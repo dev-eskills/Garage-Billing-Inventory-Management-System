@@ -60,15 +60,24 @@ export async function fetchMechanics() {
   return data;
 }
 
-export async function updateMechanicDetails(id, formData) {
-  const { data , error } = await supabase.rpc('update_mechanic', {
+export async function updateMechanicDetails({ id, formData }) {
+  // DEBUG: Check if any value is undefined
+  console.log("Sending to RPC:", {
     target_user_id: id,
     new_full_name: formData.name,
     new_phone: formData.contact,
     new_address: formData.address
   });
+
+  const { data, error } = await supabase.rpc('update_mechanic', {
+    target_user_id: id,
+    new_full_name: formData.name || '',  
+    new_phone: formData.contact || '', 
+    new_address: formData.address || ''
+  });
+
   if (error) {
-    console.error('Update failed:', error.message);
+    console.error('Update failed:', error);
     throw error;
   }
   return data;

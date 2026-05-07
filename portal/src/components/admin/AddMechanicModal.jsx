@@ -6,11 +6,11 @@ import { toast } from 'react-hot-toast';
 
 const AddMechanicModal = ({ onClose, editData = null }) => {
   const isEdit = !!editData;
-  const { 
+  const {
     adminAddMechanic, adminAddMechanicPending,
-    adminUpdateMechanic, adminUpdateMechanicPending 
+    adminUpdateMechanic, adminUpdateMechanicPending
   } = useAuth();
-  
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -39,12 +39,7 @@ const AddMechanicModal = ({ onClose, editData = null }) => {
 
     try {
       if (isEdit) {
-        await adminUpdateMechanic({
-          id: editData.id,
-          name: formData.name,
-          contact: formData.contact,
-          address: formData.address
-        });
+        await adminUpdateMechanic({ id: editData.id, formData });
       } else {
         await adminAddMechanic(formData);
       }
@@ -173,7 +168,7 @@ const AddMechanicModal = ({ onClose, editData = null }) => {
                 />
               </div>
             </div>
-            
+
             {!isEdit && (
               <>
                 {/* Password */}

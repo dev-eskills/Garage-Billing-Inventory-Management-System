@@ -1,6 +1,6 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import {  adminAddMechanic as adminAddMechanicApi, adminUpdateMechanic as adminUpdateMechanicApi, login as loginApi, logout as logoutApi, getCurrentUser,updatePassword as updatePasswordApi, fetchMechanics } from '../supabase/auth';
+import {  adminAddMechanic as adminAddMechanicApi, updateMechanicDetails , login as loginApi, logout as logoutApi, getCurrentUser,updatePassword as updatePasswordApi, fetchMechanics } from '../supabase/auth';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
@@ -21,7 +21,7 @@ export const useAuth=()=>{
   });
 
   const adminUpdateMechanicFn = useMutation({
-    mutationFn: adminUpdateMechanicApi,
+    mutationFn: updateMechanicDetails,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['mechanics'] });
       toast.success('Mechanic updated successfully!');
@@ -107,6 +107,5 @@ export const useAuth=()=>{
 
     adminUpdateMechanic: adminUpdateMechanicFn.mutateAsync,
     adminUpdateMechanicPending: adminUpdateMechanicFn.isPending,
-
   }
 }
