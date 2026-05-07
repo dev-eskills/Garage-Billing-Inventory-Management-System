@@ -14,7 +14,7 @@ const AdminDashboard = () => {
   const activeTab = location.pathname.split('/').pop() || 'overview';
 
   return (
-    <div className="min-h-screen bg-[#f8faff] flex font-sans text-gray-900 overflow-x-hidden">
+    <div className="min-h-screen bg-[#f8faff] flex font-sans text-gray-900 overflow-x-hidden relative">
       <AdminSidebar
         activeTab={activeTab}
         isSidebarOpen={isSidebarOpen}
@@ -22,8 +22,17 @@ const AdminDashboard = () => {
         logout={logout}
       />
 
+      {/* Backdrop for mobile sidebar */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       <main
-        className={`flex-1 transition-all duration-300 ease-in-out ${isSidebarOpen ? 'pl-[280px]' : 'pl-[80px]'}`}
+        className={`flex-1 w-full transition-all duration-300 ease-in-out 
+          ${isSidebarOpen ? 'lg:pl-[280px]' : 'lg:pl-[80px]'} pl-0`}
       >
         <AdminHeader
           activeTab={activeTab}
@@ -34,7 +43,7 @@ const AdminDashboard = () => {
         />
 
         {/* Dynamic Page Content */}
-        <div className="p-8 max-w-[1600px] mx-auto">
+        <div className="p-4 sm:p-8 max-w-[1600px] mx-auto w-full overflow-x-hidden">
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}
@@ -42,6 +51,7 @@ const AdminDashboard = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
+              className="w-full"
             >
               <Outlet />
             </motion.div>

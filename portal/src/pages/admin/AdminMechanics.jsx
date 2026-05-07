@@ -121,17 +121,17 @@ const AdminMechanics = () => {
       </div>
 
       {/* Mechanics Table/List */}
-      <div className="bg-white rounded-md border border-gray-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-md border border-gray-100 shadow-sm overflow-hidden w-full">
         {/* Desktop Table View */}
-        <div className="hidden md:block overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+        <div className="hidden md:block overflow-x-auto custom-scrollbar">
+          <table className="w-full text-left border-collapse min-w-[900px]">
             <thead>
               <tr className="bg-gray-50/50">
                 <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50">Mechanic</th>
-                <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50">Contact Info</th>
+                <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50 hidden xl:table-cell">Contact Info</th>
                 <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50">Role</th>
                 <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50">Status</th>
-                <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50 hidden lg:table-cell">Address</th>
+                <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50 hidden 2xl:table-cell">Address</th>
                 <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50"></th>
               </tr>
             </thead>
@@ -164,7 +164,7 @@ const AdminMechanics = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 whitespace-nowrap hidden xl:table-cell">
                       <div className="space-y-0.5">
                         <div className="flex items-center gap-2 text-gray-600">
                           <Mail size={12} className="text-gray-400" />
@@ -188,7 +188,7 @@ const AdminMechanics = () => {
                         Active
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap hidden lg:table-cell">
+                    <td className="px-6 py-4 whitespace-nowrap hidden 2xl:table-cell">
                       <div className="flex items-center gap-2 text-gray-500 font-medium">
                         <span className="text-xs">{mechanic.address || 'No address provided'}</span>
                       </div>

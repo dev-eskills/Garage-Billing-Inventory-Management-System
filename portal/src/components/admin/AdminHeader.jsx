@@ -13,8 +13,14 @@ const AdminHeader = ({ activeTab, isSidebarOpen, setIsSidebarOpen, user, logout 
   return (
     <header className="h-20 bg-white/80 backdrop-blur-md sticky top-0 z-40 border-b border-gray-100 px-8 flex items-center justify-between">
       <div className="flex items-center gap-4">
+        <button 
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          className="lg:hidden p-2 text-gray-500 hover:bg-gray-100 rounded-md transition-all"
+        >
+          {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
         
-        <h2 className="text-xl text-gray-900 tracking-tight capitalize">
+        <h2 className="text-xl font-bold text-gray-900 tracking-tight capitalize">
           {activeTab}
         </h2>
       </div>

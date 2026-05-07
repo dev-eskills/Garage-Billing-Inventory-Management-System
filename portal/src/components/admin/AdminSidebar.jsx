@@ -27,13 +27,17 @@ const AdminSidebar = ({ activeTab, isSidebarOpen, setIsSidebarOpen, logout }) =>
   return (
     <motion.aside
       initial={false}
-      animate={{ width: isSidebarOpen ? 280 : 80 }}
-      className="fixed left-0 top-0 h-full bg-white border-r border-gray-100 z-50 flex flex-col transition-all duration-300 ease-in-out shadow-sm"
+      animate={{ 
+        width: isSidebarOpen ? 280 : 80,
+        x: typeof window !== 'undefined' && window.innerWidth < 1024 && !isSidebarOpen ? -280 : 0
+      }}
+      className={`fixed left-0 top-0 h-full bg-white border-r border-gray-100 z-50 flex flex-col transition-all duration-300 ease-in-out shadow-sm 
+        ${!isSidebarOpen ? 'max-lg:-translate-x-full' : 'max-lg:translate-x-0'}`}
     >
       {/* Toggle Button */}
       <button
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        className="absolute -right-3.5 top-1/2 -translate-y-1/2 w-7 h-7 bg-white border border-gray-100 rounded-full flex items-center justify-center shadow-[0_2px_10px_rgba(0,0,0,0.08)] hover:shadow-[0_4px_15px_rgba(0,0,0,0.12)] hover:scale-110 transition-all z-[60] cursor-pointer text-[#2b5ae3]"
+        className="absolute -right-3.5 top-1/2 -translate-y-1/2 w-7 h-7 bg-white border border-gray-100 rounded-full hidden lg:flex items-center justify-center shadow-[0_2px_10px_rgba(0,0,0,0.08)] hover:shadow-[0_4px_15px_rgba(0,0,0,0.12)] hover:scale-110 transition-all z-[60] cursor-pointer text-[#2b5ae3]"
       >
         {isSidebarOpen ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
       </button>
