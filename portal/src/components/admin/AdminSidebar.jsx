@@ -8,7 +8,8 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
-  ShoppingCart
+  ShoppingCart,
+  CarIcon
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -16,6 +17,7 @@ import { Link } from 'react-router-dom';
 const navItems = [
   { id: 'overview', label: 'Dashboard', icon: LayoutDashboard, path: '/admin/overview' },
   { id: 'inventory', label: 'Inventory', icon: Package, path: '/admin/inventory' },
+  { id: 'parts', label: 'Parts', icon: CarIcon, path: '/admin/parts'},
   { id: 'mechanics', label: 'Mechanics', icon: Users, path: '/admin/mechanics' },
   { id: 'vendors', label: 'Vendors', icon: ShoppingCart, path: '/admin/vendors' },
   { id: 'customers', label: 'Customers', icon: UserSquare2, path: '/admin/customers' },

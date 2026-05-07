@@ -12,6 +12,7 @@ import AdminInventory from "../pages/admin/AdminInventory";
 import AdminCustomers from "../pages/admin/AdminCustomers";
 import AdminInvoices from "../pages/admin/AdminInvoices";
 import AdminSettings from "../pages/admin/AdminSettings";
+import AdminParts from "../pages/admin/AdminParts";
 
 const router = createBrowserRouter([
     {
@@ -64,6 +65,7 @@ const router = createBrowserRouter([
         children: [
             { index: true, element: <Navigate to="overview" replace /> },
             { path: "overview", element: <AdminOverview /> },
+            { path: "parts", element:<AdminParts/> },
             { path: "mechanics", element: <AdminMechanics /> },
             { path: "vendors", element: <AdminVendors /> },
             { path: "inventory", element: <AdminInventory /> },

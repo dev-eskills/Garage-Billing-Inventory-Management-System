@@ -24,14 +24,14 @@ const AdminDashboard = () => {
 
       {/* Backdrop for mobile sidebar */}
       {isSidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
       <main
-        className={`flex-1 w-full transition-all duration-300 ease-in-out 
+        className={`flex-1 w-full transition-all duration-300 ease-in-out
           ${isSidebarOpen ? 'lg:pl-[280px]' : 'lg:pl-[80px]'} pl-0`}
       >
         <AdminHeader
