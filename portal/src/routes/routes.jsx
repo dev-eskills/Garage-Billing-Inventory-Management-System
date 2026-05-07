@@ -5,6 +5,13 @@ import ResetPassword from "../pages/ResetPassword";
 import MechanicDashboard from "../layouts/mechanic/MechanicDashboard";
 import ProtectedRoute from "../components/ProtectedRoute";
 import AdminDashboard from "../layouts/admin/AdminDashboard";
+import AdminOverview from "../pages/admin/AdminOverview";
+import AdminMechanics from "../pages/admin/AdminMechanics";
+import AdminVendors from "../pages/admin/AdminVendors";
+import AdminInventory from "../pages/admin/AdminInventory";
+import AdminCustomers from "../pages/admin/AdminCustomers";
+import AdminInvoices from "../pages/admin/AdminInvoices";
+import AdminSettings from "../pages/admin/AdminSettings";
 
 const router = createBrowserRouter([
     {
@@ -54,6 +61,16 @@ const router = createBrowserRouter([
                 <AdminDashboard />
             </ProtectedRoute>
         ),
+        children: [
+            { index: true, element: <Navigate to="overview" replace /> },
+            { path: "overview", element: <AdminOverview /> },
+            { path: "mechanics", element: <AdminMechanics /> },
+            { path: "vendors", element: <AdminVendors /> },
+            { path: "inventory", element: <AdminInventory /> },
+            { path: "customers", element: <AdminCustomers /> },
+            { path: "invoices", element: <AdminInvoices /> },
+            { path: "settings", element: <AdminSettings /> },
+        ]
     },
 ])
 

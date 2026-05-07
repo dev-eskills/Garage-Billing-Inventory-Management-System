@@ -7,20 +7,23 @@ import {
   Settings,
   LogOut,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  ShoppingCart
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 const navItems = [
-  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { id: 'inventory', label: 'Inventory', icon: Package },
-  { id: 'mechanics', label: 'Mechanics', icon: Users },
-  { id: 'customers', label: 'Customers', icon: UserSquare2 },
-  { id: 'invoices', label: 'Invoices', icon: FileText },
-  { id: 'settings', label: 'Settings', icon: Settings },
+  { id: 'overview', label: 'Dashboard', icon: LayoutDashboard, path: '/admin/overview' },
+  { id: 'inventory', label: 'Inventory', icon: Package, path: '/admin/inventory' },
+  { id: 'mechanics', label: 'Mechanics', icon: Users, path: '/admin/mechanics' },
+  { id: 'vendors', label: 'Vendors', icon: ShoppingCart, path: '/admin/vendors' },
+  { id: 'customers', label: 'Customers', icon: UserSquare2, path: '/admin/customers' },
+  { id: 'invoices', label: 'Invoices', icon: FileText, path: '/admin/invoices' },
+  { id: 'settings', label: 'Settings', icon: Settings, path: '/admin/settings' },
 ];
 
-const AdminSidebar = ({ activeTab, setActiveTab, isSidebarOpen, setIsSidebarOpen, logout }) => {
+const AdminSidebar = ({ activeTab, isSidebarOpen, setIsSidebarOpen, logout }) => {
   return (
     <motion.aside
       initial={false}
@@ -58,18 +61,18 @@ const AdminSidebar = ({ activeTab, setActiveTab, isSidebarOpen, setIsSidebarOpen
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 py-8 px-4 space-y-2 overflow-y-auto custom-scrollbar overflow-x-hidden">
+      <nav className="flex-1 py-8 px-4 no-scrollbar space-y-2 overflow-y-auto overflow-x-hidden">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
 
           return (
-            <button
+            <Link
               key={item.id}
-              onClick={() => setActiveTab(item.id)}
+              to={item.path}
               className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-md transition-all duration-200 group relative ${isActive
-                  ? 'bg-[#2b5ae3] text-white shadow-md shadow-blue-100'
-                  : 'text-gray-500 hover:bg-gray-50 hover:text-[#2b5ae3]'
+                ? 'bg-[#2b5ae3] text-white shadow-md shadow-blue-100'
+                : 'text-gray-500 hover:bg-gray-50 hover:text-[#2b5ae3]'
                 }`}
             >
               <Icon className={`h-5 w-5 shrink-0 ${isActive ? 'text-white' : 'group-hover:scale-110 transition-transform'}`} />
@@ -92,7 +95,7 @@ const AdminSidebar = ({ activeTab, setActiveTab, isSidebarOpen, setIsSidebarOpen
                   className="absolute right-3 w-1.5 h-1.5 rounded-full bg-white opacity-60"
                 />
               )}
-            </button>
+            </Link>
           );
         })}
       </nav>

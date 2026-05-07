@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { X, User, Mail, Lock, ShieldCheck, Loader2, Phone, Eye, EyeOff, MapPin } from 'lucide-react';
-import { useAuth } from '../../hooks/useAuth';
+import { X as XIcon, User, Mail, Lock, ShieldCheck, Loader2, Phone, Eye, EyeOff, MapPin, X } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { useAdminMechanic } from '../../hooks/useAdminMechanic';
 
 const AddMechanicModal = ({ onClose, editData = null }) => {
   const isEdit = !!editData;
   const {
     adminAddMechanic, adminAddMechanicPending,
     adminUpdateMechanic, adminUpdateMechanicPending
-  } = useAuth();
+  } = useAdminMechanic();
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);

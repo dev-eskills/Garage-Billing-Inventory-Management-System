@@ -1,36 +1,12 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import {  adminAddMechanic as adminAddMechanicApi, updateMechanicDetails , login as loginApi, logout as logoutApi, getCurrentUser,updatePassword as updatePasswordApi, fetchMechanics } from '../supabase/auth';
+import { login as loginApi, logout as logoutApi, getCurrentUser,updatePassword as updatePasswordApi} from '../supabase/auth';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
 export const useAuth=()=>{
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-
-
-  const adminAddMechanicFn = useMutation({
-    mutationFn: adminAddMechanicApi,
-    onSuccess: () => {
-      toast.success('Mechanic account created successfully!');
-    },
-    onError: (err) => {
-      console.error('ERROR', err);
-      toast.error(err.message);
-    },
-  });
-
-  const adminUpdateMechanicFn = useMutation({
-    mutationFn: updateMechanicDetails,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['mechanics'] });
-      toast.success('Mechanic updated successfully!');
-    },
-    onError: (err) => {
-      console.error('ERROR', err);
-      toast.error(err.message);
-    },
-  });
 
   const loginFn = useMutation({
     mutationFn: ({ email, password }) => loginApi({ email, password }),
@@ -75,10 +51,6 @@ export const useAuth=()=>{
     queryFn: getCurrentUser,
   });
 
-  const getMechanicsFn = useQuery({
-    queryKey: ['mechanics'],
-    queryFn: fetchMechanics,
-  });
 
   return {
     
@@ -97,15 +69,5 @@ export const useAuth=()=>{
 
     updatePassword: updatePasswordFn.mutateAsync,
     updatePasswordPending: updatePasswordFn.isPending,
-
-    mechanics : getMechanicsFn.data,
-    mechanicsPending : getMechanicsFn.isPending,
-    mechanicsError : getMechanicsFn.error,
-
-    adminAddMechanic: adminAddMechanicFn.mutateAsync,
-    adminAddMechanicPending: adminAddMechanicFn.isPending,
-
-    adminUpdateMechanic: adminUpdateMechanicFn.mutateAsync,
-    adminUpdateMechanicPending: adminUpdateMechanicFn.isPending,
   }
 }

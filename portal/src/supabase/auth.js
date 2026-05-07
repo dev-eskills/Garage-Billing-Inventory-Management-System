@@ -1,23 +1,5 @@
 import { supabase, adminAuthClient } from '../lib/supabaseClient';
 
-export async function adminAddMechanic({ email, password, name, contact, address }) {
-  const { data, error } = await adminAuthClient.auth.signUp({
-    email,
-    password,
-    options: {
-      data: {
-        full_name: name,
-        phone: contact,
-        address:address,
-        role: 'mechanic', 
-      },
-    },
-  });
-
-  if (error) throw new Error(error.message);
-  return data;
-}
-
 export async function login({ email, password }) {
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
@@ -48,37 +30,5 @@ export async function updatePassword(newPassword) {
     password: newPassword,
   });
   if (error) throw new Error(error.message);
-  return data;
-}
-
-export async function fetchMechanics() {
-  const { data, error } = await supabase.rpc('get_mechanics');
-  if (error) {
-    console.error('Error fetching mechanics:', error.message);
-    return [];
-  }
-  return data;
-}
-
-export async function updateMechanicDetails({ id, formData }) {
-  // DEBUG: Check if any value is undefined
-  console.log("Sending to RPC:", {
-    target_user_id: id,
-    new_full_name: formData.name,
-    new_phone: formData.contact,
-    new_address: formData.address
-  });
-
-  const { data, error } = await supabase.rpc('update_mechanic', {
-    target_user_id: id,
-    new_full_name: formData.name || '',  
-    new_phone: formData.contact || '', 
-    new_address: formData.address || ''
-  });
-
-  if (error) {
-    console.error('Update failed:', error);
-    throw error;
-  }
   return data;
 }
