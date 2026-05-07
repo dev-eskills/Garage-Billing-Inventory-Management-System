@@ -1,25 +1,21 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { X as XIcon, User, Mail, Lock, ShieldCheck, Loader2, Phone, Eye, EyeOff, MapPin, X } from 'lucide-react';
+import { X as XIcon, User, Mail, ShieldCheck, Loader2, Phone, MapPin, X, Store } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import { useAdminMechanic } from '../../hooks/useAdminMechanic';
+import { useAdminVendor } from '../../hooks/useAdminVendor';
 
-const AddMechanicModal = ({ onClose, editData = null }) => {
+const AddVendorModal = ({ onClose, editData = null }) => {
   const isEdit = !!editData;
   const {
-    adminAddMechanic, adminAddMechanicPending,
-    adminUpdateMechanic, adminUpdateMechanicPending
-  } = useAdminMechanic();
+    adminAddVendor, adminAddVendorPending,
+    adminUpdateVendor, adminUpdateVendorPending
+  } = useAdminVendor();
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
-    name: editData?.full_name || '',
+    name: editData?.name || '',
     email: editData?.email || '',
-    contact: editData?.phone || '',
+    phone: editData?.phone || '',
     address: editData?.address || '',
-    password: '',
-    confirmPassword: ''
   });
 
   const handleChange = (e) => {
@@ -32,16 +28,11 @@ const AddMechanicModal = ({ onClose, editData = null }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!isEdit && formData.password !== formData.confirmPassword) {
-      toast.error('Passwords do not match');
-      return;
-    }
-
     try {
       if (isEdit) {
-        await adminUpdateMechanic({ id: editData.id, formData });
+        await adminUpdateVendor({ id: editData.id, formData });
       } else {
-        await adminAddMechanic(formData);
+        await adminAddVendor(formData);
       }
       onClose();
     } catch (err) {
@@ -49,7 +40,7 @@ const AddMechanicModal = ({ onClose, editData = null }) => {
     }
   };
 
-  const isPending = adminAddMechanicPending || adminUpdateMechanicPending;
+  const isPending = adminAddVendorPending || adminUpdateVendorPending;
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4 md:p-6">
@@ -77,11 +68,14 @@ const AddMechanicModal = ({ onClose, editData = null }) => {
           >
             <X size={20} />
           </button>
+          <div className="hidden sm:flex w-16 h-16 bg-white/10 rounded-full items-center justify-center mx-auto mb-4 backdrop-blur-md">
+            <Store size={32} className="text-white" />
+          </div>
           <h4 className="text-xl sm:text-2xl font-bold tracking-tight text-center">
-            {isEdit ? 'Update Mechanic Details' : 'Register New Mechanic'}
+            {isEdit ? 'Update Vendor Details' : 'Add New Vendor'}
           </h4>
           <p className="text-blue-100 font-medium mt-1 text-center text-xs sm:text-sm px-4">
-            {isEdit ? 'Modify team member profile information.' : 'Create a secure account for your team member.'}
+            {isEdit ? 'Modify supplier information and contact details.' : 'Register a new supplier to your inventory network.'}
           </p>
         </div>
 
@@ -90,9 +84,9 @@ const AddMechanicModal = ({ onClose, editData = null }) => {
           <form onSubmit={handleSubmit} className="p-4 sm:p-6 md:p-8 space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Name */}
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 sm:col-span-2">
                 <label className="text-[10px] sm:text-[11px] font-bold text-gray-500 uppercase tracking-wider block ml-1">
-                  Full Name
+                  Vendor Name / Company Name
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
@@ -105,34 +99,13 @@ const AddMechanicModal = ({ onClose, editData = null }) => {
                     value={formData.name}
                     onChange={handleChange}
                     className="block w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-sm font-medium"
-                    placeholder="Rahul Sharma"
-                  />
-                </div>
-              </div>
-
-              {/* Contact */}
-              <div className="space-y-1.5">
-                <label className="text-[10px] sm:text-[11px] font-bold text-gray-500 uppercase tracking-wider block ml-1">
-                  Contact Number
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                    <Phone size={16} className="text-gray-400" />
-                  </div>
-                  <input
-                    type="tel"
-                    name="contact"
-                    required
-                    value={formData.contact}
-                    onChange={handleChange}
-                    className="block w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-sm font-medium"
-                    placeholder="+91 98765 43210"
+                    placeholder="AutoParts Solutions"
                   />
                 </div>
               </div>
 
               {/* Email */}
-              <div className="space-y-1.5 ">
+              <div className="space-y-1.5">
                 <label className="text-[10px] sm:text-[11px] font-bold text-gray-500 uppercase tracking-wider block ml-1">
                   Email Address
                 </label>
@@ -144,19 +117,39 @@ const AddMechanicModal = ({ onClose, editData = null }) => {
                     type="email"
                     name="email"
                     required
-                    disabled={isEdit}
                     value={formData.email}
                     onChange={handleChange}
-                    className={`block w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-sm font-medium ${isEdit ? 'opacity-60 cursor-not-allowed' : ''}`}
-                    placeholder="mechanic@example.com"
+                    className="block w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-sm font-medium"
+                    placeholder="sales@autoparts.com"
+                  />
+                </div>
+              </div>
+
+              {/* Phone */}
+              <div className="space-y-1.5">
+                <label className="text-[10px] sm:text-[11px] font-bold text-gray-500 uppercase tracking-wider block ml-1">
+                  Phone Number
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                    <Phone size={16} className="text-gray-400" />
+                  </div>
+                  <input
+                    type="tel"
+                    name="phone"
+                    required
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className="block w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-sm font-medium"
+                    placeholder="+91 98765 43210"
                   />
                 </div>
               </div>
 
               {/* Address */}
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 sm:col-span-2">
                 <label className="text-[10px] sm:text-[11px] font-bold text-gray-500 uppercase tracking-wider block ml-1">
-                  Address
+                  Business Address
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
@@ -169,70 +162,10 @@ const AddMechanicModal = ({ onClose, editData = null }) => {
                     value={formData.address}
                     onChange={handleChange}
                     className="block w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-sm font-medium"
-                    placeholder="123 Main St, Anytown, USA"
+                    placeholder="123 Industrial Area, Mumbai"
                   />
                 </div>
               </div>
-
-              {!isEdit && (
-                <>
-                  {/* Password */}
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] sm:text-[11px] font-bold text-gray-500 uppercase tracking-wider block ml-1">
-                      Password
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                        <Lock size={16} className="text-gray-400" />
-                      </div>
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        name="password"
-                        required
-                        value={formData.password}
-                        onChange={handleChange}
-                        className="block w-full pl-10 pr-10 py-2.5 bg-gray-50 border border-gray-100 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-sm font-medium"
-                        placeholder="••••••••"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
-                      >
-                        {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Confirm Password */}
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] sm:text-[11px] font-bold text-gray-500 uppercase tracking-wider block ml-1">
-                      Confirm Password
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                        <Lock size={16} className="text-gray-400" />
-                      </div>
-                      <input
-                        type={showConfirmPassword ? "text" : "password"}
-                        name="confirmPassword"
-                        required
-                        value={formData.confirmPassword}
-                        onChange={handleChange}
-                        className="block w-full pl-10 pr-10 py-2.5 bg-gray-50 border border-gray-100 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-sm font-medium"
-                        placeholder="••••••••"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
-                      >
-                        {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                      </button>
-                    </div>
-                  </div>
-                </>
-              )}
             </div>
 
             <div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-6 border-t border-gray-50">
@@ -251,12 +184,12 @@ const AddMechanicModal = ({ onClose, editData = null }) => {
                 {isPending ? (
                   <>
                     <Loader2 size={16} className="animate-spin" />
-                    {isEdit ? 'Updating...' : 'Creating...'}
+                    {isEdit ? 'Updating...' : 'Adding...'}
                   </>
                 ) : (
                   <>
                     <ShieldCheck size={16} />
-                    {isEdit ? 'Update Mechanic' : 'Create Mechanic'}
+                    {isEdit ? 'Update Vendor' : 'Add Vendor'}
                   </>
                 )}
               </button>
@@ -268,4 +201,4 @@ const AddMechanicModal = ({ onClose, editData = null }) => {
   );
 };
 
-export default AddMechanicModal;
+export default AddVendorModal;

@@ -18,7 +18,6 @@ export async function adminAddMechanic({ email, password, name, contact, address
   return data;
 }
 
-
 export async function fetchMechanics() {
   const { data, error } = await supabase.rpc('get_mechanics');
   if (error) {

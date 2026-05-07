@@ -20,6 +20,7 @@ const navItems = [
   { id: 'parts', label: 'Parts', icon: CarIcon, path: '/admin/parts'},
   { id: 'mechanics', label: 'Mechanics', icon: Users, path: '/admin/mechanics' },
   { id: 'vendors', label: 'Vendors', icon: ShoppingCart, path: '/admin/vendors' },
+  { id: 'purchase', label: 'Purchase', icon: ShoppingCart, path: '/admin/purchase' },
   { id: 'customers', label: 'Customers', icon: UserSquare2, path: '/admin/customers' },
   { id: 'invoices', label: 'Invoices', icon: FileText, path: '/admin/invoices' },
   { id: 'settings', label: 'Settings', icon: Settings, path: '/admin/settings' },
@@ -29,7 +30,7 @@ const AdminSidebar = ({ activeTab, isSidebarOpen, setIsSidebarOpen, logout }) =>
   return (
     <motion.aside
       initial={false}
-      animate={{ 
+      animate={{
         width: isSidebarOpen ? 280 : 80,
         x: typeof window !== 'undefined' && window.innerWidth < 1024 && !isSidebarOpen ? -280 : 0
       }}

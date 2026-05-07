@@ -13,6 +13,7 @@ import AdminCustomers from "../pages/admin/AdminCustomers";
 import AdminInvoices from "../pages/admin/AdminInvoices";
 import AdminSettings from "../pages/admin/AdminSettings";
 import AdminParts from "../pages/admin/AdminParts";
+import AdminPurchase from "../pages/admin/AdminPurchase";
 
 const router = createBrowserRouter([
     {
@@ -69,6 +70,7 @@ const router = createBrowserRouter([
             { path: "mechanics", element: <AdminMechanics /> },
             { path: "vendors", element: <AdminVendors /> },
             { path: "inventory", element: <AdminInventory /> },
+            { path: "purchase", element: <AdminPurchase /> },
             { path: "customers", element: <AdminCustomers /> },
             { path: "invoices", element: <AdminInvoices /> },
             { path: "settings", element: <AdminSettings /> },

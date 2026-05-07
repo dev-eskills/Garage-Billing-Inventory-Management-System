@@ -121,9 +121,9 @@ const AdminMechanics = () => {
       </div>
 
       {/* Mechanics Table/List */}
-      <div className="bg-white rounded-md border border-gray-100 shadow-sm overflow-hidden w-full">
+      <div className="bg-white rounded-md border border-gray-100 shadow-sm w-full">
         {/* Desktop Table View */}
-        <div className="hidden md:block overflow-x-auto custom-scrollbar">
+        <div className="hidden md:block overflow-x-auto custom-scrollbar pb-32">
           <table className="w-full text-left border-collapse min-w-[900px]">
             <thead>
               <tr className="bg-gray-50/50">
