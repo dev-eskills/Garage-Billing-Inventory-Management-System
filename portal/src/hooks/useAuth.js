@@ -13,7 +13,7 @@ export const useAuth=()=>{
     onSuccess: (user) => {
       queryClient.setQueryData(['user'], user.user);
       toast.success('Successfully logged in!');
-      navigate('/dashboard');
+      navigate('/');
     },
     onError: (err) => {
       console.error('ERROR', err);

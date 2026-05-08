@@ -15,13 +15,26 @@ import AdminParts from "../pages/admin/AdminParts";
 import AdminPurchase from "../pages/admin/AdminPurchase";
 import MechanicDashboard from "../Pages/mechanic/MechanicDashboard";
 import MechanicProfile from "../Pages/mechanic/MechanicProfile";
+import MechanicWorkOrders from "../Pages/mechanic/MechanicWorkOrders";
+import MechanicParts from "../Pages/mechanic/MechanicParts";
+import MechanicPartDetail from "../Pages/mechanic/MechanicPartDetail";
+import MechanicInvoices from "../Pages/mechanic/MechanicInvoices";
+import MechanicInvoiceDetail from "../Pages/mechanic/MechanicInvoiceDetail";
+import MechanicCustomers from "../Pages/mechanic/MechanicCustomers";
+import MechanicCustomerDetail from "../Pages/mechanic/MechanicCustomerDetail";
+import MechanicReports from "../Pages/mechanic/MechanicReports";
+import MechanicJobDetail from "../Pages/mechanic/MechanicJobDetail";
+import CompletedJobs from "../components/Mechanic/CompletedJobs";
+import PendingJobs from "../components/Mechanic/PendingJobs";
+import PartsRequest from "../components/Mechanic/PartsRequest";
+import MechanicLayout from "../layouts/mechanic/MechanicLayout";
 
 const router = createBrowserRouter([
     {
         path: "/",
         element: (
             <ProtectedRoute>
-                <Navigate to="/dashboard" replace />
+                <Navigate to="/mechanic" replace />
             </ProtectedRoute>
         ),
     },
@@ -53,12 +66,60 @@ const router = createBrowserRouter([
         path: "/mechanic",
         element: (
             <ProtectedRoute requiredRole="mechanic">
-                <MechanicDashboard />
+                <MechanicLayout />
             </ProtectedRoute>
         ),
         children: [
-            { index: true, element: <Navigate to="dashboard" replace /> },
+            { index: true, element: <MechanicDashboard /> },
             { path: "profile", element: <MechanicProfile /> },
+            {
+                path: "work-orders",
+                element: <MechanicWorkOrders />,
+            },
+            {
+                path: "parts",
+                element: <MechanicParts />,
+            },
+            {
+                path: "parts/:id",
+                element: <MechanicPartDetail />,
+            },
+            {
+                path: "invoices",
+                element: <MechanicInvoices />,
+            },
+            {
+                path: "invoices/:id",
+                element: <MechanicInvoiceDetail />,
+            },
+            {
+                path: "customers",
+                element: <MechanicCustomers />,
+            },
+            {
+                path: "customers/:id",
+                element: <MechanicCustomerDetail />,
+            },
+            {
+                path: "reports",
+                element: <MechanicReports />,
+            },
+            {
+                path: "jobs/:id",
+                element: <MechanicJobDetail />,
+            },
+            {
+                path: "completed-jobs",
+                element: <CompletedJobs />,
+            },
+            {
+                path: "pending-jobs",
+                element: <PendingJobs />,
+            },
+            {
+                path: "parts-requests",
+                element: <PartsRequest />,
+            },
         ]
     },
     {
