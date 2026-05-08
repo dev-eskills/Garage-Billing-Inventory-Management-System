@@ -1,6 +1,6 @@
-import React from 'react';
-import { Outlet } from 'react-router-dom';
-import MechanicProfileButton from '../../Components/MechanicProfileButton';
+import React from "react";
+import { Outlet } from "react-router-dom";
+import MechanicProfileButton from "../../Components/MechanicProfileButton";
 
 const MechanicLayout = () => {
   return (
@@ -12,7 +12,9 @@ const MechanicLayout = () => {
             <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center text-white font-bold">
               G
             </div>
-            <span className="font-bold text-slate-900 tracking-tight">Garage Mechanic</span>
+            <span className="font-bold text-slate-900 tracking-tight">
+              Garage Mechanic
+            </span>
           </div>
           <div className="flex items-center gap-4">
             <MechanicProfileButton />

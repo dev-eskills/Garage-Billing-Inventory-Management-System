@@ -1,54 +1,52 @@
-import { supabase } from '../lib/supabaseClient';
+import { supabase } from "../lib/supabaseClient";
 
 export async function fetchParts() {
   const { data, error } = await supabase
-    .from('parts')
-    .select(`
-      *,
-      vendors!fk_parts_vendor (*) 
-    `)
-    .order('created_at', { ascending: false });
-  
+    .from("parts")
+    .select(`*, vendors!parts_vendor_id_fkey (*)`)
+    .order("created_at", { ascending: false });
+
   if (error) throw error;
+  console.log(data, "data ");
   return data;
 }
 export async function fetchPartsByVendor(vendorId) {
   if (!vendorId) return [];
   const { data, error } = await supabase
-    .from('parts')
-    .select(`
+    .from("parts")
+    .select(
+      `
       *,
       vendors!fk_parts_vendor (*)
-    `)
-    .eq('vendor_id', vendorId)
-    .order('part_name', { ascending: true });
+    `,
+    )
+    .eq("vendor_id", vendorId)
+    .order("part_name", { ascending: true });
 
   if (error) {
-    console.error('Error fetching parts by vendor:', error.message);
+    console.error("Error fetching parts by vendor:", error.message);
     throw error;
   }
-  console.log(data , "data ")
+  console.log(data, "data ");
   return data;
 }
 
 export async function uploadPartImage(file) {
   if (!file) return null;
 
-  const fileExt = file.name.split('.').pop();
+  const fileExt = file.name.split(".").pop();
   const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
   const filePath = `${fileName}`;
 
   const { error: uploadError } = await supabase.storage
-    .from('part-images')
+    .from("part-images")
     .upload(filePath, file);
 
   if (uploadError) {
-    throw new Error('Image upload failed: ' + uploadError.message);
+    throw new Error("Image upload failed: " + uploadError.message);
   }
 
-  const { data } = supabase.storage
-    .from('part-images')
-    .getPublicUrl(filePath);
+  const { data } = supabase.storage.from("part-images").getPublicUrl(filePath);
 
   return data.publicUrl;
 }
@@ -62,13 +60,11 @@ export async function addPart(partData) {
     unit_price: parseFloat(partData.unit_price) || 0,
     min_stock_level: parseInt(partData.min_stock_level, 10) || 0,
     image_url: partData.image_url,
-    vendor_id: partData.vendor_id
+    vendor_id: partData.vendor_id,
   };
 
   console.log(insertData);
-  const { data, error } = await supabase
-    .from('parts')
-    .insert([insertData])
+  const { data, error } = await supabase.from("parts").insert([insertData])
     .select(`
       *,
       vendors!fk_parts_vendor (*)
@@ -87,14 +83,13 @@ export async function updatePart({ id, partData }) {
     unit_price: parseFloat(partData.unit_price) || 0,
     min_stock_level: parseInt(partData.min_stock_level, 10) || 0,
     image_url: partData.image_url,
-    vendor_id: partData.vendor_id
+    vendor_id: partData.vendor_id,
   };
 
   const { data, error } = await supabase
-    .from('parts')
+    .from("parts")
     .update(updateData)
-    .eq('id', id)
-    .select(`
+    .eq("id", id).select(`
       *,
       vendors!fk_parts_vendor (*)
     `);
@@ -104,10 +99,32 @@ export async function updatePart({ id, partData }) {
 }
 
 export async function deletePart(id) {
-  const { data, error } = await supabase.rpc('delete_part', {
-    target_part_id: id
+  const { data, error } = await supabase.rpc("delete_part", {
+    target_part_id: id,
   });
 
   if (error) throw new Error(error.message);
+  return data;
+}
+
+// Search parts by name *Akshay Nagdiya*
+export async function searchParts(searchTerm) {
+  if (!searchTerm) {
+    const { data, error } = await supabase
+      .from("parts")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+    return data;
+  }
+
+  const { data, error } = await supabase
+    .from("parts")
+    .select("*")
+    .ilike("part_name", `%${searchTerm}%`)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
   return data;
 }

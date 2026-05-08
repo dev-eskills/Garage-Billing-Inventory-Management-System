@@ -15,6 +15,7 @@ import AssignPartsModal from "../../Components/AssignPartsModal";
 import JobTimeline from "../../Components/JobTimeline";
 import MechanicParts from "./MechanicParts";
 import Backbutton from "../../Components/Backbutton";
+import GenerateInvoiceModel from "../../components/GenerateInvoiceModel";
 
 const MechanicJobDetail = () => {
   return (
@@ -149,10 +150,12 @@ const MechanicJobDetail = () => {
               <Wrench size={50} />
             </div>
 
-            <button className="mt-6 w-full bg-black text-white hover:bg-gray-900 rounded-xl py-3 font-semibold flex items-center justify-center gap-2 transition-all duration-300">
+            {/* <button className="mt-6 w-full bg-black text-white hover:bg-gray-900 rounded-xl py-3 font-semibold flex items-center justify-center gap-2 transition-all duration-300">
               Generate Invoice
               <ArrowRight size={18} />
-            </button>
+            </button> */}
+
+            <GenerateInvoiceModel />
           </div>
 
           {/* Mechanic */}
