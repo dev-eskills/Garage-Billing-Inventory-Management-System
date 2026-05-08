@@ -6,6 +6,7 @@ import { Toaster } from 'react-hot-toast';
 import { RouterProvider } from 'react-router-dom';
 import router from './routes/routes.jsx';
 import './index.css';
+import App from './App.jsx';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,6 +21,7 @@ createRoot(document.getElementById("root")).render(
     <QueryClientProvider client={queryClient}>
       <ReactQueryDevtools initialIsOpen={false} />
       <RouterProvider router={router} />
+      {/* <App/> */}
       <Toaster
         position="top-center"
         gutter={12}

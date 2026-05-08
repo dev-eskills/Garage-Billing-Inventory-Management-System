@@ -30,9 +30,9 @@ const MechanicJobDetail = lazy(
   () => import("../Pages/mechanic/MechanicJobDetail"),
 );
 const ALL_JOBS = lazy(() => import("../Pages/mechanic/AllAssignedJobs"));
-const CompletedJobs = lazy(() => import("../Mechanic/CompletedJobs"));
-const PendingJobs = lazy(() => import("../Mechanic/PendingJobs"));
-const PartsRequest = lazy(() => import("../Mechanic/PartsRequest"));
+const CompletedJobs = lazy(() => import("../components/Mechanic/CompletedJobs"));
+const PendingJobs = lazy(() => import("../components/Mechanic/PendingJobs"));
+const PartsRequest = lazy(() => import("../components/Mechanic/PartsRequest"));
 
 const mechanicRoutes = [
   {

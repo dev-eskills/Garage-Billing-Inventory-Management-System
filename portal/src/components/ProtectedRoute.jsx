@@ -17,7 +17,7 @@ export default function ProtectedRoute({ children, requiredRole, onlyGuest = fal
       }
       if (isAuthenticated && onlyGuest) {
         // Redirect to their respective dashboard if they try to access login/signup while logged in
-        const target = userRole === 'admin' ? '/admin' : '/dashboard';
+        const target = userRole === 'admin' ? '/admin' : '/mechanic';
         navigate(target, { replace: true });
       }
     }
@@ -39,7 +39,7 @@ export default function ProtectedRoute({ children, requiredRole, onlyGuest = fal
   // Role checking logic (only for protected routes)
   if (!onlyGuest && requiredRole && userRole !== requiredRole) {
     if (userRole === 'admin') return <Navigate to="/admin" />;
-    return <Navigate to="/dashboard" />;
+    return <Navigate to="/mechanic" />;
   }
 
   return children;

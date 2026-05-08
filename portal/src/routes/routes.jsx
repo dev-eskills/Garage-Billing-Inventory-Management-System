@@ -2,7 +2,6 @@ import { createBrowserRouter, Navigate } from "react-router-dom";
 import Login from "../pages/Login";
 import ForgotPassword from "../pages/ForgotPassword";
 import ResetPassword from "../pages/ResetPassword";
-import MechanicDashboard from "../layouts/mechanic/MechanicDashboard";
 import ProtectedRoute from "../components/ProtectedRoute";
 import AdminDashboard from "../layouts/admin/AdminDashboard";
 import AdminOverview from "../pages/admin/AdminOverview";
@@ -14,6 +13,8 @@ import AdminInvoices from "../pages/admin/AdminInvoices";
 import AdminSettings from "../pages/admin/AdminSettings";
 import AdminParts from "../pages/admin/AdminParts";
 import AdminPurchase from "../pages/admin/AdminPurchase";
+import MechanicDashboard from "../Pages/mechanic/MechanicDashboard";
+import MechanicProfile from "../Pages/mechanic/MechanicProfile";
 
 const router = createBrowserRouter([
     {
@@ -49,12 +50,16 @@ const router = createBrowserRouter([
         ),
     },
     {
-        path: "/dashboard",
+        path: "/mechanic",
         element: (
             <ProtectedRoute requiredRole="mechanic">
                 <MechanicDashboard />
             </ProtectedRoute>
         ),
+        children: [
+            { index: true, element: <Navigate to="dashboard" replace /> },
+            { path: "profile", element: <MechanicProfile /> },
+        ]
     },
     {
         path: "/admin",
@@ -66,7 +71,7 @@ const router = createBrowserRouter([
         children: [
             { index: true, element: <Navigate to="overview" replace /> },
             { path: "overview", element: <AdminOverview /> },
-            { path: "parts", element:<AdminParts/> },
+            { path: "parts", element: <AdminParts /> },
             { path: "mechanics", element: <AdminMechanics /> },
             { path: "vendors", element: <AdminVendors /> },
             { path: "inventory", element: <AdminInventory /> },

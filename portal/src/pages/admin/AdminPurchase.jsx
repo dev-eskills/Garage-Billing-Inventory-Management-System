@@ -9,6 +9,8 @@ import {
     Trash2,
     CheckCircle2,
     Clock,
+    Package,
+    Store
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAdminPurchase } from '../../hooks/useAdminPurchase';
@@ -136,97 +138,186 @@ const AdminPurchase = () => {
                         <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
                         <p className="font-bold">Loading purchase records...</p>
                     </div>
-                ) : (
-                    <div className="overflow-x-auto custom-scrollbar pb-32">
-                        <table className="w-full text-left border-collapse min-w-[900px]">
-                            <thead>
-                                <tr className="bg-gray-50/50">
-                                    <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50">Order Date</th>
-                                    <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50">Vendor Info</th>
-                                    <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50">Part Details</th>
-                                    <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50">Amount</th>
-                                    <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50">Status</th>
-                                    <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50"></th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-50">
-                                {filteredPurchases.length === 0 ? (
-                                    <tr>
-                                        <td colSpan="5" className="px-6 py-10 text-center text-gray-500 font-medium">
-                                            No purchase records found.
-                                        </td>
+                ) : <>
+                        {/* Desktop Table View */}
+                        <div className="hidden md:block overflow-x-auto custom-scrollbar pb-32">
+                            <table className="w-full text-left border-collapse min-w-[900px]">
+                                <thead>
+                                    <tr className="bg-gray-50/50">
+                                        <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50">Purchase Date</th>
+                                        <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50">Vendor Info</th>
+                                        <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50">Part Details</th>
+                                        <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50">Total Amount</th>
+                                        <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50">Status</th>
+                                        <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50"></th>
                                     </tr>
-                                ) : (
-                                    filteredPurchases.map((purchase) => (
-                                        <tr key={purchase.id} className="hover:bg-gray-50/50 transition-colors group text-sm">
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="flex items-center gap-2 text-gray-900 font-medium">
-                                                    <Calendar size={14} className="text-gray-400" />
-                                                    {new Date(purchase.purchase_date).toLocaleDateString()}
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-8 h-8 rounded-md bg-blue-50 text-[#2b5ae3] flex items-center justify-center font-bold text-xs uppercase">
-                                                        {purchase.vendors?.name?.charAt(0) || 'V'}
-                                                    </div>
-                                                    <span className="font-bold text-gray-900">{purchase.vendors?.name}</span>
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <span className="font-bold text-gray-900">₹ {Number(purchase.total_amount).toLocaleString()}</span>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-tight border ${purchase.payment_status === 'Paid'
-                                                    ? 'bg-green-50 text-green-700 border-green-100'
-                                                    : 'bg-orange-50 text-orange-700 border-orange-100'
-                                                    }`}>
-                                                    {purchase.payment_status === 'Paid' ? (
-                                                        <CheckCircle2 size={12} className="mr-1.5" />
-                                                    ) : (
-                                                        <Clock size={12} className="mr-1.5" />
-                                                    )}
-                                                    {purchase.payment_status}
-                                                </span>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-right">
-                                                <div className="relative">
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            setActiveDropdown(activeDropdown === purchase.id ? null : purchase.id);
-                                                        }}
-                                                        className="p-1.5 hover:bg-gray-100 rounded-md transition-all text-gray-400 hover:text-gray-600 cursor-pointer"
-                                                    >
-                                                        <MoreVertical size={16} />
-                                                    </button>
-                                                    {activeDropdown === purchase.id && (
-                                                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-100 py-1 z-50 text-left">
-                                                            <button
-                                                                onClick={() => handleStatusUpdate(purchase.id, purchase.payment_status)}
-                                                                className="w-full text-left px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-2 cursor-pointer"
-                                                            >
-                                                                {purchase.payment_status === 'Paid' ? <Clock size={14} /> : <CheckCircle2 size={14} />}
-                                                                Mark as {purchase.payment_status === 'Paid' ? 'Pending' : 'Paid'}
-                                                            </button>
-                                                            <button
-                                                                onClick={() => handleDeleteClick(purchase)}
-                                                                className="w-full text-left px-4 py-2 text-xs font-bold text-red-600 hover:bg-red-50 flex items-center gap-2 cursor-pointer"
-                                                            >
-                                                                <Trash2 size={14} />
-                                                                Delete Order
-                                                            </button>
-                                                        </div>
-                                                    )}
-                                                </div>
+                                </thead>
+                                <tbody className="divide-y divide-gray-50">
+                                    {filteredPurchases.length === 0 ? (
+                                        <tr>
+                                            <td colSpan="6" className="px-6 py-10 text-center text-gray-500 font-medium">
+                                                No purchase records found.
                                             </td>
                                         </tr>
-                                    ))
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
+                                    ) : (
+                                        filteredPurchases.map((purchase) => (
+                                            <tr key={purchase.id} className="hover:bg-gray-50/50 transition-colors group text-sm">
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="flex items-center gap-2 text-gray-900 font-medium">
+                                                        <Calendar size={14} className="text-gray-400" />
+                                                        {new Date(purchase.purchase_date).toLocaleDateString()}
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="flex flex-col">
+                                                        <span className="font-bold text-gray-900">{purchase.vendors?.name || 'Unknown Vendor'}</span>
+                                                        <span className="text-[10px] text-gray-500 font-medium">{purchase.vendors?.email || 'No email'}</span>
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="flex flex-col">
+                                                        <div className="flex items-center gap-1.5">
+                                                            <Package size={14} className="text-blue-500" />
+                                                            <span className="font-bold text-gray-900">{purchase.parts?.part_name || 'N/A'}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2 mt-0.5">
+                                                            <span className="text-[10px] text-gray-500 font-bold bg-gray-100 px-1 rounded uppercase tracking-tighter">QTY: {purchase.quantity}</span>
+                                                            <span className="text-[10px] text-gray-400">@ ₹{purchase.parts?.unit_price || 0}</span>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <span className="text-sm font-bold text-gray-900">₹ {Number(purchase.total_amount).toLocaleString()}</span>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-tight border ${purchase.payment_status === 'Paid'
+                                                        ? 'bg-green-50 text-green-700 border-green-100'
+                                                        : 'bg-orange-50 text-orange-700 border-orange-100'
+                                                        }`}>
+                                                        {purchase.payment_status === 'Paid' ? (
+                                                            <CheckCircle2 size={12} className="mr-1.5" />
+                                                        ) : (
+                                                            <Clock size={12} className="mr-1.5" />
+                                                        )}
+                                                        {purchase.payment_status}
+                                                    </span>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-right">
+                                                    <div className="relative">
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setActiveDropdown(activeDropdown === purchase.id ? null : purchase.id);
+                                                            }}
+                                                            className="p-1.5 hover:bg-gray-100 rounded-md transition-all text-gray-400 hover:text-gray-600 cursor-pointer"
+                                                        >
+                                                            <MoreVertical size={16} />
+                                                        </button>
+                                                        {activeDropdown === purchase.id && (
+                                                            <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-100 py-1 z-50 text-left">
+                                                                <button
+                                                                    onClick={() => handleStatusUpdate(purchase.id, purchase.payment_status)}
+                                                                    className="w-full text-left px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-2 cursor-pointer"
+                                                                >
+                                                                    {purchase.payment_status === 'Paid' ? <Clock size={14} /> : <CheckCircle2 size={14} />}
+                                                                    Mark as {purchase.payment_status === 'Paid' ? 'Pending' : 'Paid'}
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => handleDeleteClick(purchase)}
+                                                                    className="w-full text-left px-4 py-2 text-xs font-bold text-red-600 hover:bg-red-50 flex items-center gap-2 cursor-pointer"
+                                                                >
+                                                                    <Trash2 size={14} />
+                                                                    Delete Order
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Mobile Card View */}
+                        <div className="md:hidden divide-y divide-gray-50">
+                            {filteredPurchases.length === 0 ? (
+                                <div className="p-8 text-center text-gray-500 font-bold">
+                                    No purchase records found.
+                                </div>
+                            ) : (
+                                filteredPurchases.map((purchase) => (
+                                    <div key={purchase.id} className="p-4 space-y-4">
+                                        <div className="flex items-start justify-between">
+                                            <div className="space-y-1">
+                                                <div className="flex items-center gap-2 text-xs text-gray-500 font-medium">
+                                                    <Calendar size={14} />
+                                                    {new Date(purchase.purchase_date).toLocaleDateString()}
+                                                </div>
+                                                <h5 className="font-bold text-gray-900">{purchase.vendors?.name}</h5>
+                                                <p className="text-[10px] text-gray-500">{purchase.vendors?.email}</p>
+                                            </div>
+                                            <div className="relative">
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setActiveDropdown(activeDropdown === purchase.id ? null : purchase.id);
+                                                    }}
+                                                    className="p-1.5 hover:bg-gray-100 rounded-md transition-colors text-gray-400"
+                                                >
+                                                    <MoreVertical size={18} />
+                                                </button>
+                                                {activeDropdown === purchase.id && (
+                                                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-100 py-1 z-50 text-left">
+                                                        <button
+                                                            onClick={() => handleStatusUpdate(purchase.id, purchase.payment_status)}
+                                                            className="w-full text-left px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                                                        >
+                                                            {purchase.payment_status === 'Paid' ? <Clock size={14} /> : <CheckCircle2 size={14} />}
+                                                            Mark as {purchase.payment_status === 'Paid' ? 'Pending' : 'Paid'}
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDeleteClick(purchase)}
+                                                            className="w-full text-left px-4 py-2 text-xs font-bold text-red-600 hover:bg-red-50 flex items-center gap-2"
+                                                        >
+                                                            <Trash2 size={14} />
+                                                            Delete Order
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-gray-50 p-3 rounded-md space-y-2">
+                                            <div className="flex items-center gap-2">
+                                                <Package size={14} className="text-[#2b5ae3]" />
+                                                <span className="text-sm font-bold text-gray-900">{purchase.parts?.part_name}</span>
+                                            </div>
+                                            <div className="flex items-center justify-between text-[11px] font-medium text-gray-600">
+                                                <span>Quantity: <span className="text-gray-900">{purchase.quantity}</span></span>
+                                                <span>Unit Price: <span className="text-gray-900">₹{purchase.parts?.unit_price}</span></span>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center justify-between pt-2 border-t border-gray-50">
+                                            <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${purchase.payment_status === 'Paid'
+                                                ? 'bg-green-50 text-green-700 border-green-100'
+                                                : 'bg-orange-50 text-orange-700 border-orange-100'
+                                                }`}>
+                                                {purchase.payment_status}
+                                            </span>
+                                            <div className="text-right">
+                                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Total Amount</p>
+                                                <p className="text-sm font-bold text-[#2b5ae3]">₹ {Number(purchase.total_amount).toLocaleString()}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </>
+                }
             </div>
 
             {/* Modals */}

@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { User, LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 const MechanicProfileButton = () => {
   const [open, setOpen] = useState(false);
+  const { logout } = useAuth()
 
   const handleSignOut = () => {
-    console.log("Sign out clicked");
+    logout()
     // add your logout logic here (clear token, redirect, etc.)
   };
 
