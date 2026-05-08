@@ -13,6 +13,25 @@ export async function fetchVendors() {
   return data;
 }
 
+export async function fetchAllVendorsWithParts() {
+  const { data, error } = await supabase
+    .from('vendors')
+    .select(`
+      *,
+      parts!fk_parts_vendor (
+        part_name,
+        stock_quantity
+      )
+    `)
+    .order('name', { ascending: true });
+
+  if (error) {
+    console.error('Error fetching vendors with parts:', error.message);
+    throw error;
+  }
+  return data;
+}
+
 export async function adminAddVendor({ name, email, phone, address }) {
   const { data, error } = await supabase
     .from('vendors')

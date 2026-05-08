@@ -17,9 +17,9 @@ import { Link } from 'react-router-dom';
 const navItems = [
   { id: 'overview', label: 'Dashboard', icon: LayoutDashboard, path: '/admin/overview' },
   { id: 'inventory', label: 'Inventory', icon: Package, path: '/admin/inventory' },
-  { id: 'parts', label: 'Parts', icon: CarIcon, path: '/admin/parts'},
   { id: 'mechanics', label: 'Mechanics', icon: Users, path: '/admin/mechanics' },
   { id: 'vendors', label: 'Vendors', icon: ShoppingCart, path: '/admin/vendors' },
+  { id: 'parts', label: 'Parts', icon: CarIcon, path: '/admin/parts' },
   { id: 'purchase', label: 'Purchase', icon: ShoppingCart, path: '/admin/purchase' },
   { id: 'customers', label: 'Customers', icon: UserSquare2, path: '/admin/customers' },
   { id: 'invoices', label: 'Invoices', icon: FileText, path: '/admin/invoices' },

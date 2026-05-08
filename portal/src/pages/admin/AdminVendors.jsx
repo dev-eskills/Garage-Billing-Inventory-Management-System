@@ -13,6 +13,7 @@ import {
     MapPin,
     Trash2,
     Edit,
+    Package,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAdminVendor } from '../../hooks/useAdminVendor';
@@ -22,7 +23,8 @@ import ConfirmationModal from '../../components/common/ConfirmationModal';
 const AdminVendors = () => {
     const {
         vendors, vendorsPending,
-        adminDeleteVendor, adminDeleteVendorPending
+        adminDeleteVendor, adminDeleteVendorPending,
+        vendorWithParts
     } = useAdminVendor();
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -67,7 +69,8 @@ const AdminVendors = () => {
         return () => document.removeEventListener('click', handleClickOutside);
     }, [activeDropdown]);
 
-    const filteredVendors = (vendors || []).filter(vendor =>
+    const displayVendors = vendorWithParts || vendors || [];
+    const filteredVendors = displayVendors.filter(vendor =>
         vendor.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         vendor.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         vendor.phone?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -130,6 +133,7 @@ const AdminVendors = () => {
                                     <tr className="bg-gray-50/50">
                                         <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50">Vendor</th>
                                         <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50 hidden xl:table-cell">Contact Info</th>
+                                        <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50">Supplied Parts</th>
                                         <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50">Status</th>
                                         <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50 hidden 2xl:table-cell">Location</th>
                                         <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50"></th>
@@ -138,7 +142,7 @@ const AdminVendors = () => {
                                 <tbody className="divide-y divide-gray-50">
                                     {filteredVendors.length === 0 ? (
                                         <tr>
-                                            <td colSpan="5" className="px-6 py-10 text-center text-gray-500 font-medium">
+                                            <td colSpan="6" className="px-6 py-10 text-center text-gray-500 font-medium">
                                                 No vendors found matching your search.
                                             </td>
                                         </tr>
@@ -165,6 +169,34 @@ const AdminVendors = () => {
                                                             <Phone size={12} className="text-gray-400" />
                                                             <span className="text-xs font-medium">{vendor.phone || 'N/A'}</span>
                                                         </div>
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <div className="flex flex-col gap-2">
+                                                        <div className="flex flex-wrap gap-1.5 max-w-[300px]">
+                                                            {vendor.parts && vendor.parts.length > 0 ? (
+                                                                vendor.parts.map((part, idx) => (
+                                                                    <div key={idx} className="inline-flex items-center gap-1.5 px-2 py-1 bg-white border border-gray-200 rounded shadow-sm text-[10px] font-bold text-gray-700 hover:border-blue-200 hover:bg-blue-50/30 transition-all">
+                                                                        <Package size={10} className="text-blue-500" />
+                                                                        <span>{part.part_name}</span>
+                                                                        <span className={`px-1 rounded-sm min-w-[20px] text-center ${part.stock_quantity <= 5 ? 'bg-red-500 text-white' : 'bg-blue-600 text-white'}`}>
+                                                                            {part.stock_quantity}
+                                                                        </span>
+                                                                    </div>
+                                                                ))
+                                                            ) : (
+                                                                <span className="text-gray-400 text-[11px] italic font-medium">Catalog empty</span>
+                                                            )}
+                                                        </div>
+                                                        {vendor.parts?.length > 0 && (
+                                                            <div className="flex items-center gap-2">
+                                                                <div className="h-px bg-gray-100 flex-1"></div>
+                                                                <span className="text-[9px] text-gray-400 uppercase tracking-widest whitespace-nowrap">
+                                                                    {vendor.parts.length} {vendor.parts.length === 1 ? 'Part' : 'Parts'} listed
+                                                                </span>
+                                                                <div className="h-px bg-gray-100 flex-px w-2"></div>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
@@ -288,6 +320,36 @@ const AdminVendors = () => {
                                             <div className="flex items-center gap-2 text-gray-600 bg-gray-50 px-3 py-2 rounded-md">
                                                 <Phone size={14} className="text-gray-400" />
                                                 <span className="text-xs font-medium">{vendor.phone || 'N/A'}</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Parts List Mobile */}
+                                        <div className="bg-gray-50 border border-gray-100 rounded-md p-3">
+                                            <div className="flex items-center justify-between mb-2.5">
+                                                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest flex items-center gap-1.5">
+                                                    <Store size={12} className="text-[#2b5ae3]" />
+                                                    Inventory Catalog
+                                                </p>
+                                                {vendor.parts?.length > 0 && (
+                                                    <span className="text-[9px] font-black text-gray-400 uppercase">
+                                                        {vendor.parts.length} {vendor.parts.length === 1 ? 'Item' : 'Items'}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <div className="flex flex-wrap gap-2">
+                                                {vendor.parts && vendor.parts.length > 0 ? (
+                                                    vendor.parts.map((part, idx) => (
+                                                        <div key={idx} className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white border border-gray-200 rounded shadow-sm text-[10px] font-bold text-gray-700">
+                                                            <Package size={10} className="text-blue-500" />
+                                                            <span>{part.part_name}</span>
+                                                            <span className={`px-1 rounded-sm min-w-[18px] text-center ${part.stock_quantity <= 5 ? 'bg-red-500 text-white' : 'bg-blue-600 text-white'}`}>
+                                                                {part.stock_quantity}
+                                                            </span>
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <span className="text-gray-400 text-[10px] italic">No inventory listed</span>
+                                                )}
                                             </div>
                                         </div>
 

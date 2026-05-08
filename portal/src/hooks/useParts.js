@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchParts, addPart, updatePart, deletePart } from '../supabase/parts';
+import { fetchParts, fetchPartsByVendor, addPart, updatePart, deletePart } from '../supabase/parts';
 import { toast } from 'react-hot-toast';
 
 export const useParts = () => {
@@ -60,4 +60,12 @@ export const useParts = () => {
     deletePart: deletePartFn.mutateAsync,
     deletePartPending: deletePartFn.isPending,
   };
+};
+
+export const usePartsByVendor = (vendorId) => {
+  return useQuery({
+    queryKey: ['parts', vendorId],
+    queryFn: () => fetchPartsByVendor(vendorId),
+    enabled: !!vendorId,
+  });
 };

@@ -3,14 +3,7 @@ import { motion } from 'framer-motion';
 import { X, ShoppingBag, User, Package, Hash, DollarSign, Calendar, ShieldCheck, Loader2, IndianRupee } from 'lucide-react';
 import { useAdminVendor } from '../../hooks/useAdminVendor';
 import { useAdminPurchase } from '../../hooks/useAdminPurchase';
-
-const STATIC_PARTS = [
-  { id: 'p1', name: 'Engine Oil', price: 1200 },
-  { id: 'p2', name: 'Brake Pads', price: 850 },
-  { id: 'p3', name: 'Air Filter', price: 450 },
-  { id: 'p4', name: 'Spark Plug', price: 200 },
-  { id: 'p5', name: 'Clutch Plate', price: 3500 },
-];
+import { usePartsByVendor } from '../../hooks/useParts';
 
 const AddPurchaseModal = ({ onClose }) => {
   const { vendors } = useAdminVendor();
@@ -24,19 +17,26 @@ const AddPurchaseModal = ({ onClose }) => {
     purchase_date: new Date().toISOString().split('T')[0],
   });
 
+  // Fetch parts dynamically when vendor is selected
+  const { data: vendorParts, isLoading: partsLoading } = usePartsByVendor(formData.vendor_id);
+
   // Calculate total amount automatically
-  const selectedPart = STATIC_PARTS.find(p => p.id === formData.part_id);
+  const selectedPart = vendorParts?.find(p => p.id === formData.part_id);
   const totalAmount = useMemo(() => {
     if (!selectedPart) return 0;
-    return selectedPart.price * formData.quantity;
+    return (selectedPart.unit_price || 0) * formData.quantity;
   }, [selectedPart, formData.quantity]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => {
+      const newData = { ...prev, [name]: value };
+      // Reset part selection if vendor changes
+      if (name === 'vendor_id') {
+        newData.part_id = '';
+      }
+      return newData;
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -49,7 +49,8 @@ const AddPurchaseModal = ({ onClose }) => {
         total_amount: totalAmount,
         purchase_date: formData.purchase_date,
         payment_status: formData.payment_status,
-        // items: [{ part_id: formData.part_id, quantity: formData.quantity, price: selectedPart.price }]
+        quantity: formData.quantity || 1,
+        part_id: formData.part_id,
       });
       onClose();
     } catch (err) {
@@ -124,18 +125,19 @@ const AddPurchaseModal = ({ onClose }) => {
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                  <Package size={16} className="text-gray-400" />
+                  {partsLoading ? <Loader2 size={16} className="text-blue-500 animate-spin" /> : <Package size={16} className="text-gray-400" />}
                 </div>
                 <select
                   name="part_id"
                   required
+                  disabled={!formData.vendor_id || partsLoading}
                   value={formData.part_id}
                   onChange={handleChange}
-                  className="block w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-sm font-medium appearance-none"
+                  className="block w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-sm font-medium appearance-none disabled:opacity-50"
                 >
-                  <option value="">Choose a part...</option>
-                  {STATIC_PARTS.map(p => (
-                    <option key={p.id} value={p.id}>{p.name} - ₹{p.price}</option>
+                  <option value="">{formData.vendor_id ? (partsLoading ? 'Loading parts...' : 'Choose a part...') : 'Select a vendor first'}</option>
+                  {vendorParts?.map(p => (
+                    <option key={p.id} value={p.id}>{p.part_name} - ₹{p.unit_price}</option>
                   ))}
                 </select>
               </div>
@@ -175,7 +177,7 @@ const AddPurchaseModal = ({ onClose }) => {
                   <input
                     type="text"
                     readOnly
-                    value={`₹ ${totalAmount}`}
+                    value={`₹ ${totalAmount.toLocaleString()}`}
                     className="block w-full pl-10 pr-4 py-2.5 bg-blue-50 border border-blue-100 rounded-md text-[#2b5ae3] font-semibold text-sm focus:outline-none"
                   />
                 </div>

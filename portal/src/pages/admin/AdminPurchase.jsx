@@ -21,8 +21,7 @@ const AdminPurchase = () => {
         updatePurchaseStatus, updateStatusPending,
         deletePurchase, deletePurchasePending
     } = useAdminPurchase();
-
-    console.log(purchases);
+    console.log(purchases , "purchases")
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -50,7 +49,7 @@ const AdminPurchase = () => {
     };
 
     const handleStatusUpdate = async (id, currentStatus) => {
-        const newStatus = currentStatus === 'paid' ? 'pending' : 'paid';
+        const newStatus = currentStatus === 'Paid' ? 'Pending' : 'Paid';
         await updatePurchaseStatus({ id, status: newStatus });
         setActiveDropdown(null);
     };
@@ -65,6 +64,7 @@ const AdminPurchase = () => {
 
     const filteredPurchases = (purchases || []).filter(p =>
         p.vendors?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.parts?.part_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         p.total_amount?.toString().includes(searchQuery)
     );
 
@@ -94,13 +94,13 @@ const AdminPurchase = () => {
                 <div className="bg-white p-4 rounded-md border border-gray-100 shadow-sm">
                     <p className="text-green-600 text-xs font-bold uppercase tracking-wider">Total Paid</p>
                     <h4 className="text-2xl font-bold text-gray-900 mt-1">
-                        ₹ {(purchases || []).filter(p => p.payment_status === 'paid').reduce((acc, curr) => acc + (Number(curr.total_amount) || 0), 0).toLocaleString()}
+                        ₹ {(purchases || []).filter(p => p.payment_status === 'Paid').reduce((acc, curr) => acc + (Number(curr.total_amount) || 0), 0).toLocaleString()}
                     </h4>
                 </div>
                 <div className="bg-white p-4 rounded-md border border-gray-100 shadow-sm">
                     <p className="text-orange-600 text-xs font-bold uppercase tracking-wider">Pending Payments</p>
                     <h4 className="text-2xl font-bold text-gray-900 mt-1">
-                        ₹ {(purchases || []).filter(p => p.payment_status === 'pending').reduce((acc, curr) => acc + (Number(curr.total_amount) || 0), 0).toLocaleString()}
+                        ₹ {(purchases || []).filter(p => p.payment_status === 'Pending').reduce((acc, curr) => acc + (Number(curr.total_amount) || 0), 0).toLocaleString()}
                     </h4>
                 </div>
             </div>
@@ -142,7 +142,8 @@ const AdminPurchase = () => {
                             <thead>
                                 <tr className="bg-gray-50/50">
                                     <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50">Order Date</th>
-                                    <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50">Vendor</th>
+                                    <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50">Vendor Info</th>
+                                    <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50">Part Details</th>
                                     <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50">Amount</th>
                                     <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50">Status</th>
                                     <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50"></th>
@@ -176,11 +177,11 @@ const AdminPurchase = () => {
                                                 <span className="font-bold text-gray-900">₹ {Number(purchase.total_amount).toLocaleString()}</span>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-tight border ${purchase.payment_status === 'paid'
+                                                <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-tight border ${purchase.payment_status === 'Paid'
                                                     ? 'bg-green-50 text-green-700 border-green-100'
                                                     : 'bg-orange-50 text-orange-700 border-orange-100'
                                                     }`}>
-                                                    {purchase.payment_status === 'paid' ? (
+                                                    {purchase.payment_status === 'Paid' ? (
                                                         <CheckCircle2 size={12} className="mr-1.5" />
                                                     ) : (
                                                         <Clock size={12} className="mr-1.5" />
@@ -205,8 +206,8 @@ const AdminPurchase = () => {
                                                                 onClick={() => handleStatusUpdate(purchase.id, purchase.payment_status)}
                                                                 className="w-full text-left px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-2 cursor-pointer"
                                                             >
-                                                                {purchase.payment_status === 'paid' ? <Clock size={14} /> : <CheckCircle2 size={14} />}
-                                                                Mark as {purchase.payment_status === 'paid' ? 'Pending' : 'Paid'}
+                                                                {purchase.payment_status === 'Paid' ? <Clock size={14} /> : <CheckCircle2 size={14} />}
+                                                                Mark as {purchase.payment_status === 'Paid' ? 'Pending' : 'Paid'}
                                                             </button>
                                                             <button
                                                                 onClick={() => handleDeleteClick(purchase)}

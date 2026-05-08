@@ -1,15 +1,33 @@
 import { supabase } from '../lib/supabaseClient';
 
 export async function fetchParts() {
-  // If get_parts RPC exists, use it. Otherwise fallback to select if RLS allows reading.
-  const { data, error } = await supabase.rpc('get_parts');
+  const { data, error } = await supabase
+    .from('parts')
+    .select(`
+      *,
+      vendors!fk_parts_vendor (*) 
+    `)
+    .order('created_at', { ascending: false });
   
+  if (error) throw error;
+  return data;
+}
+export async function fetchPartsByVendor(vendorId) {
+  if (!vendorId) return [];
+  const { data, error } = await supabase
+    .from('parts')
+    .select(`
+      *,
+      vendors!fk_parts_vendor (*)
+    `)
+    .eq('vendor_id', vendorId)
+    .order('part_name', { ascending: true });
+
   if (error) {
-    // Fallback if the user hasn't created the get_parts RPC
-    const fallback = await supabase.from('parts').select('*').order('created_at', { ascending: false });
-    if (fallback.error) throw fallback.error;
-    return fallback.data;
+    console.error('Error fetching parts by vendor:', error.message);
+    throw error;
   }
+  console.log(data , "data ")
   return data;
 }
 
@@ -36,39 +54,53 @@ export async function uploadPartImage(file) {
 }
 
 export async function addPart(partData) {
-  const { data, error } = await supabase.rpc('add_part', {
-    p_name: partData.part_name,
-    p_sku: partData.sku,
-    p_category: partData.category,
-    p_stock: parseInt(partData.stock_quantity, 10) || 0,
-    p_price: parseFloat(partData.unit_price) || 0,
-    p_min_stock: parseInt(partData.min_stock_level, 10) || 0,
-    p_image_url: partData.image_url
-  });
+  const insertData = {
+    part_name: partData.part_name,
+    sku: partData.sku,
+    category: partData.category,
+    stock_quantity: parseInt(partData.stock_quantity, 10) || 0,
+    unit_price: parseFloat(partData.unit_price) || 0,
+    min_stock_level: parseInt(partData.min_stock_level, 10) || 0,
+    image_url: partData.image_url,
+    vendor_id: partData.vendor_id
+  };
 
-  if (error) {
-    // Fallback if RPC doesn't exist but RLS allows insert
-    const fallback = await supabase.from('parts').insert([partData]).select();
-    if (fallback.error) throw new Error(fallback.error.message);
-    return fallback.data[0];
-  }
-  return data;
+  console.log(insertData);
+  const { data, error } = await supabase
+    .from('parts')
+    .insert([insertData])
+    .select(`
+      *,
+      vendors!fk_parts_vendor (*)
+    `);
+
+  if (error) throw new Error(error.message);
+  return data[0];
 }
 
 export async function updatePart({ id, partData }) {
-  const { data, error } = await supabase.rpc('update_part', {
-    target_part_id: id,
-    new_part_name: partData.part_name,
-    new_sku: partData.sku,
-    new_category: partData.category,
-    new_stock_quantity: parseInt(partData.stock_quantity, 10) || 0,
-    new_unit_price: parseFloat(partData.unit_price) || 0,
-    new_min_stock_level: parseInt(partData.min_stock_level, 10) || 0,
-    new_image_url: partData.image_url
-  });
+  const updateData = {
+    part_name: partData.part_name,
+    sku: partData.sku,
+    category: partData.category,
+    stock_quantity: parseInt(partData.stock_quantity, 10) || 0,
+    unit_price: parseFloat(partData.unit_price) || 0,
+    min_stock_level: parseInt(partData.min_stock_level, 10) || 0,
+    image_url: partData.image_url,
+    vendor_id: partData.vendor_id
+  };
+
+  const { data, error } = await supabase
+    .from('parts')
+    .update(updateData)
+    .eq('id', id)
+    .select(`
+      *,
+      vendors!fk_parts_vendor (*)
+    `);
 
   if (error) throw new Error(error.message);
-  return data;
+  return data[0];
 }
 
 export async function deletePart(id) {

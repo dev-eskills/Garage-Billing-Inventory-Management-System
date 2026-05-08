@@ -1,6 +1,6 @@
 import { supabase } from '../lib/supabaseClient';
 
-export async function adminAddPurchase({ vendor_id, total_amount, purchase_date, payment_status, items }) {
+export async function adminAddPurchase({ vendor_id, total_amount, purchase_date, payment_status, quantity, part_id }) {
   // First, insert the main purchase record
   const { data: purchaseData, error: purchaseError } = await supabase
     .from('purchases')
@@ -8,8 +8,10 @@ export async function adminAddPurchase({ vendor_id, total_amount, purchase_date,
       { 
         vendor_id, 
         total_amount, 
-        purchase_date: payment_status === 'paid' ? new Date().toISOString() : purchase_date,
-        payment_status 
+        purchase_date: payment_status === 'Paid' ? new Date().toISOString() : purchase_date,
+        payment_status ,
+        quantity,
+        part_id
       }
     ])
     .select();
@@ -27,32 +29,36 @@ export async function adminFetchPurchases() {
     .select(`
       *,
       vendors (
-        name
+        name,
+        email
+      ),
+      parts (
+        part_name,
+        sku,
+        unit_price
       )
     `)
     .order('purchase_date', { ascending: false });
+
   if (error) {
     console.error('Error fetching purchases:', error.message);
-    throw new Error(error.message);
+    throw error;
   }
   return data;
 }
 
 export async function adminUpdatePurchaseStatus(id, status) {
+  const updateData = { payment_status: status };
+  if (status === 'Paid') {
+    updateData.purchase_date = new Date().toISOString();
+  }
   const { data, error } = await supabase
     .from('purchases')
-    .update({ 
-      payment_status: status,
-      purchase_date: status === 'paid' ? new Date().toISOString() : undefined
-    })
+    .update(updateData)
     .eq('id', id)
     .select();
-
-  if (error) {
-    console.error('Error updating purchase status:', error.message);
-    throw new Error(error.message);
-  }
-  return data[0];
+  if (error) throw new Error(error.message);
+  return data;
 }
 
 export async function adminDeletePurchase(id) {
