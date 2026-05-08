@@ -11,6 +11,7 @@ const AddPartModal = ({ onClose, editData = null }) => {
   const isEdit = !!editData;
   const { vendors } = useAdminVendor();
   const {
+    parts,
     addPart, addPartPending,
     updatePart, updatePartPending
   } = useParts();
@@ -19,13 +20,15 @@ const AddPartModal = ({ onClose, editData = null }) => {
     part_name: editData?.part_name || '',
     sku: editData?.sku || '',
     category: editData?.category || '',
-    stock_quantity: editData?.stock_quantity || '',
-    unit_price: editData?.unit_price || '',
-    min_stock_level: editData?.min_stock_level || '',
-    image_url: editData?.image_url || '',
-    vendor_id: editData?.vendor_id || ''
+    image_url: editData?.image_url || ''
   });
+
+  const uniqueCategories = [...new Set(parts?.map(p => p.category).filter(Boolean) || [])];
+  const uniquePartNames = [...new Set(parts?.map(p => p.part_name).filter(Boolean) || [])];
   
+  const [isNewCategory, setIsNewCategory] = useState(uniqueCategories.length === 0);
+  const [isNewPartName, setIsNewPartName] = useState(uniquePartNames.length === 0);
+
   const [imageFile, setImageFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(editData?.image_url || null);
 
@@ -38,9 +41,31 @@ const AddPartModal = ({ onClose, editData = null }) => {
   };
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
+    
+    if (name === 'category_select') {
+      if (value === 'NEW_CATEGORY') {
+        setIsNewCategory(true);
+        setFormData(prev => ({ ...prev, category: '' }));
+      } else {
+        setFormData(prev => ({ ...prev, category: value }));
+      }
+      return;
+    }
+
+    if (name === 'part_name_select') {
+      if (value === 'NEW_PART_NAME') {
+        setIsNewPartName(true);
+        setFormData(prev => ({ ...prev, part_name: '' }));
+      } else {
+        setFormData(prev => ({ ...prev, part_name: value }));
+      }
+      return;
+    }
+
     setFormData(prev => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [name]: value
     }));
   };
 
@@ -114,22 +139,51 @@ const AddPartModal = ({ onClose, editData = null }) => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Part Name */}
               <div className="space-y-1.5">
-                <label className="text-[10px] sm:text-[11px] font-bold text-gray-500 uppercase tracking-wider block ml-1">
-                  Part Name
-                </label>
+                <div className="flex items-center justify-between ml-1">
+                  <label className="text-[10px] sm:text-[11px] font-bold text-gray-500 uppercase tracking-wider block">
+                    Part Name
+                  </label>
+                  {isNewPartName && uniquePartNames.length > 0 && (
+                    <button 
+                      type="button" 
+                      onClick={() => {
+                        setIsNewPartName(false);
+                        setFormData(prev => ({ ...prev, part_name: uniquePartNames[0] || '' }));
+                      }}
+                      className="text-[10px] text-[#2b5ae3] font-bold hover:underline"
+                    >
+                      Select Existing
+                    </button>
+                  )}
+                </div>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                     <Package size={16} className="text-gray-400" />
                   </div>
-                  <input
-                    type="text"
-                    name="part_name"
-                    required
-                    value={formData.part_name}
-                    onChange={handleChange}
-                    className="block w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-sm font-medium"
-                    placeholder="Brake Pads"
-                  />
+                  {!isNewPartName ? (
+                    <select
+                      name="part_name_select"
+                      required
+                      value={formData.part_name}
+                      onChange={handleChange}
+                      className="block w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-sm font-medium appearance-none"
+                    >
+                      {uniquePartNames.map(name => (
+                        <option key={name} value={name}>{name}</option>
+                      ))}
+                      <option value="NEW_PART_NAME" className="font-bold text-[#2b5ae3]">+ Add New Part Name</option>
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      name="part_name"
+                      required
+                      value={formData.part_name}
+                      onChange={handleChange}
+                      className="block w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-sm font-medium"
+                      placeholder="e.g. Brake Pads"
+                    />
+                  )}
                 </div>
               </div>
 
@@ -156,117 +210,55 @@ const AddPartModal = ({ onClose, editData = null }) => {
 
               {/* Category */}
               <div className="space-y-1.5 ">
-                <label className="text-[10px] sm:text-[11px] font-bold text-gray-500 uppercase tracking-wider block ml-1">
-                  Category
-                </label>
+                <div className="flex items-center justify-between ml-1">
+                  <label className="text-[10px] sm:text-[11px] font-bold text-gray-500 uppercase tracking-wider block">
+                    Category
+                  </label>
+                  {isNewCategory && uniqueCategories.length > 0 && (
+                    <button 
+                      type="button" 
+                      onClick={() => {
+                        setIsNewCategory(false);
+                        setFormData(prev => ({ ...prev, category: uniqueCategories[0] || '' }));
+                      }}
+                      className="text-[10px] text-[#2b5ae3] font-bold hover:underline"
+                    >
+                      Select Existing
+                    </button>
+                  )}
+                </div>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                     <Tag size={16} className="text-gray-400" />
                   </div>
-                  <input
-                    type="text"
-                    name="category"
-                    required
-                    value={formData.category}
-                    onChange={handleChange}
-                    className="block w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-sm font-medium"
-                    placeholder="Brakes"
-                  />
+                  {!isNewCategory ? (
+                    <select
+                      name="category_select"
+                      required
+                      value={formData.category}
+                      onChange={handleChange}
+                      className="block w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-sm font-medium appearance-none"
+                    >
+                      {uniqueCategories.map(cat => (
+                        <option key={cat} value={cat}>{cat}</option>
+                      ))}
+                      <option value="NEW_CATEGORY" className="font-bold text-[#2b5ae3]">+ Add New Category</option>
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      name="category"
+                      required
+                      value={formData.category}
+                      onChange={handleChange}
+                      className="block w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-sm font-medium"
+                      placeholder="e.g. Brakes"
+                    />
+                  )}
                 </div>
               </div>
 
-              {/* Stock Quantity */}
-              <div className="space-y-1.5">
-                <label className="text-[10px] sm:text-[11px] font-bold text-gray-500 uppercase tracking-wider block ml-1">
-                  Stock Quantity
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                    <Layers size={16} className="text-gray-400" />
-                  </div>
-                  <input
-                    type="number"
-                    name="stock_quantity"
-                    required
-                    value={formData.stock_quantity}
-                    onChange={handleChange}
-                    className="block w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-sm font-medium"
-                    placeholder="50"
-                    min="0"
-                  />
-                </div>
-              </div>
-              
-              {/* Unit Price */}
-              <div className="space-y-1.5">
-                <label className="text-[10px] sm:text-[11px] font-bold text-gray-500 uppercase tracking-wider block ml-1">
-                  Unit Price
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                    <DollarSign size={16} className="text-gray-400" />
-                  </div>
-                  <input
-                    type="number"
-                    name="unit_price"
-                    required
-                    value={formData.unit_price}
-                    onChange={handleChange}
-                    className="block w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-sm font-medium"
-                    placeholder="29.99"
-                    step="0.01"
-                    min="0"
-                  />
-                </div>
-              </div>
-              
-              {/* Min Stock Level */}
-              <div className="space-y-1.5">
-                <label className="text-[10px] sm:text-[11px] font-bold text-gray-500 uppercase tracking-wider block ml-1">
-                  Min Stock Level
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                    <AlertCircle size={16} className="text-gray-400" />
-                  </div>
-                  <input
-                    type="number"
-                    name="min_stock_level"
-                    required
-                    value={formData.min_stock_level}
-                    onChange={handleChange}
-                    className="block w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-sm font-medium"
-                    placeholder="10"
-                    min="0"
-                  />
-                </div>
-              </div>
 
-              {/* Vendor Selection */}
-              <div className="space-y-1.5 sm:col-span-2">
-                <label className="text-[10px] sm:text-[11px] font-bold text-gray-500 uppercase tracking-wider block ml-1">
-                  Preferred Vendor
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                    <User size={16} className="text-gray-400" />
-                  </div>
-                  <select
-                    name="vendor_id"
-                    required
-                    value={formData.vendor_id}
-                    onChange={handleChange}
-                    className="block w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-sm font-medium appearance-none"
-                  >
-                    <option value="">Select a vendor...</option>
-                    {vendors?.map(vendor => (
-                      <option key={vendor.id} value={vendor.id}>
-                        {vendor.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
 
               {/* Image Upload */}
               <div className="space-y-1.5 sm:col-span-2">

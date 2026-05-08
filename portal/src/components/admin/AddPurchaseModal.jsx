@@ -1,38 +1,43 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { X, ShoppingBag, User, Package, Hash, DollarSign, Calendar, ShieldCheck, Loader2, IndianRupee } from 'lucide-react';
+import { X, ShoppingBag, User, Package, Hash, DollarSign, Calendar, ShieldCheck, Loader2, IndianRupee, Tag } from 'lucide-react';
 import { useAdminVendor } from '../../hooks/useAdminVendor';
 import { useAdminPurchase } from '../../hooks/useAdminPurchase';
-import { usePartsByVendor } from '../../hooks/useParts';
+import { useParts } from '../../hooks/useParts';
 
 const AddPurchaseModal = ({ onClose }) => {
   const { vendors } = useAdminVendor();
   const { addPurchase, addPurchasePending } = useAdminPurchase();
+  const { parts, partsPending } = useParts();
 
   const [formData, setFormData] = useState({
-    vendor_id: '',
+    category: '',
     part_id: '',
+    vendor_id: '',
+    unit_price: '',
     quantity: 1,
     payment_status: 'Pending',
     purchase_date: new Date().toISOString().split('T')[0],
   });
 
-  // Fetch parts dynamically when vendor is selected
-  const { data: vendorParts, isLoading: partsLoading } = usePartsByVendor(formData.vendor_id);
+  const categories = useMemo(() => {
+    return [...new Set(parts?.map(p => p.category) || [])];
+  }, [parts]);
 
-  // Calculate total amount automatically
-  const selectedPart = vendorParts?.find(p => p.id === formData.part_id);
+  const filteredParts = useMemo(() => {
+    if (!formData.category) return [];
+    return parts?.filter(p => p.category === formData.category) || [];
+  }, [parts, formData.category]);
+
   const totalAmount = useMemo(() => {
-    if (!selectedPart) return 0;
-    return (selectedPart.unit_price || 0) * formData.quantity;
-  }, [selectedPart, formData.quantity]);
+    return (parseFloat(formData.unit_price) || 0) * (parseInt(formData.quantity) || 1);
+  }, [formData.unit_price, formData.quantity]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => {
       const newData = { ...prev, [name]: value };
-      // Reset part selection if vendor changes
-      if (name === 'vendor_id') {
+      if (name === 'category') {
         newData.part_id = '';
       }
       return newData;
@@ -51,6 +56,7 @@ const AddPurchaseModal = ({ onClose }) => {
         payment_status: formData.payment_status,
         quantity: formData.quantity || 1,
         part_id: formData.part_id,
+        unit_price: parseFloat(formData.unit_price) || 0,
       });
       onClose();
     } catch (err) {
@@ -94,6 +100,55 @@ const AddPurchaseModal = ({ onClose }) => {
         {/* Form Content */}
         <div className="overflow-y-auto custom-scrollbar flex-1">
           <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-5">
+            {/* Category Selection */}
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider block ml-1">
+                Select Category
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                  <Tag size={16} className="text-gray-400" />
+                </div>
+                <select
+                  name="category"
+                  required
+                  value={formData.category}
+                  onChange={handleChange}
+                  className="block w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-sm font-medium appearance-none"
+                >
+                  <option value="">Choose a category...</option>
+                  {categories.map(c => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Part Selection */}
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider block ml-1">
+                Select Part Name
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                  {partsPending ? <Loader2 size={16} className="text-blue-500 animate-spin" /> : <Package size={16} className="text-gray-400" />}
+                </div>
+                <select
+                  name="part_id"
+                  required
+                  disabled={!formData.category || partsPending}
+                  value={formData.part_id}
+                  onChange={handleChange}
+                  className="block w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-sm font-medium appearance-none disabled:opacity-50"
+                >
+                  <option value="">{formData.category ? (partsPending ? 'Loading parts...' : 'Choose a part...') : 'Select a category first'}</option>
+                  {filteredParts.map(p => (
+                    <option key={p.id} value={p.id}>{p.part_name} ({p.sku})</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
             {/* Vendor Selection */}
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider block ml-1">
@@ -118,32 +173,29 @@ const AddPurchaseModal = ({ onClose }) => {
               </div>
             </div>
 
-            {/* Part Selection */}
-            <div className="space-y-1.5">
-              <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider block ml-1">
-                Select Part / Item
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                  {partsLoading ? <Loader2 size={16} className="text-blue-500 animate-spin" /> : <Package size={16} className="text-gray-400" />}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {/* Unit Price */}
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider block ml-1">
+                  Per Part Price
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                    <IndianRupee size={16} className="text-gray-400" />
+                  </div>
+                  <input
+                    type="number"
+                    name="unit_price"
+                    min="0"
+                    step="0.01"
+                    required
+                    value={formData.unit_price}
+                    onChange={handleChange}
+                    className="block w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-sm font-medium"
+                  />
                 </div>
-                <select
-                  name="part_id"
-                  required
-                  disabled={!formData.vendor_id || partsLoading}
-                  value={formData.part_id}
-                  onChange={handleChange}
-                  className="block w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-sm font-medium appearance-none disabled:opacity-50"
-                >
-                  <option value="">{formData.vendor_id ? (partsLoading ? 'Loading parts...' : 'Choose a part...') : 'Select a vendor first'}</option>
-                  {vendorParts?.map(p => (
-                    <option key={p.id} value={p.id}>{p.part_name} - ₹{p.unit_price}</option>
-                  ))}
-                </select>
               </div>
-            </div>
 
-            <div className="grid grid-cols-2 gap-4">
               {/* Quantity */}
               <div className="space-y-1.5">
                 <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider block ml-1">
