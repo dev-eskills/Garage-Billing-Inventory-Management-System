@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, Package } from "lucide-react";
 import MechanicProfileButton from "../../Components/MechanicProfileButton";
 import MechanicInvoices from "./MechanicInvoices";
 import { useAuth } from "../../hooks/useAuth";
@@ -109,9 +109,20 @@ const MechanicDashboard = () => {
                 <PlusCircle size={18} />
                 Add New Customer
               </Link>
-              <button className="rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-100">
-                Inventory report
-              </button>
+              <Link 
+                to="/mechanic/purchase"
+                className="rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 flex items-center gap-2"
+              >
+                <Package size={18} />
+                Purchase Parts
+              </Link>
+              <Link 
+                to="/mechanic/parts"
+                className="rounded-full bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 flex items-center gap-2 shadow-sm"
+              >
+                <Package size={18} />
+                My Inventory
+              </Link>
 
               <MechanicProfileButton />
             </div>
@@ -123,6 +134,14 @@ const MechanicDashboard = () => {
               className="rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 hover:shadow-md"
             >
               All Jobs
+            </Link>
+
+            {/* Purchase Parts (Highlight) */}
+            <Link
+              to="/mechanic/purchase"
+              className="rounded-full bg-blue-50 text-blue-700 border border-blue-200 px-5 py-3 text-sm font-semibold transition hover:bg-blue-100 hover:border-blue-300"
+            >
+              Purchase Parts
             </Link>
 
             {/* Completed (calm success green) */}
@@ -139,6 +158,24 @@ const MechanicDashboard = () => {
               className="rounded-full bg-amber-50 text-amber-800 border border-amber-200 px-5 py-3 text-sm font-semibold transition hover:bg-amber-100 hover:border-amber-300"
             >
               Pending Jobs
+            </Link>
+
+            {/* Create Job (Action) */}
+            <Link
+              to="/mechanic/create-job"
+              className="rounded-full bg-blue-600 text-white px-5 py-3 text-sm font-semibold transition hover:bg-blue-700 shadow-md flex items-center gap-2"
+            >
+              <PlusCircle size={18} />
+              Create New Job
+            </Link>
+
+            {/* My Inventory (Personal stock) */}
+            <Link
+              to="/mechanic/parts"
+              className="rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 px-5 py-3 text-sm font-semibold transition hover:bg-indigo-100 hover:border-indigo-300 flex items-center gap-2"
+            >
+              <Package size={16} />
+              My Inventory
             </Link>
 
             {/* Parts Requests (cool info blue) */}

@@ -78,13 +78,15 @@ export const useParts = () => {
     decreasePartStock: async (partId, quantity) => {
       try {
         const data = await decreasePartStock(partId, quantity);
-        queryClient.invalidateQueries(['parts']);
+        queryClient.invalidateQueries({ queryKey: ['parts'] });
+        queryClient.invalidateQueries({ queryKey: ['currentStock'] });
         return data;
       } catch (error) {
         toast.error('Failed to update stock');
         throw error;
       }
-    }
+    },
+
   };
 };
 

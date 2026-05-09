@@ -4,7 +4,7 @@ import MechanicProfileButton from '../../Components/MechanicProfileButton';
 
 const MechanicLayout = () => {
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen no-scrollbar  bg-slate-50">
       {/* Shared Header/Navbar for Mechanic */}
       <nav className="bg-white border-b border-slate-200 px-4 py-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl flex justify-between items-center">
@@ -21,7 +21,7 @@ const MechanicLayout = () => {
       </nav>
 
       {/* Main Content Area */}
-      <main className="mx-auto max-w-7xl">
+      <main className="no-scrollbar mx-auto max-w-7xl">
         <Outlet />
       </main>
     </div>

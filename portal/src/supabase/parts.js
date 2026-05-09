@@ -136,3 +136,4 @@ export async function decreasePartStock(partId, quantity) {
   if (error) throw error;
   return data[0];
 }
+

@@ -32,6 +32,8 @@ import PendingJobs from "../components/Mechanic/PendingJobs";
 import PartsRequest from "../components/Mechanic/PartsRequest";
 import MechanicLayout from "../layouts/mechanic/MechanicLayout";
 import CreateCustomer from "../Pages/mechanic/CreateCustomer";
+import MechanicPurchase from "../Pages/mechanic/MechanicPurchase";
+import CreateJob from "../Pages/mechanic/CreateJob";
 
 const router = createBrowserRouter([
     {
@@ -105,6 +107,10 @@ const router = createBrowserRouter([
                 element: <CreateCustomer />,
             },
             {
+                path: "purchase",
+                element: <MechanicPurchase />,
+            },
+            {
                 path: "customers/:id",
                 element: <MechanicCustomerDetail />,
             },
@@ -127,6 +133,10 @@ const router = createBrowserRouter([
             {
                 path: "parts-requests",
                 element: <PartsRequest />,
+            },
+            {
+                path: "create-job",
+                element: <CreateJob />,
             },
         ]
     },
