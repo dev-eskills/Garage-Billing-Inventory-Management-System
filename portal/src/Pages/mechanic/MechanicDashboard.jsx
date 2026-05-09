@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import MechanicProfileButton from "../../Components/MechanicProfileButton";
 import MechanicInvoices from "./MechanicInvoices";
+import AddNewCustomer from "../../Components/AddNewCustomer";
 
 const dashboardStats = [
   {
@@ -106,7 +107,7 @@ const MechanicDashboard = () => {
                 Inventory report
               </button>
 
-              <MechanicProfileButton />
+              <AddNewCustomer />
             </div>
           </div>
           <div className="flex flex-wrap gap-3 mt-5 items-center">

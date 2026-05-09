@@ -28,120 +28,125 @@ import CompletedJobs from "../components/Mechanic/CompletedJobs";
 import PendingJobs from "../components/Mechanic/PendingJobs";
 import PartsRequest from "../components/Mechanic/PartsRequest";
 import MechanicLayout from "../layouts/mechanic/MechanicLayout";
+import AllAssignedJobs from "../Pages/mechanic/AllAssignedJobs";
 
 const router = createBrowserRouter([
-    {
-        path: "/",
-        element: (
-            <ProtectedRoute>
-                <Navigate to="/mechanic" replace />
-            </ProtectedRoute>
-        ),
-    },
-    {
-        path: "/login",
-        element: (
-            <ProtectedRoute onlyGuest={true}>
-                <Login />
-            </ProtectedRoute>
-        ),
-    },
-    {
-        path: "/forgot-password",
-        element: (
-            <ProtectedRoute onlyGuest={true}>
-                <ForgotPassword />
-            </ProtectedRoute>
-        ),
-    },
-    {
-        path: "/reset-password",
-        element: (
-            <ProtectedRoute>
-                <ResetPassword />
-            </ProtectedRoute>
-        ),
-    },
-    {
-        path: "/mechanic",
-        element: (
-            <ProtectedRoute requiredRole="mechanic">
-                <MechanicLayout />
-            </ProtectedRoute>
-        ),
-        children: [
-            { index: true, element: <MechanicDashboard /> },
-            { path: "profile", element: <MechanicProfile /> },
-            {
-                path: "work-orders",
-                element: <MechanicWorkOrders />,
-            },
-            {
-                path: "parts",
-                element: <MechanicParts />,
-            },
-            {
-                path: "parts/:id",
-                element: <MechanicPartDetail />,
-            },
-            {
-                path: "invoices",
-                element: <MechanicInvoices />,
-            },
-            {
-                path: "invoices/:id",
-                element: <MechanicInvoiceDetail />,
-            },
-            {
-                path: "customers",
-                element: <MechanicCustomers />,
-            },
-            {
-                path: "customers/:id",
-                element: <MechanicCustomerDetail />,
-            },
-            {
-                path: "reports",
-                element: <MechanicReports />,
-            },
-            {
-                path: "jobs/:id",
-                element: <MechanicJobDetail />,
-            },
-            {
-                path: "completed-jobs",
-                element: <CompletedJobs />,
-            },
-            {
-                path: "pending-jobs",
-                element: <PendingJobs />,
-            },
-            {
-                path: "parts-requests",
-                element: <PartsRequest />,
-            },
-        ]
-    },
-    {
-        path: "/admin",
-        element: (
-            <ProtectedRoute requiredRole="admin">
-                <AdminDashboard />
-            </ProtectedRoute>
-        ),
-        children: [
-            { index: true, element: <Navigate to="overview" replace /> },
-            { path: "overview", element: <AdminOverview /> },
-            { path: "parts", element: <AdminParts /> },
-            { path: "mechanics", element: <AdminMechanics /> },
-            { path: "vendors", element: <AdminVendors /> },
-            { path: "inventory", element: <AdminInventory /> },
-            { path: "purchase", element: <AdminPurchase /> },
-            { path: "customers", element: <AdminCustomers /> },
-            { path: "invoices", element: <AdminInvoices /> },
-            { path: "settings", element: <AdminSettings /> },
-        ]
-    },
-])
+  {
+    path: "/",
+    element: (
+      <ProtectedRoute>
+        <Navigate to="/mechanic" replace />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/login",
+    element: (
+      <ProtectedRoute onlyGuest={true}>
+        <Login />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/forgot-password",
+    element: (
+      <ProtectedRoute onlyGuest={true}>
+        <ForgotPassword />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/reset-password",
+    element: (
+      <ProtectedRoute>
+        <ResetPassword />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/mechanic",
+    element: (
+      <ProtectedRoute requiredRole="mechanic">
+        <MechanicLayout />
+      </ProtectedRoute>
+    ),
+    children: [
+      { index: true, element: <MechanicDashboard /> },
+      { path: "profile", element: <MechanicProfile /> },
+      {
+        path: "work-orders",
+        element: <MechanicWorkOrders />,
+      },
+      {
+        path: "parts",
+        element: <MechanicParts />,
+      },
+      {
+        path: "parts/:id",
+        element: <MechanicPartDetail />,
+      },
+      {
+        path: "invoices",
+        element: <MechanicInvoices />,
+      },
+      {
+        path: "invoices/:id",
+        element: <MechanicInvoiceDetail />,
+      },
+      {
+        path: "customers",
+        element: <MechanicCustomers />,
+      },
+      {
+        path: "customers/:id",
+        element: <MechanicCustomerDetail />,
+      },
+      {
+        path: "reports",
+        element: <MechanicReports />,
+      },
+      {
+        path: "all-jobs",
+        element: <AllAssignedJobs />,
+      },
+      {
+        path: "jobs/:id",
+        element: <MechanicJobDetail />,
+      },
+      {
+        path: "completed-jobs",
+        element: <CompletedJobs />,
+      },
+      {
+        path: "pending-jobs",
+        element: <PendingJobs />,
+      },
+      {
+        path: "parts-requests",
+        element: <PartsRequest />,
+      },
+    ],
+  },
+  {
+    path: "/admin",
+    element: (
+      <ProtectedRoute requiredRole="admin">
+        <AdminDashboard />
+      </ProtectedRoute>
+    ),
+    children: [
+      { index: true, element: <Navigate to="overview" replace /> },
+      { path: "overview", element: <AdminOverview /> },
+      { path: "parts", element: <AdminParts /> },
+      { path: "mechanics", element: <AdminMechanics /> },
+      { path: "vendors", element: <AdminVendors /> },
+      { path: "inventory", element: <AdminInventory /> },
+      { path: "purchase", element: <AdminPurchase /> },
+      { path: "customers", element: <AdminCustomers /> },
+      { path: "invoices", element: <AdminInvoices /> },
+      { path: "settings", element: <AdminSettings /> },
+    ],
+  },
+]);
 
 export default router;
