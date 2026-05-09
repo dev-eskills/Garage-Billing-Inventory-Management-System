@@ -174,18 +174,18 @@ const AdminPurchase = () => {
                                                         <span className="text-[10px] text-gray-500 font-medium">{purchase.vendors?.email || 'No email'}</span>
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="flex flex-col">
-                                                        <div className="flex items-center gap-1.5">
-                                                            <Package size={14} className="text-blue-500" />
-                                                            <span className="font-bold text-gray-900">{purchase.parts?.part_name || 'N/A'}</span>
+                                                    <td className="px-6 py-4 whitespace-nowrap">
+                                                        <div className="flex flex-col">
+                                                            <div className="flex items-center gap-1.5">
+                                                                <Package size={14} className="text-blue-500" />
+                                                                <span className="font-bold text-gray-900">{purchase.parts?.part_name || 'N/A'}</span>
+                                                            </div>
+                                                            <div className="flex items-center gap-2 mt-0.5">
+                                                                <span className="text-[10px] text-gray-500 font-bold bg-gray-100 px-1 rounded uppercase tracking-tighter">QTY: {purchase.quantity}</span>
+                                                                <span className="text-[10px] text-gray-400">@ ₹{purchase.unit_price || 0}</span>
+                                                            </div>
                                                         </div>
-                                                        <div className="flex items-center gap-2 mt-0.5">
-                                                            <span className="text-[10px] text-gray-500 font-bold bg-gray-100 px-1 rounded uppercase tracking-tighter">QTY: {purchase.quantity}</span>
-                                                            <span className="text-[10px] text-gray-400">@ ₹{purchase.parts?.unit_price || 0}</span>
-                                                        </div>
-                                                    </div>
-                                                </td>
+                                                    </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <span className="text-sm font-bold text-gray-900">₹ {Number(purchase.total_amount).toLocaleString()}</span>
                                                 </td>
@@ -296,7 +296,7 @@ const AdminPurchase = () => {
                                             </div>
                                             <div className="flex items-center justify-between text-[11px] font-medium text-gray-600">
                                                 <span>Quantity: <span className="text-gray-900">{purchase.quantity}</span></span>
-                                                <span>Unit Price: <span className="text-gray-900">₹{purchase.parts?.unit_price}</span></span>
+                                                <span>Unit Price: <span className="text-gray-900">₹{purchase.unit_price}</span></span>
                                             </div>
                                         </div>
 

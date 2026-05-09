@@ -4,8 +4,7 @@ export async function fetchParts() {
   const { data, error } = await supabase
     .from('parts')
     .select(`
-      *,
-      vendors!fk_parts_vendor (*) 
+      *
     `)
     .order('created_at', { ascending: false });
   
@@ -58,11 +57,7 @@ export async function addPart(partData) {
     part_name: partData.part_name,
     sku: partData.sku,
     category: partData.category,
-    stock_quantity: parseInt(partData.stock_quantity, 10) || 0,
-    unit_price: parseFloat(partData.unit_price) || 0,
-    min_stock_level: parseInt(partData.min_stock_level, 10) || 0,
-    image_url: partData.image_url,
-    vendor_id: partData.vendor_id
+    image_url: partData.image_url
   };
 
   console.log(insertData);
@@ -83,11 +78,7 @@ export async function updatePart({ id, partData }) {
     part_name: partData.part_name,
     sku: partData.sku,
     category: partData.category,
-    stock_quantity: parseInt(partData.stock_quantity, 10) || 0,
-    unit_price: parseFloat(partData.unit_price) || 0,
-    min_stock_level: parseInt(partData.min_stock_level, 10) || 0,
-    image_url: partData.image_url,
-    vendor_id: partData.vendor_id
+    image_url: partData.image_url
   };
 
   const { data, error } = await supabase
@@ -110,4 +101,18 @@ export async function deletePart(id) {
 
   if (error) throw new Error(error.message);
   return data;
+}
+
+export async function updatePartSalePrice(id, sale_price) {
+  const { data, error } = await supabase
+    .from('parts')
+    .update({ sale_price: parseFloat(sale_price) || 0 })
+    .eq('id', id)
+    .select(`
+      *,
+      vendors!fk_parts_vendor (*)
+    `);
+
+  if (error) throw new Error(error.message);
+  return data[0];
 }
