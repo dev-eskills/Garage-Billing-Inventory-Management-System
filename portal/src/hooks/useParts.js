@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchParts, fetchPartsByVendor, addPart, updatePart, deletePart, updatePartSalePrice } from '../supabase/parts';
+import { fetchParts, fetchPartsByVendor, addPart, updatePart, deletePart, updatePartSalePrice, decreasePartStock } from '../supabase/parts';
 import { toast } from 'react-hot-toast';
 
 export const useParts = () => {
@@ -74,6 +74,17 @@ export const useParts = () => {
 
     updatePartSalePrice: updatePartSalePriceFn.mutateAsync,
     updatePartSalePricePending: updatePartSalePriceFn.isPending,
+
+    decreasePartStock: async (partId, quantity) => {
+      try {
+        const data = await decreasePartStock(partId, quantity);
+        queryClient.invalidateQueries(['parts']);
+        return data;
+      } catch (error) {
+        toast.error('Failed to update stock');
+        throw error;
+      }
+    }
   };
 };
 

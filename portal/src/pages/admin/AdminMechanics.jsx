@@ -20,6 +20,8 @@ import ChangePasswordModal from '../../components/admin/ChangePasswordModal';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
 import { useAuth } from '../../hooks/useAuth';
 import { useAdminMechanic } from '../../hooks/useAdminMechanic';
+import { usePagination } from '../../hooks/usePagination';
+import Pagination from '../../components/common/Pagination';
 
 const AdminMechanics = () => {
   const navigate = useNavigate();
@@ -86,6 +88,14 @@ const AdminMechanics = () => {
     mechanic.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     mechanic.email?.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const {
+    currentPage,
+    totalPages,
+    currentData,
+    onPageChange,
+    totalResults
+  } = usePagination(filteredMechanics, 10);
 
   return (
     <div className="space-y-6">
@@ -160,7 +170,7 @@ const AdminMechanics = () => {
                   </td>
                 </tr>
               ) : (
-                filteredMechanics.map((mechanic) => (
+                currentData.map((mechanic) => (
                   <tr key={mechanic.id} className="hover:bg-gray-50/50 transition-colors group text-sm">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-3">
@@ -264,12 +274,12 @@ const AdminMechanics = () => {
                 Loading mechanics...
               </div>
             </div>
-          ) : filteredMechanics.length === 0 ? (
+          ) : currentData.length === 0 ? (
             <div className="p-8 text-center text-gray-500">
               No mechanics found.
             </div>
           ) : (
-            filteredMechanics.map((mechanic) => (
+            currentData.map((mechanic) => (
               <div key={mechanic.id} className="p-4 space-y-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
@@ -346,6 +356,13 @@ const AdminMechanics = () => {
             ))
           )}
         </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={onPageChange}
+          totalResults={totalResults}
+          pageSize={10}
+        />
       </div>
 
       {/* Modal */}

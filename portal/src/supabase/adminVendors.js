@@ -18,9 +18,14 @@ export async function fetchAllVendorsWithParts() {
     .from('vendors')
     .select(`
       *,
-      parts!fk_parts_vendor (
-        part_name,
-        stock_quantity
+      purchases (
+        quantity,
+        total_amount,
+        unit_price,
+        purchase_date,
+        parts (
+          part_name
+        )
       )
     `)
     .order('name', { ascending: true });
@@ -29,18 +34,43 @@ export async function fetchAllVendorsWithParts() {
     console.error('Error fetching vendors with parts:', error.message);
     throw error;
   }
-  return data;
+
+  // Transform data to group parts from purchases
+  return data.map(vendor => {
+    const partsMap = {};
+
+    vendor.purchases?.forEach(purchase => {
+      const partName = purchase.parts?.part_name;
+      if (partName) {
+        if (!partsMap[partName]) {
+          partsMap[partName] = 0;
+        }
+        partsMap[partName] += purchase.quantity || 0;
+      }
+    });
+
+    const transformedParts = Object.keys(partsMap).map(name => ({
+      part_name: name,
+      stock_quantity: partsMap[name] // Reusing stock_quantity key for UI compatibility
+    }));
+
+    return {
+      ...vendor,
+      parts: transformedParts,
+      purchaseHistory: vendor.purchases || []
+    };
+  });
 }
 
 export async function adminAddVendor({ name, email, phone, address }) {
   const { data, error } = await supabase
     .from('vendors')
     .insert([
-      { 
-        name: name, 
-        email: email, 
-        phone: phone, 
-        address: address 
+      {
+        name: name,
+        email: email,
+        phone: phone,
+        address: address
       }
     ])
     .select();
@@ -56,11 +86,11 @@ export async function adminUpdateVendor(id, { name, email, phone, address }) {
 
   const { data, error } = await supabase
     .from('vendors')
-    .update({ 
-      name: name, 
-      email: email, 
-      phone: phone, 
-      address: address 
+    .update({
+      name: name,
+      email: email,
+      phone: phone,
+      address: address
     })
     .eq('id', id)
     .select();

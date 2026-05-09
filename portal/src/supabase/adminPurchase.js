@@ -54,7 +54,7 @@ export async function adminAddPurchase({ vendor_id, total_amount, purchase_date,
         amount: total_amount,
         expense_date: payment_status === 'Paid' ? new Date().toISOString() : purchase_date,
         description: `Automated expense for part purchase (Quantity: ${quantity})`,
-        reference_id: purchaseData[0].id
+        purchase_id: purchaseData[0].id
       };
 
       const { error: expenseError } = await supabase

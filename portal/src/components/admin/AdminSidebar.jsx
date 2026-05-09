@@ -10,7 +10,9 @@ import {
   ChevronRight,
   ShoppingCart,
   CarIcon,
-  DollarSign
+  DollarSign,
+  TrendingDown,
+  User
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -19,10 +21,11 @@ const navItems = [
   { id: 'overview', label: 'Dashboard', icon: LayoutDashboard, path: '/admin/overview' },
   { id: 'inventory', label: 'Inventory', icon: Package, path: '/admin/inventory' },
   { id: 'mechanics', label: 'Mechanics', icon: Users, path: '/admin/mechanics' },
-  { id: 'vendors', label: 'Vendors', icon: ShoppingCart, path: '/admin/vendors' },
+  { id: 'vendors', label: 'Vendors', icon: User, path: '/admin/vendors' },
   { id: 'parts', label: 'Parts', icon: CarIcon, path: '/admin/parts' },
   { id: 'purchase', label: 'Purchase', icon: ShoppingCart, path: '/admin/purchase' },
   { id: 'expenses', label: 'Expenses', icon: DollarSign, path: '/admin/expenses' },
+  { id: 'losses', label: 'Losses', icon: TrendingDown, path: '/admin/losses' },
   { id: 'customers', label: 'Customers', icon: UserSquare2, path: '/admin/customers' },
   { id: 'invoices', label: 'Invoices', icon: FileText, path: '/admin/invoices' },
   { id: 'settings', label: 'Settings', icon: Settings, path: '/admin/settings' },
