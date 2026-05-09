@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Plus,
   Search,
@@ -11,6 +12,7 @@ import {
   Download,
   X as XIcon,
   Lock,
+  WrenchIcon,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AddMechanicModal from '../../components/admin/AddMechanicModal';
@@ -20,6 +22,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useAdminMechanic } from '../../hooks/useAdminMechanic';
 
 const AdminMechanics = () => {
+  const navigate = useNavigate();
   const { mechanics, mechanicsPending, adminDeleteMechanic, adminDeleteMechanicPending } = useAdminMechanic();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
@@ -64,6 +67,11 @@ const AdminMechanics = () => {
     } catch (err) {
       // Error handled by hook
     }
+  };
+
+  const handleJobsHistory = (mechanic) => {
+    navigate(`/admin/mechanics/${mechanic.id}`);
+    setActiveDropdown(null);
   };
 
   useEffect(() => {
@@ -222,6 +230,13 @@ const AdminMechanics = () => {
                                 Change Password
                               </button>
                               <button
+                                onClick={() => handleJobsHistory(mechanic)}
+                                className="w-full text-left px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-2 cursor-pointer"
+                              >
+                                <WrenchIcon size={14} className="text-gray-400" />
+                                Jobs History
+                              </button>
+                              <button
                                 onClick={() => handleDeleteClick(mechanic)}
                                 className="w-full text-left px-4 py-2 text-xs font-bold text-red-600 hover:bg-red-50 flex items-center gap-2 cursor-pointer"
                               >
@@ -310,7 +325,7 @@ const AdminMechanics = () => {
                     )}
                   </div>
                 </div>
-                
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
                   <div className="flex items-center gap-2 text-gray-600 bg-gray-50 px-3 py-2 rounded-md">
                     <Mail size={14} className="text-gray-400" />
@@ -321,7 +336,7 @@ const AdminMechanics = () => {
                     <span className="text-xs font-medium">{mechanic.phone || 'N/A'}</span>
                   </div>
                 </div>
-                
+
                 {mechanic.address && (
                   <div className="text-xs text-gray-500 bg-gray-50 px-3 py-2 rounded-md italic">
                     {mechanic.address}

@@ -14,6 +14,7 @@ import AdminSettings from "../pages/admin/AdminSettings";
 import AdminParts from "../pages/admin/AdminParts";
 import AdminPurchase from "../pages/admin/AdminPurchase";
 import AdminExpenses from "../pages/admin/AdminExpenses";
+import MechanicDetails from "../pages/admin/MechanicDetails";
 import MechanicDashboard from "../Pages/mechanic/MechanicDashboard";
 import MechanicProfile from "../Pages/mechanic/MechanicProfile";
 import MechanicWorkOrders from "../Pages/mechanic/MechanicWorkOrders";
@@ -29,6 +30,7 @@ import CompletedJobs from "../components/Mechanic/CompletedJobs";
 import PendingJobs from "../components/Mechanic/PendingJobs";
 import PartsRequest from "../components/Mechanic/PartsRequest";
 import MechanicLayout from "../layouts/mechanic/MechanicLayout";
+import CreateCustomer from "../Pages/mechanic/CreateCustomer";
 
 const router = createBrowserRouter([
     {
@@ -98,6 +100,10 @@ const router = createBrowserRouter([
                 element: <MechanicCustomers />,
             },
             {
+                path: "create-customer",
+                element: <CreateCustomer />,
+            },
+            {
                 path: "customers/:id",
                 element: <MechanicCustomerDetail />,
             },
@@ -135,6 +141,7 @@ const router = createBrowserRouter([
             { path: "overview", element: <AdminOverview /> },
             { path: "parts", element: <AdminParts /> },
             { path: "mechanics", element: <AdminMechanics /> },
+            { path: "mechanics/:id", element: <MechanicDetails /> },
             { path: "vendors", element: <AdminVendors /> },
             { path: "inventory", element: <AdminInventory /> },
             { path: "purchase", element: <AdminPurchase /> },

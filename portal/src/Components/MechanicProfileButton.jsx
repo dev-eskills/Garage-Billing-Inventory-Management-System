@@ -5,7 +5,7 @@ import { useAuth } from "../hooks/useAuth";
 
 const MechanicProfileButton = () => {
   const [open, setOpen] = useState(false);
-  const { logout } = useAuth()
+  const { logout, user } = useAuth()
 
   const handleSignOut = () => {
     logout()
@@ -26,7 +26,7 @@ const MechanicProfileButton = () => {
         />
 
         <div className="text-left">
-          <p className="text-sm font-semibold text-slate-900">Akshay</p>
+          <p className="text-sm font-semibold text-slate-900">{user?.user_metadata?.full_name || 'Mechanic'}</p>
           <p className="text-xs text-slate-500">Mechanic</p>
         </div>
       </button>

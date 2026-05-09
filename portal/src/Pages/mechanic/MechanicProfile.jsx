@@ -9,8 +9,10 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import MechanicWorkOrders from "./MechanicWorkOrders";
+import { useAuth } from "../../hooks/useAuth";
 
 const MechanicProfile = () => {
+  const { user } = useAuth();
   return (
     <div
       className="min-h-screen p-6 bg-cover bg-center relative"
@@ -44,23 +46,23 @@ const MechanicProfile = () => {
               </div>
 
               <div>
-                <h2 className="text-xl font-bold">Akshay Mechanic</h2>
-                <p className="text-sm text-gray-500">Senior Technician</p>
+                <h2 className="text-xl font-bold">{user?.user_metadata?.full_name || 'Mechanic Name'}</h2>
+                <p className="text-sm text-gray-500">{user?.user_metadata?.role === 'mechanic' ? 'Technician' : 'Staff'}</p>
                 <span className="inline-block mt-2 text-xs px-3 py-1 rounded-full bg-green-100 text-green-700">
                   Active
                 </span>
               </div>
             </div>
-
+  
             {/* Info */}
             <div className="space-y-3 mt-5 text-sm">
               <p>
-                <Phone className="inline w-4 mr-2 text-green-600" /> +91
-                9876543210
+                <Phone className="inline w-4 mr-2 text-green-600" /> 
+                {user?.user_metadata?.phone || '+91 0000000000'}
               </p>
               <p>
                 <Mail className="inline w-4 mr-2 text-purple-600" />{" "}
-                akshay@garage.com
+                {user?.email || 'email@garage.com'}
               </p>
               <p>
                 <MapPin className="inline w-4 mr-2 text-red-500" /> Bhopal

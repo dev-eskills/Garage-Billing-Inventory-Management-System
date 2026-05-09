@@ -1,7 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { PlusCircle } from "lucide-react";
 import MechanicProfileButton from "../../Components/MechanicProfileButton";
 import MechanicInvoices from "./MechanicInvoices";
+import { useAuth } from "../../hooks/useAuth";
 
 const dashboardStats = [
   {
@@ -81,6 +83,7 @@ const statusClasses = {
 };
 
 const MechanicDashboard = () => {
+  const { user } = useAuth();
   return (
     <div className="min-h-screen bg-slate-50 px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-8">
@@ -91,7 +94,7 @@ const MechanicDashboard = () => {
                 Mechanic dashboard
               </p>
               <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900">
-                Welcome back, Akshay
+                Welcome back, {user?.user_metadata?.full_name || 'Mechanic'}
               </h1>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
                 Review your current workload, parts alerts, and open jobs at a
@@ -99,9 +102,13 @@ const MechanicDashboard = () => {
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
-              <button className="rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
-                New work order
-              </button>
+              <Link 
+                to="/mechanic/create-customer"
+                className="rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 flex items-center gap-2"
+              >
+                <PlusCircle size={18} />
+                Add New Customer
+              </Link>
               <button className="rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-100">
                 Inventory report
               </button>

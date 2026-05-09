@@ -11,6 +11,7 @@ export async function fetchParts() {
   if (error) throw error;
   return data;
 }
+
 export async function fetchPartsByVendor(vendorId) {
   if (!vendorId) return [];
   const { data, error } = await supabase
@@ -26,7 +27,6 @@ export async function fetchPartsByVendor(vendorId) {
     console.error('Error fetching parts by vendor:', error.message);
     throw error;
   }
-  console.log(data , "data ")
   return data;
 }
 
