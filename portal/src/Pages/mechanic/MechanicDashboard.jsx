@@ -1,8 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { PlusCircle, Package } from "lucide-react";
 import MechanicProfileButton from "../../Components/MechanicProfileButton";
 import MechanicInvoices from "./MechanicInvoices";
-import AddNewCustomer from "../../Components/AddNewCustomer";
+import { useAuth } from "../../hooks/useAuth";
 
 const dashboardStats = [
   {
@@ -82,6 +83,7 @@ const statusClasses = {
 };
 
 const MechanicDashboard = () => {
+  const { user } = useAuth();
   return (
     <div className="min-h-screen bg-slate-50 px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-8">
@@ -92,7 +94,7 @@ const MechanicDashboard = () => {
                 Mechanic dashboard
               </p>
               <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900">
-                Welcome back, Akshay
+                Welcome back, {user?.user_metadata?.full_name || 'Mechanic'}
               </h1>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
                 Review your current workload, parts alerts, and open jobs at a
@@ -100,14 +102,29 @@ const MechanicDashboard = () => {
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
-              <button className="rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
-                New work order
-              </button>
-              <button className="rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-100">
-                Inventory report
-              </button>
+              <Link
+                to="/mechanic/create-customer"
+                className="rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 flex items-center gap-2"
+              >
+                <PlusCircle size={18} />
+                Add New Customer
+              </Link>
+              <Link
+                to="/mechanic/purchase"
+                className="rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 flex items-center gap-2"
+              >
+                <Package size={18} />
+                Purchase Parts
+              </Link>
+              <Link
+                to="/mechanic/parts"
+                className="rounded-full bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 flex items-center gap-2 shadow-sm"
+              >
+                <Package size={18} />
+                My Inventory
+              </Link>
 
-              <AddNewCustomer />
+              <MechanicProfileButton />
             </div>
           </div>
           <div className="flex flex-wrap gap-3 mt-5 items-center">
@@ -117,6 +134,14 @@ const MechanicDashboard = () => {
               className="rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 hover:shadow-md"
             >
               All Jobs
+            </Link>
+
+            {/* Purchase Parts (Highlight) */}
+            <Link
+              to="/mechanic/purchase"
+              className="rounded-full bg-blue-50 text-blue-700 border border-blue-200 px-5 py-3 text-sm font-semibold transition hover:bg-blue-100 hover:border-blue-300"
+            >
+              Purchase Parts
             </Link>
 
             {/* Completed (calm success green) */}
@@ -133,6 +158,33 @@ const MechanicDashboard = () => {
               className="rounded-full bg-amber-50 text-amber-800 border border-amber-200 px-5 py-3 text-sm font-semibold transition hover:bg-amber-100 hover:border-amber-300"
             >
               Pending Jobs
+            </Link>
+
+            {/* Create Job (Action) */}
+            <Link
+              to="/mechanic/create-job"
+              className="rounded-full bg-blue-600 text-white px-5 py-3 text-sm font-semibold transition hover:bg-blue-700 shadow-md flex items-center gap-2"
+            >
+              <PlusCircle size={18} />
+              Create New Job
+            </Link>
+
+            {/* My Inventory (Personal stock) */}
+            <Link
+              to="/mechanic/parts"
+              className="rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 px-5 py-3 text-sm font-semibold transition hover:bg-indigo-100 hover:border-indigo-300 flex items-center gap-2"
+            >
+              <Package size={16} />
+              My Inventory
+            </Link>
+
+            {/* Purchase History (Audit trail) */}
+            <Link
+              to="/mechanic/purchase-history"
+              className="rounded-full bg-slate-50 text-slate-700 border border-slate-200 px-5 py-3 text-sm font-semibold transition hover:bg-slate-100 hover:border-slate-300 flex items-center gap-2"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-history"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" /><path d="M12 7v5l4 2" /></svg>
+              Purchase History
             </Link>
 
             {/* Parts Requests (cool info blue) */}

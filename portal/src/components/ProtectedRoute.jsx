@@ -17,7 +17,7 @@ export default function ProtectedRoute({ children, requiredRole, onlyGuest = fal
       }
       if (isAuthenticated && onlyGuest) {
         // Redirect to their respective dashboard if they try to access login/signup while logged in
-        const target = userRole === 'admin' ? '/admin' : '/mechanic';
+        const target = userRole === 'admin' ? 'admin' : '/mechanic';
         navigate(target, { replace: true });
       }
     }

@@ -293,7 +293,7 @@
 import React, { useState, useEffect } from "react";
 import { Package, Plus, X, Minus, Search } from "lucide-react";
 import { supabase } from "../lib/supabaseClient";
-import { fetchParts, searchParts } from "../supabase/parts"; // make sure searchParts is exported
+import { fetchParts, searchParts } from "../supabase/parts"; 
 
 const AssignPartsModal = () => {
   const [open, setOpen] = useState(false);

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Plus,
   Search,
@@ -11,6 +12,7 @@ import {
   Download,
   X as XIcon,
   Lock,
+  WrenchIcon,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AddMechanicModal from '../../components/admin/AddMechanicModal';
@@ -18,8 +20,11 @@ import ChangePasswordModal from '../../components/admin/ChangePasswordModal';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
 import { useAuth } from '../../hooks/useAuth';
 import { useAdminMechanic } from '../../hooks/useAdminMechanic';
+import { usePagination } from '../../hooks/usePagination';
+import Pagination from '../../components/common/Pagination';
 
 const AdminMechanics = () => {
+  const navigate = useNavigate();
   const { mechanics, mechanicsPending, adminDeleteMechanic, adminDeleteMechanicPending } = useAdminMechanic();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
@@ -66,6 +71,11 @@ const AdminMechanics = () => {
     }
   };
 
+  const handleJobsHistory = (mechanic) => {
+    navigate(`/admin/mechanics/${mechanic.id}`);
+    setActiveDropdown(null);
+  };
+
   useEffect(() => {
     const handleClickOutside = () => setActiveDropdown(null);
     if (activeDropdown !== null) {
@@ -78,6 +88,14 @@ const AdminMechanics = () => {
     mechanic.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     mechanic.email?.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const {
+    currentPage,
+    totalPages,
+    currentData,
+    onPageChange,
+    totalResults
+  } = usePagination(filteredMechanics, 10);
 
   return (
     <div className="space-y-6">
@@ -152,7 +170,7 @@ const AdminMechanics = () => {
                   </td>
                 </tr>
               ) : (
-                filteredMechanics.map((mechanic) => (
+                currentData.map((mechanic) => (
                   <tr key={mechanic.id} className="hover:bg-gray-50/50 transition-colors group text-sm">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-3">
@@ -222,6 +240,13 @@ const AdminMechanics = () => {
                                 Change Password
                               </button>
                               <button
+                                onClick={() => handleJobsHistory(mechanic)}
+                                className="w-full text-left px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-2 cursor-pointer"
+                              >
+                                <WrenchIcon size={14} className="text-gray-400" />
+                                Jobs History
+                              </button>
+                              <button
                                 onClick={() => handleDeleteClick(mechanic)}
                                 className="w-full text-left px-4 py-2 text-xs font-bold text-red-600 hover:bg-red-50 flex items-center gap-2 cursor-pointer"
                               >
@@ -249,12 +274,12 @@ const AdminMechanics = () => {
                 Loading mechanics...
               </div>
             </div>
-          ) : filteredMechanics.length === 0 ? (
+          ) : currentData.length === 0 ? (
             <div className="p-8 text-center text-gray-500">
               No mechanics found.
             </div>
           ) : (
-            filteredMechanics.map((mechanic) => (
+            currentData.map((mechanic) => (
               <div key={mechanic.id} className="p-4 space-y-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
@@ -310,7 +335,7 @@ const AdminMechanics = () => {
                     )}
                   </div>
                 </div>
-                
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
                   <div className="flex items-center gap-2 text-gray-600 bg-gray-50 px-3 py-2 rounded-md">
                     <Mail size={14} className="text-gray-400" />
@@ -321,7 +346,7 @@ const AdminMechanics = () => {
                     <span className="text-xs font-medium">{mechanic.phone || 'N/A'}</span>
                   </div>
                 </div>
-                
+
                 {mechanic.address && (
                   <div className="text-xs text-gray-500 bg-gray-50 px-3 py-2 rounded-md italic">
                     {mechanic.address}
@@ -331,6 +356,13 @@ const AdminMechanics = () => {
             ))
           )}
         </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={onPageChange}
+          totalResults={totalResults}
+          pageSize={10}
+        />
       </div>
 
       {/* Modal */}

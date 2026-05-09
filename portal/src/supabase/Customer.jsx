@@ -9,10 +9,7 @@ export async function addCustomer(customerData, mechanicId) {
     const payload = {
       customer_details: {
         name: customerData.full_name || "",
-        address: customerData.address || "",
-        contact:
-           customerData.phone || "",
-       
+        contact: customerData.phone || "",
       },
       vehicle_details: {
         model: customerData.vehicle_model || "",

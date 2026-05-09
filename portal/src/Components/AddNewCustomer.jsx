@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { User, Car, X, Plus } from "lucide-react";
 import { supabase } from "../lib/supabaseClient";
 import { useAuth } from "../hooks/useAuth";
-import { toast } from "react-hot-toast"; // <-- import toast
+import { toast } from "react-hot-toast"; 
 
 const AddNewCustomer = ({ onCustomerAdded }) => {
   const [open, setOpen] = useState(false);

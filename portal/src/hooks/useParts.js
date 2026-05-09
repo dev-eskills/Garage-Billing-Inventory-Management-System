@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchParts, fetchPartsByVendor, addPart, updatePart, deletePart } from '../supabase/parts';
+import { fetchParts, fetchPartsByVendor, addPart, updatePart, deletePart, updatePartSalePrice, decreasePartStock } from '../supabase/parts';
 import { toast } from 'react-hot-toast';
 
 export const useParts = () => {
@@ -46,6 +46,18 @@ export const useParts = () => {
     },
   });
 
+  const updatePartSalePriceFn = useMutation({
+    mutationFn: ({ id, sale_price }) => updatePartSalePrice(id, sale_price),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['parts'] });
+      toast.success('Sale price updated successfully!');
+    },
+    onError: (err) => {
+      console.error('ERROR', err);
+      toast.error(err.message);
+    },
+  });
+
   return {
     parts: getPartsFn.data,
     partsPending: getPartsFn.isPending,
@@ -59,6 +71,22 @@ export const useParts = () => {
 
     deletePart: deletePartFn.mutateAsync,
     deletePartPending: deletePartFn.isPending,
+
+    updatePartSalePrice: updatePartSalePriceFn.mutateAsync,
+    updatePartSalePricePending: updatePartSalePriceFn.isPending,
+
+    decreasePartStock: async (partId, quantity) => {
+      try {
+        const data = await decreasePartStock(partId, quantity);
+        queryClient.invalidateQueries({ queryKey: ['parts'] });
+        queryClient.invalidateQueries({ queryKey: ['currentStock'] });
+        return data;
+      } catch (error) {
+        toast.error('Failed to update stock');
+        throw error;
+      }
+    },
+
   };
 };
 

@@ -3,13 +3,19 @@ import { supabase } from "../lib/supabaseClient";
 export async function fetchParts() {
   const { data, error } = await supabase
     .from("parts")
-    .select(`*, vendors!parts_vendor_id_fkey (*)`)
+    .select(
+      `
+      *,
+      vendors (*)
+    `,
+    )
     .order("created_at", { ascending: false });
 
   if (error) throw error;
   console.log(data, "data ");
   return data;
 }
+
 export async function fetchPartsByVendor(vendorId) {
   if (!vendorId) return [];
   const { data, error } = await supabase
@@ -17,7 +23,7 @@ export async function fetchPartsByVendor(vendorId) {
     .select(
       `
       *,
-      vendors!fk_parts_vendor (*)
+      vendors (*)
     `,
     )
     .eq("vendor_id", vendorId)
@@ -27,7 +33,6 @@ export async function fetchPartsByVendor(vendorId) {
     console.error("Error fetching parts by vendor:", error.message);
     throw error;
   }
-  console.log(data, "data ");
   return data;
 }
 
@@ -56,18 +61,14 @@ export async function addPart(partData) {
     part_name: partData.part_name,
     sku: partData.sku,
     category: partData.category,
-    stock_quantity: parseInt(partData.stock_quantity, 10) || 0,
-    unit_price: parseFloat(partData.unit_price) || 0,
-    min_stock_level: parseInt(partData.min_stock_level, 10) || 0,
     image_url: partData.image_url,
-    vendor_id: partData.vendor_id,
   };
 
   console.log(insertData);
   const { data, error } = await supabase.from("parts").insert([insertData])
     .select(`
       *,
-      vendors!fk_parts_vendor (*)
+      vendors (*)
     `);
 
   if (error) throw new Error(error.message);
@@ -79,11 +80,7 @@ export async function updatePart({ id, partData }) {
     part_name: partData.part_name,
     sku: partData.sku,
     category: partData.category,
-    stock_quantity: parseInt(partData.stock_quantity, 10) || 0,
-    unit_price: parseFloat(partData.unit_price) || 0,
-    min_stock_level: parseInt(partData.min_stock_level, 10) || 0,
     image_url: partData.image_url,
-    vendor_id: partData.vendor_id,
   };
 
   const { data, error } = await supabase
@@ -91,7 +88,7 @@ export async function updatePart({ id, partData }) {
     .update(updateData)
     .eq("id", id).select(`
       *,
-      vendors!fk_parts_vendor (*)
+      vendors (*)
     `);
 
   if (error) throw new Error(error.message);
@@ -107,24 +104,51 @@ export async function deletePart(id) {
   return data;
 }
 
-// Search parts by name *Akshay Nagdiya*
-export async function searchParts(searchTerm) {
-  if (!searchTerm) {
-    const { data, error } = await supabase
-      .from("parts")
-      .select("*")
-      .order("created_at", { ascending: false });
+export async function updatePartSalePrice(id, sale_price) {
+  const { data, error } = await supabase
+    .from("parts")
+    .update({ sale_price: parseFloat(sale_price) || 0 })
+    .eq("id", id).select(`
+      *,
+      vendors (*)
+    `);
 
-    if (error) throw error;
-    return data;
-  }
+  if (error) throw new Error(error.message);
+  return data[0];
+}
+
+export async function decreasePartStock(partId, quantity) {
+  const { data: partData, error: fetchError } = await supabase
+    .from("parts")
+    .select("stock_quantity")
+    .eq("id", partId)
+    .single();
+
+  if (fetchError) throw fetchError;
 
   const { data, error } = await supabase
     .from("parts")
-    .select("*")
-    .ilike("part_name", `%${searchTerm}%`)
-    .order("created_at", { ascending: false });
+    .update({
+      stock_quantity: Math.max(
+        0,
+        (partData.stock_quantity || 0) - parseInt(quantity, 10),
+      ),
+    })
+    .eq("id", partId)
+    .select();
 
   if (error) throw error;
+  return data[0];
+}
+
+export async function searchParts(query) {
+  if (!query) return [];
+
+  const { data, error } = await supabase
+    .from("parts")
+    .select(`*, vendors (*)`)
+    .ilike("part_name", `%${query}%`); // case-insensitive search
+
+  if (error) throw new Error(error.message);
   return data;
 }

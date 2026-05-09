@@ -14,6 +14,8 @@ export const useAdminPurchase = () => {
     mutationFn: adminAddPurchase,
     onSuccess: () => {
       queryClient.invalidateQueries(['adminPurchases']);
+      queryClient.invalidateQueries(['stockIn']);
+      queryClient.invalidateQueries(['currentStock']);
       toast.success('Purchase recorded successfully!');
     },
     onError: (error) => {
@@ -25,6 +27,7 @@ export const useAdminPurchase = () => {
     mutationFn: ({ id, status }) => adminUpdatePurchaseStatus(id, status),
     onSuccess: () => {
       queryClient.invalidateQueries(['adminPurchases']);
+      queryClient.invalidateQueries(['stockIn']);
       toast.success('Payment status updated!');
     },
     onError: (error) => {
@@ -36,6 +39,8 @@ export const useAdminPurchase = () => {
     mutationFn: adminDeletePurchase,
     onSuccess: () => {
       queryClient.invalidateQueries(['adminPurchases']);
+      queryClient.invalidateQueries(['stockIn']);
+      queryClient.invalidateQueries(['currentStock']);
       toast.success('Purchase record deleted');
     },
     onError: (error) => {

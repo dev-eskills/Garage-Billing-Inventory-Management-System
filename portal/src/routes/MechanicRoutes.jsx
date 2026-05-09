@@ -33,6 +33,8 @@ const ALL_JOBS = lazy(() => import("../Pages/mechanic/AllAssignedJobs"));
 const CompletedJobs = lazy(() => import("../components/Mechanic/CompletedJobs"));
 const PendingJobs = lazy(() => import("../components/Mechanic/PendingJobs"));
 const PartsRequest = lazy(() => import("../components/Mechanic/PartsRequest"));
+const CreateCustomer = lazy(() => import("../Pages/mechanic/CreateCustomer"));
+const MechanicPurchase = lazy(() => import("../Pages/mechanic/MechanicPurchase"));
 
 const mechanicRoutes = [
   {
@@ -42,6 +44,14 @@ const mechanicRoutes = [
   {
     path: "/mechanic/dashboard",
     element: <MechanicDashboard />,
+  },
+  {
+    path: "/mechanic/create-customer",
+    element: <CreateCustomer />,
+  },
+  {
+    path: "/mechanic/purchase",
+    element: <MechanicPurchase />,
   },
   {
     path: "/mechanic/profile",

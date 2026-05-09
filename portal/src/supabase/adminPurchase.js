@@ -1,6 +1,6 @@
 import { supabase } from '../lib/supabaseClient';
 
-export async function adminAddPurchase({ vendor_id, total_amount, purchase_date, payment_status, quantity, part_id }) {
+export async function adminAddPurchase({ vendor_id, total_amount, purchase_date, payment_status, quantity, part_id, unit_price, image_url }) {
   // First, insert the main purchase record
   const { data: purchaseData, error: purchaseError } = await supabase
     .from('purchases')
@@ -11,7 +11,9 @@ export async function adminAddPurchase({ vendor_id, total_amount, purchase_date,
         purchase_date: payment_status === 'Paid' ? new Date().toISOString() : purchase_date,
         payment_status ,
         quantity,
-        part_id
+        part_id,
+        unit_price,
+        image_url
       }
     ])
     .select();
@@ -20,6 +22,68 @@ export async function adminAddPurchase({ vendor_id, total_amount, purchase_date,
     console.error('Error adding purchase:', purchaseError.message);
     throw new Error(purchaseError.message);
   }
+
+  // Create an automatic expense record for this purchase
+  try {
+    let partsPurchaseCatId;
+    
+    // First, try to find the "Parts Purchase" category
+    const { data: catData, error: catError } = await supabase
+      .from('expense_categories')
+      .select('id')
+      .eq('name', 'Parts Purchase')
+      .maybeSingle();
+      
+    if (catData) {
+      partsPurchaseCatId = catData.id;
+    } else {
+      // Create it if it doesn't exist
+      const { data: newCat, error: newCatError } = await supabase
+        .from('expense_categories')
+        .insert([{ name: 'Parts Purchase' }])
+        .select()
+        .single();
+        
+      if (!newCatError && newCat) {
+        partsPurchaseCatId = newCat.id;
+      }
+    }
+
+    if (partsPurchaseCatId) {
+      const expenseData = {
+        category_id: partsPurchaseCatId,
+        amount: total_amount,
+        expense_date: payment_status === 'Paid' ? new Date().toISOString() : purchase_date,
+        description: `Automated expense for part purchase (Quantity: ${quantity})`,
+        purchase_id: purchaseData[0].id
+      };
+
+      const { error: expenseError } = await supabase
+        .from('expenses')
+        .insert([expenseData]);
+
+      if (expenseError) {
+        console.error('Error recording expense:', expenseError.message);
+      }
+    }
+  } catch (err) {
+    console.error('Failed to create automated expense:', err);
+  }
+
+  // Update stock_quantity in parts table
+  const { data: partData, error: partErr } = await supabase
+    .from('parts')
+    .select('stock_quantity')
+    .eq('id', part_id)
+    .single();
+
+  if (!partErr && partData) {
+    await supabase
+      .from('parts')
+      .update({ stock_quantity: (partData.stock_quantity || 0) + parseInt(quantity, 10) })
+      .eq('id', part_id);
+  }
+
   return purchaseData
 }
 
@@ -35,7 +99,8 @@ export async function adminFetchPurchases() {
       parts (
         part_name,
         sku,
-        unit_price
+        sale_price,
+        image_url
       )
     `)
     .order('purchase_date', { ascending: false });
