@@ -24,7 +24,21 @@ const AdminExpenses = () => {
     return expenses.filter(exp => 
       (exp.expense_categories?.name || '').toLowerCase().includes(query) ||
       (exp.description && exp.description.toLowerCase().includes(query))
-    );
+    )
+      .sort((a, b) => {
+        // Primary Sort: Date (Newest date first)
+        const dateCompare = new Date(b.expense_date) - new Date(a.expense_date);
+        if (dateCompare !== 0) {
+          return dateCompare;
+        }
+        // Secondary Sort: If dates are identical, use 'created_at' or 'id'
+        if (a.created_at && b.created_at) {
+          return new Date(b.created_at) - new Date(a.created_at);
+        }
+        // Otherwise, use ID
+        return b.id.localeCompare(a.id);
+      });
+   
   }, [expenses, searchQuery]);
 
   const {

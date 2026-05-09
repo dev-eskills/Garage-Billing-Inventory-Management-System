@@ -94,7 +94,6 @@ const AdminVendors = () => {
         onPageChange,
         totalResults
     } = usePagination(filteredVendors, 10);
-    console.log("currentData: ", currentData)
     return (
         <div className="space-y-6">
             {/* Header Section */}
