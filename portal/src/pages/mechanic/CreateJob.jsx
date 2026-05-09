@@ -183,7 +183,7 @@ const CreateJob = () => {
                       <option value="" disabled>Choose a customer...</option>
                       {customers.map(c => (
                         <option key={c.id} value={c.id}>
-                          {c.customer_details.name} ({c.customer_details?.contact})
+                          {c?.customer_details?.name} ({c.customer_details?.contact})
                         </option>
                       ))}
                     </select>
