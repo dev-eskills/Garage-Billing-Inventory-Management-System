@@ -130,7 +130,6 @@ const AdminExpenses = () => {
 
       {/* Expenses Table */}
       <div className="bg-white rounded-md border border-gray-100 shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50/50">
@@ -255,7 +254,6 @@ const AdminExpenses = () => {
               )}
             </tbody>
           </table>
-        </div>
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}

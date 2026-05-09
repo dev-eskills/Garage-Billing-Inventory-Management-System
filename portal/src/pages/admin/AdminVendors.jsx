@@ -14,6 +14,10 @@ import {
     Trash2,
     Edit,
     Package,
+    ChevronDown,
+    ChevronUp,
+    Calendar,
+    ShoppingBag
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAdminVendor } from '../../hooks/useAdminVendor';
@@ -34,6 +38,11 @@ const AdminVendors = () => {
     const [selectedVendor, setSelectedVendor] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [activeDropdown, setActiveDropdown] = useState(null);
+    const [expandedVendorId, setExpandedVendorId] = useState(null);
+
+    const toggleExpand = (vendorId) => {
+        setExpandedVendorId(prev => prev === vendorId ? null : vendorId);
+    };
 
     const handleAddNew = () => {
         setSelectedVendor(null);
@@ -138,15 +147,17 @@ const AdminVendors = () => {
                     <>
                         {/* Desktop Table View */}
                         <div className="hidden md:block overflow-x-auto custom-scrollbar pb-32">
-                            <table className="w-full text-left border-collapse min-w-[900px]">
+                            <table className="w-full text-left border-collapse min-w-[870px]]">
                                 <thead>
                                     <tr className="bg-gray-50/50">
                                         <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50">Vendor</th>
                                         <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50 hidden xl:table-cell">Contact Info</th>
                                         <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50">Supplied Parts</th>
                                         <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50">Status</th>
-                                        <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50 hidden 2xl:table-cell">Location</th>
-                                        <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50"></th>
+                                        <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50  2xl:table-cell">Location</th>
+
+                                        <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50">Action</th>
+                                        <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50">History</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-50">
@@ -158,110 +169,194 @@ const AdminVendors = () => {
                                         </tr>
                                     ) : (
                                         currentData.map((vendor) => (
-                                            <tr key={vendor.id} className="hover:bg-gray-50/50 transition-colors group text-sm">
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-9 h-9 rounded-md bg-blue-50 text-[#2b5ae3] flex items-center justify-center font-bold text-sm uppercase">
-                                                            {vendor.name?.charAt(0) || 'V'}
-                                                        </div>
-                                                        <div>
-                                                            <p className="font-bold text-gray-900 leading-none">{vendor.name}</p>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap hidden xl:table-cell">
-                                                    <div className="space-y-0.5">
-                                                        <div className="flex items-center gap-2 text-gray-600">
-                                                            <Mail size={12} className="text-gray-400" />
-                                                            <span className="text-xs font-medium">{vendor.email}</span>
-                                                        </div>
-                                                        <div className="flex items-center gap-2 text-gray-600">
-                                                            <Phone size={12} className="text-gray-400" />
-                                                            <span className="text-xs font-medium">{vendor.phone || 'N/A'}</span>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <div className="flex flex-col gap-2">
-                                                        <div className="flex flex-wrap gap-1.5 max-w-[300px]">
-                                                            {vendor.parts && vendor.parts.length > 0 ? (
-                                                                vendor.parts.map((part, idx) => (
-                                                                    <div key={idx} className="inline-flex items-center gap-1.5 px-2 py-1 bg-white border border-gray-200 rounded shadow-sm text-[10px] font-bold text-gray-700 hover:border-blue-200 hover:bg-blue-50/30 transition-all">
-                                                                        <Package size={10} className="text-blue-500" />
-                                                                        <span>{part.part_name}</span>
-                                                                        <span className={`px-1 rounded-sm min-w-[20px] text-center ${part.stock_quantity <= 5 ? 'bg-red-500 text-white' : 'bg-blue-600 text-white'}`}>
-                                                                            {part.stock_quantity}
-                                                                        </span>
-                                                                    </div>
-                                                                ))
-                                                            ) : (
-                                                                <span className="text-gray-400 text-[11px] italic font-medium">Catalog empty</span>
-                                                            )}
-                                                        </div>
-                                                        {vendor.parts?.length > 0 && (
-                                                            <div className="flex items-center gap-2">
-                                                                <div className="h-px bg-gray-100 flex-1"></div>
-                                                                <span className="text-[9px] text-gray-400 uppercase tracking-widest whitespace-nowrap">
-                                                                    {vendor.parts.length} {vendor.parts.length === 1 ? 'Part' : 'Parts'} listed
-                                                                </span>
-                                                                <div className="h-px bg-gray-100 flex-px w-2"></div>
+                                            <React.Fragment key={vendor.id}>
+                                                <tr
+                                                    className={`hover:bg-gray-50/50 transition-colors group text-sm cursor-pointer ${expandedVendorId === vendor.id ? 'bg-blue-50/20' : ''}`}
+                                                    onClick={() => toggleExpand(vendor.id)}
+                                                >
+                                                    <td className="px-6 py-4 whitespace-nowrap">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="w-9 h-9 rounded-md bg-blue-50 text-[#2b5ae3] flex items-center justify-center font-bold text-sm uppercase">
+                                                                {vendor.name?.charAt(0) || 'V'}
                                                             </div>
-                                                        )}
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-tight border bg-green-50 text-green-700 border-green-100`}>
-                                                        <span className={`w-1.5 h-1.5 rounded-full mr-1.5 bg-green-500`}></span>
-                                                        Active
-                                                    </span>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap hidden 2xl:table-cell">
-                                                    <div className="flex items-center gap-2 text-gray-500 font-medium">
-                                                        <MapPin size={12} className="text-gray-400" />
-                                                        <span className="text-xs">{vendor.address || 'No address provided'}</span>
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-right">
-                                                    <div className="flex items-center justify-end gap-2">
-                                                        <button
-                                                            onClick={() => handleEdit(vendor)}
-                                                            className="px-3 py-1.5 text-xs font-bold text-[#2b5ae3] hover:bg-blue-50 rounded-md transition-colors cursor-pointer border border-blue-100 flex items-center gap-1.5"
-                                                        >
-                                                            <Edit size={14} />
-                                                            Edit
-                                                        </button>
-                                                        <div className="relative">
-                                                            <button
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    setActiveDropdown(activeDropdown === vendor.id ? null : vendor.id);
-                                                                }}
-                                                                className="p-1.5 hover:bg-gray-100 rounded-md transition-all text-gray-400 hover:text-gray-600 cursor-pointer"
-                                                            >
-                                                                <MoreVertical size={16} />
-                                                            </button>
-                                                            {activeDropdown === vendor.id && (
-                                                                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-100 py-1 z-50">
-                                                                    <button
-                                                                        onClick={() => handleEdit(vendor)}
-                                                                        className="w-full text-left px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-2 cursor-pointer"
-                                                                    >
-                                                                        <Edit size={14} className="text-gray-400" />
-                                                                        Update Info
-                                                                    </button>
-                                                                    <button
-                                                                        onClick={() => handleDeleteClick(vendor)}
-                                                                        className="w-full text-left px-4 py-2 text-xs font-bold text-red-600 hover:bg-red-50 flex items-center gap-2 cursor-pointer"
-                                                                    >
-                                                                        <Trash2 size={14} />
-                                                                        Delete Vendor
-                                                                    </button>
+                                                            <div>
+                                                                <p className="font-bold text-gray-900 leading-none">{vendor.name}</p>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap hidden xl:table-cell">
+                                                        <div className="space-y-0.5">
+                                                            <div className="flex items-center gap-2 text-gray-600">
+                                                                <Mail size={12} className="text-gray-400" />
+                                                                <span className="text-xs font-medium">{vendor.email}</span>
+                                                            </div>
+                                                            <div className="flex items-center gap-2 text-gray-600">
+                                                                <Phone size={12} className="text-gray-400" />
+                                                                <span className="text-xs font-medium">{vendor.phone || 'N/A'}</span>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        <div className="flex flex-col gap-2">
+                                                            <div className="flex flex-wrap gap-1.5 max-w-[300px]">
+                                                                {vendor.parts && vendor.parts.length > 0 ? (
+                                                                    vendor.parts.map((part, idx) => (
+                                                                        <div key={idx} className="inline-flex items-center gap-1.5 px-2 py-1 bg-white border border-gray-200 rounded shadow-sm text-[10px] font-bold text-gray-700 hover:border-blue-200 hover:bg-blue-50/30 transition-all">
+                                                                            <Package size={10} className="text-blue-500" />
+                                                                            <span>{part.part_name}</span>
+                                                                            <span className={`px-1 rounded-sm min-w-[20px] text-center ${part.stock_quantity <= 5 ? 'bg-red-500 text-white' : 'bg-blue-600 text-white'}`}>
+                                                                                {part.stock_quantity}
+                                                                            </span>
+                                                                        </div>
+                                                                    ))
+                                                                ) : (
+                                                                    <span className="text-gray-400 text-[11px] italic font-medium">Catalog empty</span>
+                                                                )}
+                                                            </div>
+                                                            {vendor.parts?.length > 0 && (
+                                                                <div className="flex items-center gap-2">
+                                                                    <div className="h-px bg-gray-100 flex-1"></div>
+                                                                    <span className="text-[9px] text-gray-400 uppercase tracking-widest whitespace-nowrap">
+                                                                        {vendor.parts.length} {vendor.parts.length === 1 ? 'Part' : 'Parts'} listed
+                                                                    </span>
+                                                                    <div className="h-px bg-gray-100 flex-px w-2"></div>
                                                                 </div>
                                                             )}
                                                         </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap">
+                                                        <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-tight border bg-green-50 text-green-700 border-green-100`}>
+                                                            <span className={`w-1.5 h-1.5 rounded-full mr-1.5 bg-green-500`}></span>
+                                                            Active
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap 2xl:table-cell ">
+                                                        <div className="flex items-center gap-2 text-gray-500 font-medium">
+                                                            <MapPin size={12} className="text-gray-400" />
+                                                            <span className="text-xs">{vendor?.address || 'No address provided'}</span>
+                                                        </div>
+                                                    </td>
+
+                                                    <td className="px-6 py-4 whitespace-nowrap text-right" onClick={(e) => e.stopPropagation()}>
+                                                        <div className="flex items-center justify-end gap-2">
+                                                            <button
+                                                                onClick={() => handleEdit(vendor)}
+                                                                className="px-3 py-1.5 text-xs font-bold text-[#2b5ae3] hover:bg-blue-50 rounded-md transition-colors cursor-pointer border border-blue-100 flex items-center gap-1.5"
+                                                            >
+                                                                <Edit size={14} />
+                                                                Edit
+                                                            </button>
+                                                            <div className="relative">
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        setActiveDropdown(activeDropdown === vendor.id ? null : vendor.id);
+                                                                    }}
+                                                                    className="p-1.5 hover:bg-gray-100 rounded-md transition-all text-gray-400 hover:text-gray-600 cursor-pointer"
+                                                                >
+                                                                    <MoreVertical size={16} />
+                                                                </button>
+                                                                {activeDropdown === vendor.id && (
+                                                                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-100 py-1 z-50 text-left">
+                                                                        <button
+                                                                            onClick={() => handleEdit(vendor)}
+                                                                            className="w-full text-left px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-2 cursor-pointer"
+                                                                        >
+                                                                            <Edit size={14} className="text-gray-400" />
+                                                                            Update Info
+                                                                        </button>
+                                                                        <button
+                                                                            onClick={() => handleDeleteClick(vendor)}
+                                                                            className="w-full text-left px-4 py-2 text-xs font-bold text-red-600 hover:bg-red-50 flex items-center gap-2 cursor-pointer"
+                                                                        >
+                                                                            <Trash2 size={14} />
+                                                                            Delete Vendor
+                                                                        </button>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap">
+                                                        <button
+                                                            className={`p-1.5 rounded-md transition-all ${expandedVendorId === vendor.id ? 'bg-blue-100 text-[#2b5ae3]' : 'text-gray-400 hover:bg-gray-100'}`}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                toggleExpand(vendor.id);
+                                                            }}
+                                                        >
+                                                            {expandedVendorId === vendor.id ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                                                        </button>
+                                                    </td>
+                                                </tr>
+
+                                                {/* Expanded History Row */}
+                                                <AnimatePresence>
+                                                    {expandedVendorId === vendor.id && (
+                                                        <motion.tr
+                                                            initial={{ opacity: 0, height: 0 }}
+                                                            animate={{ opacity: 1, height: 'auto' }}
+                                                            exit={{ opacity: 0, height: 0 }}
+                                                        >
+                                                            <td colSpan="7" className="px-6 py-4 bg-gray-50/80 border-b border-gray-100">
+                                                                <div className="pl-12">
+                                                                    <h5 className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3 flex items-center gap-2">
+                                                                        <ShoppingBag size={14} className="text-[#2b5ae3]" />
+                                                                        Complete Transaction History
+                                                                    </h5>
+                                                                    {(!vendor.purchaseHistory || vendor.purchaseHistory.length === 0) ? (
+                                                                        <p className="text-sm text-gray-500 italic mb-2">No purchase records found for this vendor.</p>
+                                                                    ) : (
+                                                                        <table className="w-full text-left bg-white border border-gray-100 rounded-md shadow-sm overflow-hidden mb-3">
+                                                                            <thead>
+                                                                                <tr className="bg-gray-50 text-[10px] text-gray-500 uppercase tracking-wider border-b border-gray-100 font-black">
+                                                                                    <th className="px-4 py-3 font-bold">Purchase Date</th>
+                                                                                    <th className="px-4 py-3 font-bold">Part Name</th>
+                                                                                    <th className="px-4 py-3 font-bold text-right">Unit Price</th>
+                                                                                    <th className="px-4 py-3 font-bold text-center">Quantity</th>
+                                                                                    <th className="px-4 py-3 font-bold text-right">Total Amount</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody className="divide-y divide-gray-50 text-xs">
+                                                                                {vendor?.purchaseHistory?.map((pur) => (
+                                                                                    <tr key={pur.id} className="hover:bg-blue-50/30 transition-colors">
+                                                                                        <td className="px-4 py-3 text-gray-600">
+                                                                                            <div className="flex items-center gap-2">
+                                                                                                <Calendar size={12} className="text-gray-400" />
+                                                                                                {new Date(pur.purchase_date).toLocaleDateString()}
+                                                                                            </div>
+                                                                                        </td>
+                                                                                        <td className="px-4 py-3 font-bold text-gray-900 flex items-center gap-2">
+                                                                                            <Package size={12} className="text-blue-500" />
+                                                                                            {pur.parts?.part_name || 'N/A'}
+                                                                                        </td>
+                                                                                        <td className="px-4 py-3 text-right font-medium text-gray-700">₹ {Number(pur.unit_price || 0).toLocaleString()}</td>
+                                                                                        <td className="px-4 py-3 text-center font-black text-gray-900">
+                                                                                            <span className="bg-gray-100 px-1.5 py-0.5 rounded text-[10px]">{pur.quantity}</span>
+                                                                                        </td>
+                                                                                        <td className="px-4 py-3 text-right font-bold text-[#2b5ae3]">₹ {Number(pur.total_amount || 0).toLocaleString()}</td>
+                                                                                    </tr>
+                                                                                ))}
+                                                                            </tbody>
+                                                                            <tfoot className="bg-blue-50/50 border-t border-blue-100/50">
+                                                                                <tr>
+                                                                                    <td colSpan="3" className="px-4 py-3 text-right font-bold text-gray-700 text-[10px] uppercase tracking-wider">Lifetime Business:</td>
+                                                                                    <td className="px-4 py-3 text-center font-bold text-gray-900 text-sm">
+                                                                                        {vendor.purchaseHistory.reduce((sum, p) => sum + (Number(p.quantity) || 0), 0)} Units
+                                                                                    </td>
+                                                                                    <td className="px-4 py-3 text-right font-black text-[#2b5ae3] text-sm">
+                                                                                        ₹ {vendor.purchaseHistory.reduce((sum, p) => sum + (Number(p.total_amount) || 0), 0).toLocaleString()}
+                                                                                    </td>
+                                                                                </tr>
+                                                                            </tfoot>
+                                                                        </table>
+                                                                    )}
+                                                                </div>
+                                                            </td>
+                                                        </motion.tr>
+                                                    )}
+                                                </AnimatePresence>
+                                            </React.Fragment>
                                         ))
                                     )}
                                 </tbody>
