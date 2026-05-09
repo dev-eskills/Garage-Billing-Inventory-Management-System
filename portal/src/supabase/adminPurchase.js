@@ -1,6 +1,6 @@
 import { supabase } from '../lib/supabaseClient';
 
-export async function adminAddPurchase({ vendor_id, total_amount, purchase_date, payment_status, quantity, part_id, unit_price }) {
+export async function adminAddPurchase({ vendor_id, total_amount, purchase_date, payment_status, quantity, part_id, unit_price, image_url }) {
   // First, insert the main purchase record
   const { data: purchaseData, error: purchaseError } = await supabase
     .from('purchases')
@@ -12,7 +12,8 @@ export async function adminAddPurchase({ vendor_id, total_amount, purchase_date,
         payment_status ,
         quantity,
         part_id,
-        unit_price
+        unit_price,
+        image_url
       }
     ])
     .select();
@@ -98,7 +99,8 @@ export async function adminFetchPurchases() {
       parts (
         part_name,
         sku,
-        sale_price
+        sale_price,
+        image_url
       )
     `)
     .order('purchase_date', { ascending: false });

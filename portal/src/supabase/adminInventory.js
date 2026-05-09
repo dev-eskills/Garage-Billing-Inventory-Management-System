@@ -1,34 +1,31 @@
 import { supabase } from '../lib/supabaseClient';
 
-export async function fetchStockHistory() {
-  // Fetch Stock In (Purchases)
-  const { data: stockIn, error: inError } = await supabase
+export async function fetchStockIn() {
+  const { data, error } = await supabase
     .from('purchases')
     .select(`
       *,
       vendors (name),
-      parts (part_name, sku)
+      parts (part_name, sku, image_url)
     `)
     .order('purchase_date', { ascending: false });
 
-  if (inError) throw inError;
+  if (error) throw error;
+  return data;
+}
 
-  // Fetch Stock Out (Mechanic Inventory)
-  const { data: stockOut, error: outError } = await supabase
+export async function fetchStockOut() {
+  const { data, error } = await supabase
     .from('mechanic_inventory')
     .select(`
       *,
       profiles:mechanic_id (full_name),
-      parts (part_name, sku)
+      parts (part_name, sku, image_url)
     `)
     .order('purchased_at', { ascending: false });
 
-  if (outError) throw outError;
-
-  return {
-    stockIn,
-    stockOut
-  };
+  if (error) throw error;
+  return data;
 }
 
 export async function fetchCurrentStock() {
