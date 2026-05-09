@@ -61,7 +61,7 @@ const ChangePasswordModal = ({ onClose, mechanic }) => {
         <div className="bg-[#2b5ae3] px-6 py-6 text-white relative">
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 p-2 hover:bg-white/10 rounded-md transition-colors text-white/80 hover:text-white"
+            className="absolute cursor-pointer top-4 right-4 p-2 hover:bg-white/10 rounded-md transition-colors text-white/80 hover:text-white"
           >
             <XIcon size={20} />
           </button>

@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { adminAddMechanic, deleteMechanic, fetchMechanics, updateMechanicDetails, updateMechanicPassword } from "../supabase/adminMechanic";
+import { adminAddMechanic, deleteMechanic, fetchMechanics, fetchMechanicsJobs, updateMechanicDetails, updateMechanicPassword } from "../supabase/adminMechanic";
 import toast from "react-hot-toast";
 
-export const useAdminMechanic =()=>{
+export const useAdminMechanic = (mechanicId = "") => {
   const queryClient = useQueryClient();
 
 
@@ -11,6 +11,11 @@ export const useAdminMechanic =()=>{
     queryFn: fetchMechanics,
   }); 
 
+
+  const getMechanicJobsFn = useQuery({
+    queryKey: ['mechanic-jobs', mechanicId],
+    queryFn: () => fetchMechanicsJobs(mechanicId),
+  });
 
   const adminAddMechanicFn = useMutation({
     mutationFn: adminAddMechanic,
@@ -64,6 +69,10 @@ export const useAdminMechanic =()=>{
     mechanics : getMechanicsFn.data,
     mechanicsPending : getMechanicsFn.isPending,
     mechanicsError : getMechanicsFn.error,
+
+    mechanicsJobs : getMechanicJobsFn.data,
+    mechanicsJobsPending : getMechanicJobsFn.isPending,
+    mechanicsJobsError : getMechanicJobsFn.error,
 
     adminAddMechanic: adminAddMechanicFn.mutateAsync,
     adminAddMechanicPending: adminAddMechanicFn.isPending,

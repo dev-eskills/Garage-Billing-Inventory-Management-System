@@ -67,3 +67,25 @@ export async function deleteMechanic(id) {
     }
     return data;
 }
+
+export const fetchMechanicsJobs = async (mechanicId) => {
+  const { data, error } = await supabase
+    .from('jobs')
+    .select(`
+      id,
+      created_at,
+      service_type,
+      total_amount_full_service,
+      customer_details,
+      vehicle_details,
+      invoices (
+        storage_path,
+        file_name
+      )
+    `)
+    .eq('mechanic_id', mechanicId)
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data;
+};
