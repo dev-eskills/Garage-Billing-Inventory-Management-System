@@ -18,7 +18,7 @@ export async function fetchAllVendorsWithParts() {
     .from('vendors')
     .select(`
       *,
-      parts!fk_parts_vendor (
+      parts (
         part_name,
         stock_quantity
       )

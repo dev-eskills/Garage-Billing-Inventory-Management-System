@@ -14,6 +14,7 @@ import AdminSettings from "../pages/admin/AdminSettings";
 import AdminParts from "../pages/admin/AdminParts";
 import AdminPurchase from "../pages/admin/AdminPurchase";
 import AdminExpenses from "../pages/admin/AdminExpenses";
+import AdminLosses from "../pages/admin/AdminLosses";
 import MechanicDashboard from "../Pages/mechanic/MechanicDashboard";
 import MechanicProfile from "../Pages/mechanic/MechanicProfile";
 
@@ -78,6 +79,7 @@ const router = createBrowserRouter([
             { path: "inventory", element: <AdminInventory /> },
             { path: "purchase", element: <AdminPurchase /> },
             { path: "expenses", element: <AdminExpenses /> },
+            { path: "losses", element: <AdminLosses /> },
             { path: "customers", element: <AdminCustomers /> },
             { path: "invoices", element: <AdminInvoices /> },
             { path: "settings", element: <AdminSettings /> },

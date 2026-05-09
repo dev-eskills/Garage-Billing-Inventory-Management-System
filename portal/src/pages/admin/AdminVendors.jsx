@@ -19,6 +19,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAdminVendor } from '../../hooks/useAdminVendor';
 import AddVendorModal from '../../components/admin/AddVendorModal';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
+import { usePagination } from '../../hooks/usePagination';
+import Pagination from '../../components/common/Pagination';
 
 const AdminVendors = () => {
     const {
@@ -76,6 +78,14 @@ const AdminVendors = () => {
         vendor.phone?.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+    const {
+        currentPage,
+        totalPages,
+        currentData,
+        onPageChange,
+        totalResults
+    } = usePagination(filteredVendors, 10);
+    console.log("currentData: ", currentData)
     return (
         <div className="space-y-6">
             {/* Header Section */}
@@ -140,14 +150,14 @@ const AdminVendors = () => {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-50">
-                                    {filteredVendors.length === 0 ? (
+                                    {currentData.length === 0 ? (
                                         <tr>
                                             <td colSpan="6" className="px-6 py-10 text-center text-gray-500 font-medium">
                                                 No vendors found matching your search.
                                             </td>
                                         </tr>
                                     ) : (
-                                        filteredVendors.map((vendor) => (
+                                        currentData.map((vendor) => (
                                             <tr key={vendor.id} className="hover:bg-gray-50/50 transition-colors group text-sm">
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <div className="flex items-center gap-3">
@@ -260,12 +270,12 @@ const AdminVendors = () => {
 
                         {/* Mobile/Tablet Card View */}
                         <div className="md:hidden divide-y divide-gray-50">
-                            {filteredVendors.length === 0 ? (
+                            {currentData.length === 0 ? (
                                 <div className="p-8 text-center text-gray-500 font-bold">
                                     No vendors found.
                                 </div>
                             ) : (
-                                filteredVendors.map((vendor) => (
+                                currentData.map((vendor) => (
                                     <div key={vendor.id} className="p-4 space-y-4">
                                         <div className="flex items-start justify-between">
                                             <div className="flex items-center gap-3">
@@ -363,6 +373,13 @@ const AdminVendors = () => {
                                 ))
                             )}
                         </div>
+                        <Pagination
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            onPageChange={onPageChange}
+                            totalResults={totalResults}
+                            pageSize={10}
+                        />
                     </>
                 )}
             </div>

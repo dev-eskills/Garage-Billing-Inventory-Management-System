@@ -4,7 +4,8 @@ export async function fetchParts() {
   const { data, error } = await supabase
     .from('parts')
     .select(`
-      *
+      *,
+      vendors (*)
     `)
     .order('created_at', { ascending: false });
   
@@ -17,7 +18,7 @@ export async function fetchPartsByVendor(vendorId) {
     .from('parts')
     .select(`
       *,
-      vendors!fk_parts_vendor (*)
+      vendors (*)
     `)
     .eq('vendor_id', vendorId)
     .order('part_name', { ascending: true });
@@ -66,7 +67,7 @@ export async function addPart(partData) {
     .insert([insertData])
     .select(`
       *,
-      vendors!fk_parts_vendor (*)
+      vendors (*)
     `);
 
   if (error) throw new Error(error.message);
@@ -87,7 +88,7 @@ export async function updatePart({ id, partData }) {
     .eq('id', id)
     .select(`
       *,
-      vendors!fk_parts_vendor (*)
+      vendors (*)
     `);
 
   if (error) throw new Error(error.message);
@@ -110,9 +111,28 @@ export async function updatePartSalePrice(id, sale_price) {
     .eq('id', id)
     .select(`
       *,
-      vendors!fk_parts_vendor (*)
+      vendors (*)
     `);
 
   if (error) throw new Error(error.message);
+  return data[0];
+}
+
+export async function decreasePartStock(partId, quantity) {
+  const { data: partData, error: fetchError } = await supabase
+    .from('parts')
+    .select('stock_quantity')
+    .eq('id', partId)
+    .single();
+
+  if (fetchError) throw fetchError;
+
+  const { data, error } = await supabase
+    .from('parts')
+    .update({ stock_quantity: Math.max(0, (partData.stock_quantity || 0) - parseInt(quantity, 10)) })
+    .eq('id', partId)
+    .select();
+
+  if (error) throw error;
   return data[0];
 }

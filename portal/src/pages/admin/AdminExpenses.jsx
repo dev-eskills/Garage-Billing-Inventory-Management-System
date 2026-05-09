@@ -6,6 +6,8 @@ import AddExpenseModal from '../../components/admin/AddExpenseModal';
 import DeleteConfirmModal from '../../components/admin/DeleteConfirmModal';
 import { syncHistoricalPurchases } from '../../supabase/syncPurchases';
 import { useQueryClient } from '@tanstack/react-query';
+import { usePagination } from '../../hooks/usePagination';
+import Pagination from '../../components/common/Pagination';
 
 const AdminExpenses = () => {
   const queryClient = useQueryClient();
@@ -16,10 +18,6 @@ const AdminExpenses = () => {
   const [expenseToDelete, setExpenseToDelete] = useState(null);
   const [expandedRowId, setExpandedRowId] = useState(null);
 
-  const toggleRow = (id) => {
-    setExpandedRowId(prev => prev === id ? null : id);
-  };
-
   const filteredExpenses = useMemo(() => {
     if (!expenses) return [];
     const query = searchQuery.toLowerCase();
@@ -29,9 +27,21 @@ const AdminExpenses = () => {
     );
   }, [expenses, searchQuery]);
 
+  const {
+    currentPage,
+    totalPages,
+    currentData,
+    onPageChange,
+    totalResults
+  } = usePagination(filteredExpenses, 10);
+
   const totalExpenses = useMemo(() => {
     return filteredExpenses.reduce((sum, exp) => sum + Number(exp.amount), 0);
   }, [filteredExpenses]);
+
+  const toggleRow = (id) => {
+    setExpandedRowId(prev => prev === id ? null : id);
+  };
 
   const handleAddNew = () => {
     setSelectedExpense(null);
@@ -145,7 +155,7 @@ const AdminExpenses = () => {
                   </td>
                 </tr>
               ) : (
-                filteredExpenses.map((exp) => (
+                currentData.map((exp) => (
                   <React.Fragment key={exp.id}>
                     <tr 
                       className={`hover:bg-gray-50/50 transition-colors text-sm ${exp.expense_categories?.name === 'Parts Purchase' ? 'cursor-pointer' : ''}`}
@@ -246,6 +256,13 @@ const AdminExpenses = () => {
             </tbody>
           </table>
         </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={onPageChange}
+          totalResults={totalResults}
+          pageSize={10}
+        />
       </div>
 
       <AnimatePresence>

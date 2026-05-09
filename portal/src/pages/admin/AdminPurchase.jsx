@@ -10,12 +10,18 @@ import {
     CheckCircle2,
     Clock,
     Package,
-    Store
+    Store,
+    TrendingDown
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAdminPurchase } from '../../hooks/useAdminPurchase';
+import { useLosses } from '../../hooks/useLosses';
+import { useParts } from '../../hooks/useParts';
+import { usePagination } from '../../hooks/usePagination';
 import AddPurchaseModal from '../../components/admin/AddPurchaseModal';
+import ReturnPartsModal from '../../components/admin/ReturnPartsModal';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
+import Pagination from '../../components/common/Pagination';
 
 const AdminPurchase = () => {
     const {
@@ -23,10 +29,13 @@ const AdminPurchase = () => {
         updatePurchaseStatus, updateStatusPending,
         deletePurchase, deletePurchasePending
     } = useAdminPurchase();
-    console.log(purchases , "purchases")
+
+    const { createLoss, createLossPending } = useLosses();
+    const { decreasePartStock } = useParts();
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
     const [selectedPurchase, setSelectedPurchase] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [activeDropdown, setActiveDropdown] = useState(null);
@@ -56,6 +65,35 @@ const AdminPurchase = () => {
         setActiveDropdown(null);
     };
 
+    const handleMarkAsLoss = (purchase) => {
+        setSelectedPurchase(purchase);
+        setIsReturnModalOpen(true);
+        setActiveDropdown(null);
+    };
+
+    const handleConfirmReturn = async (quantity, totalLoss) => {
+        if (!selectedPurchase) return;
+        
+        const lossData = {
+            description: `Defective part return: ${selectedPurchase.parts?.part_name} (${quantity} units) from ${selectedPurchase.vendors?.name}`,
+            amount: totalLoss,
+            loss_date: new Date().toISOString().split('T')[0],
+            type: 'Defective Part',
+            purchase_id: selectedPurchase.id,
+        };
+        
+        try {
+            await createLoss(lossData);
+            if (selectedPurchase.part_id) {
+                await decreasePartStock(selectedPurchase.part_id, quantity);
+            }
+            setIsReturnModalOpen(false);
+            setSelectedPurchase(null);
+        } catch (err) {
+            console.error('Failed to process return:', err);
+        }
+    };
+
     useEffect(() => {
         const handleClickOutside = () => setActiveDropdown(null);
         if (activeDropdown !== null) {
@@ -69,6 +107,14 @@ const AdminPurchase = () => {
         p.parts?.part_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         p.total_amount?.toString().includes(searchQuery)
     );
+
+    const {
+        currentPage,
+        totalPages,
+        currentData,
+        onPageChange,
+        totalResults
+    } = usePagination(filteredPurchases, 10);
 
     return (
         <div className="space-y-6">
@@ -153,14 +199,14 @@ const AdminPurchase = () => {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-50">
-                                    {filteredPurchases.length === 0 ? (
+                                    {currentData.length === 0 ? (
                                         <tr>
                                             <td colSpan="6" className="px-6 py-10 text-center text-gray-500 font-medium">
                                                 No purchase records found.
                                             </td>
                                         </tr>
                                     ) : (
-                                        filteredPurchases.map((purchase) => (
+                                        currentData.map((purchase) => (
                                             <tr key={purchase.id} className="hover:bg-gray-50/50 transition-colors group text-sm">
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <div className="flex items-center gap-2 text-gray-900 font-medium">
@@ -223,11 +269,18 @@ const AdminPurchase = () => {
                                                                     Mark as {purchase.payment_status === 'Paid' ? 'Pending' : 'Paid'}
                                                                 </button>
                                                                 <button
+                                                                    onClick={() => handleMarkAsLoss(purchase)}
+                                                                    className="w-full text-left px-4 py-2 text-xs font-bold text-orange-600 hover:bg-orange-50 flex items-center gap-2 cursor-pointer"
+                                                                >
+                                                                    <TrendingDown size={14} />
+                                                                    Mark as Loss
+                                                                </button>
+                                                                <button
                                                                     onClick={() => handleDeleteClick(purchase)}
                                                                     className="w-full text-left px-4 py-2 text-xs font-bold text-red-600 hover:bg-red-50 flex items-center gap-2 cursor-pointer"
                                                                 >
                                                                     <Trash2 size={14} />
-                                                                    Delete Order
+                                                                    Delete Purchase
                                                                 </button>
                                                             </div>
                                                         )}
@@ -242,12 +295,12 @@ const AdminPurchase = () => {
 
                         {/* Mobile Card View */}
                         <div className="md:hidden divide-y divide-gray-50">
-                            {filteredPurchases.length === 0 ? (
+                            {currentData.length === 0 ? (
                                 <div className="p-8 text-center text-gray-500 font-bold">
                                     No purchase records found.
                                 </div>
                             ) : (
-                                filteredPurchases.map((purchase) => (
+                                currentData.map((purchase) => (
                                     <div key={purchase.id} className="p-4 space-y-4">
                                         <div className="flex items-start justify-between">
                                             <div className="space-y-1">
@@ -278,11 +331,18 @@ const AdminPurchase = () => {
                                                             Mark as {purchase.payment_status === 'Paid' ? 'Pending' : 'Paid'}
                                                         </button>
                                                         <button
+                                                            onClick={() => handleMarkAsLoss(purchase)}
+                                                            className="w-full text-left px-4 py-2 text-xs font-bold text-orange-600 hover:bg-orange-50 flex items-center gap-2"
+                                                        >
+                                                            <TrendingDown size={14} />
+                                                            Mark as Loss
+                                                        </button>
+                                                        <button
                                                             onClick={() => handleDeleteClick(purchase)}
                                                             className="w-full text-left px-4 py-2 text-xs font-bold text-red-600 hover:bg-red-50 flex items-center gap-2"
                                                         >
                                                             <Trash2 size={14} />
-                                                            Delete Order
+                                                            Delete Purchase
                                                         </button>
                                                     </div>
                                                 )}
@@ -316,6 +376,13 @@ const AdminPurchase = () => {
                                 ))
                             )}
                         </div>
+                        <Pagination
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            onPageChange={onPageChange}
+                            totalResults={totalResults}
+                            pageSize={10}
+                        />
                     </>
                 }
             </div>
@@ -328,6 +395,14 @@ const AdminPurchase = () => {
                     />
                 )}
             </AnimatePresence>
+
+            <ReturnPartsModal
+                isOpen={isReturnModalOpen}
+                onClose={() => setIsReturnModalOpen(false)}
+                onConfirm={handleConfirmReturn}
+                purchase={selectedPurchase}
+                isPending={createLossPending}
+            />
 
             <ConfirmationModal
                 isOpen={isDeleteModalOpen}
