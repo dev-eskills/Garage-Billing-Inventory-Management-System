@@ -55,7 +55,20 @@ export async function updateMechanicStock({ mechanicId, partId, newQuantity }) {
 
     if (insertError) throw insertError;
   }
+}export async function fetchAllMechanicInventory(mechanicId) {
+  if (!mechanicId) return [];
+  const { data, error } = await supabase
+    .from('mechanic_inventory')
+    .select(`
+      *,
+      parts (*)
+    `)
+    .eq('mechanic_id', mechanicId)
+    .order('purchased_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching all mechanic inventory:', error.message);
+    throw error;
+  }
+  return data;
 }
-
-
-

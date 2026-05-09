@@ -34,6 +34,8 @@ import MechanicLayout from "../layouts/mechanic/MechanicLayout";
 import CreateCustomer from "../Pages/mechanic/CreateCustomer";
 import MechanicPurchase from "../Pages/mechanic/MechanicPurchase";
 import CreateJob from "../Pages/mechanic/CreateJob";
+import AllAssignedJobs from "../Pages/mechanic/AllAssignedJobs";
+import MechanicPurchases from "../Pages/mechanic/MechanicPurchases";
 
 const router = createBrowserRouter([
     {
@@ -119,6 +121,10 @@ const router = createBrowserRouter([
                 element: <MechanicReports />,
             },
             {
+                path: "all-jobs",
+                element: <AllAssignedJobs />,
+            },
+            {
                 path: "jobs/:id",
                 element: <MechanicJobDetail />,
             },
@@ -137,6 +143,10 @@ const router = createBrowserRouter([
             {
                 path: "create-job",
                 element: <CreateJob />,
+            },
+            {
+                path: "purchase-history",
+                element: <MechanicPurchases />,
             },
         ]
     },

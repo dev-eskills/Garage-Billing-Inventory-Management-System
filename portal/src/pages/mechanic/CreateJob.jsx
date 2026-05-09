@@ -14,7 +14,8 @@ import {
   Loader2,
   ChevronDown,
   X,
-  AlertCircle
+  AlertCircle,
+  ChevronRight
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../hooks/useAuth";
@@ -29,8 +30,6 @@ const CreateJob = () => {
   const { customers, customersLoading } = useCustomers(user?.id);
   const { mechanicInventory, isInventoryPending } = useMechanicInventory(user?.id);
   const { createJob, isCreatingJob } = useJobs(user?.id);
-  console.log(mechanicInventory);
-
 
   // Form State
   const [selectedCustomer, setSelectedCustomer] = useState(null);
@@ -133,19 +132,23 @@ const CreateJob = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50 p-6 lg:p-10">
-      <div className="max-w-5xl mx-auto">
-        <header className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div className="min-h-screen bg-slate-50/50 p-6 lg:p-8">
+      <div className="max-w-6xl mx-auto space-y-8">
+        
+        {/* Header Section */}
+        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
-            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
-              <PlusCircle className="text-blue-600" size={32} />
+            <h1 className="text-3xl font-bold text-slate-900 tracking-tight flex items-center gap-3">
+              <div className="p-2 bg-blue-600 rounded-lg text-white shadow-lg shadow-blue-500/20">
+                <PlusCircle size={24} />
+              </div>
               Create New Job
             </h1>
-            <p className="text-slate-500 mt-2 text-lg">Register a new service and deduct used parts from your inventory.</p>
+            <p className="text-slate-500 mt-2">Register a new service and deduct used parts from your inventory.</p>
           </div>
           <button
             onClick={() => navigate(-1)}
-            className="px-5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-600 font-bold hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm"
+            className="px-5 py-2.5 bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm"
           >
             <X size={18} />
             Cancel
@@ -154,19 +157,18 @@ const CreateJob = () => {
 
         <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Form Area */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-6">
 
             {/* Customer Selection Card */}
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-              <div className="p-6 border-b border-slate-100 bg-slate-50/50 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-600">
-                  <User size={20} />
+            <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
+              <div className="p-5 border-b border-slate-100 bg-slate-50/50 flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                  <User size={18} />
                 </div>
-                <h2 className="text-xl font-bold text-slate-800">Customer Details</h2>
+                <h2 className="text-lg font-bold text-slate-800">Customer Details</h2>
               </div>
-              <div className="p-8">
-                <div className="relative">
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">Select Customer</label>
+              <div className="p-6">
+                <div className="space-y-4">
                   <div className="relative">
                     <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                     <select
@@ -175,7 +177,7 @@ const CreateJob = () => {
                         const customer = customers.find(c => c.id === e.target.value);
                         setSelectedCustomer(customer);
                       }}
-                      className="w-full pl-12 pr-12 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-medium text-slate-800 appearance-none cursor-pointer"
+                      className="w-full pl-12 pr-12 py-3 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-slate-800 appearance-none cursor-pointer"
                       required
                     >
                       <option value="" disabled>Choose a customer...</option>
@@ -189,67 +191,74 @@ const CreateJob = () => {
                   </div>
 
                   {selectedCustomer && (
-                    <div className="mt-4 p-4 bg-indigo-50/50 rounded-2xl border border-indigo-100 flex items-center justify-between">
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="p-4 bg-emerald-50 rounded-lg border border-emerald-100 flex items-center justify-between"
+                    >
                       <div>
-                        <p className="text-sm font-bold text-indigo-900">{selectedCustomer.customer_details.name}</p>
-                        <p className="text-xs text-indigo-500">{selectedCustomer.customer_details?.contact}</p>
+                        <p className="text-sm font-bold text-emerald-900">{selectedCustomer.customer_details.name}</p>
+                        <p className="text-xs text-emerald-600 font-medium">{selectedCustomer.customer_details?.contact}</p>
                       </div>
-                    </div>
+                      <div className="text-emerald-500">
+                        <CheckCircle2 size={20} />
+                      </div>
+                    </motion.div>
                   )}
                 </div>
               </div>
             </div>
 
             {/* Job Details Card */}
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-              <div className="p-6 border-b border-slate-100 bg-slate-50/50 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600">
-                  <FileText size={20} />
+            <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
+              <div className="p-5 border-b border-slate-100 bg-slate-50/50 flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+                  <FileText size={18} />
                 </div>
-                <h2 className="text-xl font-bold text-slate-800">Job Information</h2>
+                <h2 className="text-lg font-bold text-slate-800">Job Information</h2>
               </div>
-              <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">Repair Issue</label>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block ml-1">Repair Issue</label>
                   <input
                     type="text"
                     value={jobDetails.repair_issue}
                     onChange={(e) => setJobDetails({ ...jobDetails, repair_issue: e.target.value })}
-                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-medium"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">Service Type</label>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block ml-1">Service Type</label>
                   <input
                     type="text"
                     value={jobDetails.service_type}
                     onChange={(e) => setJobDetails({ ...jobDetails, service_type: e.target.value })}
-                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-medium"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block flex items-center gap-2">
-                    <Calendar size={14} /> Service Date
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block ml-1 flex items-center gap-1.5">
+                    <Calendar size={12} /> Service Date
                   </label>
                   <input
                     type="date"
                     value={jobDetails.service_date}
                     onChange={(e) => setJobDetails({ ...jobDetails, service_date: e.target.value })}
-                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-medium"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block flex items-center gap-2">
-                    <AlertCircle size={14} /> Next Service Due (Expiry)
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block ml-1 flex items-center gap-1.5">
+                    <AlertCircle size={12} /> Next Service Due
                   </label>
                   <input
                     type="date"
                     value={jobDetails.expiry_date}
                     onChange={(e) => setJobDetails({ ...jobDetails, expiry_date: e.target.value })}
-                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-medium"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
                     required
                   />
                 </div>
@@ -257,77 +266,77 @@ const CreateJob = () => {
             </div>
 
             {/* Parts Section Card */}
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-              <div className="p-6 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+            <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
+              <div className="p-5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600">
-                    <Package size={20} />
+                  <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+                    <Package size={18} />
                   </div>
-                  <h2 className="text-xl font-bold text-slate-800">Parts Used</h2>
+                  <h2 className="text-lg font-bold text-slate-800">Parts Used</h2>
                 </div>
                 <button
                   type="button"
                   onClick={() => setIsPartModalOpen(true)}
-                  className="px-4 py-2 bg-amber-600 text-white text-sm font-bold rounded-xl hover:bg-amber-700 transition-all flex items-center gap-2 shadow-sm shadow-amber-500/20"
+                  className="px-4 py-2 bg-amber-600 text-white text-xs font-bold rounded-lg hover:bg-amber-700 transition-all flex items-center gap-2 shadow-sm"
                 >
-                  <Plus size={18} />
+                  <Plus size={16} />
                   Add Parts from Stock
                 </button>
               </div>
 
-              <div className="p-8">
+              <div className="p-6">
                 {usedParts.length === 0 ? (
-                  <div className="py-12 flex flex-col items-center justify-center border-2 border-dashed border-slate-100 rounded-3xl text-slate-400">
-                    <Package size={48} className="mb-4 opacity-20" />
-                    <p className="font-medium">No parts selected from stock</p>
-                    <p className="text-xs mt-1">Search and select parts above</p>
+                  <div className="py-10 flex flex-col items-center justify-center border-2 border-dashed border-slate-100 rounded-lg text-slate-400">
+                    <Package size={40} className="mb-3 opacity-20" />
+                    <p className="text-sm font-medium">No parts selected from stock</p>
+                    <p className="text-[10px] mt-1">Click the button above to select parts</p>
                   </div>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {usedParts.map(part => (
-                      <div key={part.part_id} className="flex items-center gap-6 p-5 bg-slate-50/50 border border-slate-100 rounded-2xl hover:border-slate-200 transition-all group">
-                        <div className="w-12 h-12 rounded-xl bg-white border border-slate-100 flex items-center justify-center shrink-0 shadow-sm overflow-hidden">
+                      <div key={part.part_id} className="flex items-center gap-4 p-4 bg-slate-50/50 border border-slate-100 rounded-lg hover:border-blue-100 transition-all group">
+                        <div className="w-10 h-10 rounded-lg bg-white border border-slate-200 flex items-center justify-center shrink-0 shadow-sm overflow-hidden">
                           {part.image_url ? (
                             <img src={part.image_url} alt={part.part_name} className="w-full h-full object-cover" />
                           ) : (
-                            <Package size={20} className="text-slate-300" />
+                            <Package size={18} className="text-slate-300" />
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-bold text-slate-800 truncate">{part.part_name}</h4>
-                          <p className="text-xs text-slate-400">Unit Price: ₹{part.unit_price}</p>
+                          <h4 className="text-sm font-bold text-slate-800 truncate">{part.part_name}</h4>
+                          <p className="text-[10px] text-slate-400 font-medium">Price: ₹{part.unit_price}</p>
                         </div>
-                        <div className="flex items-center gap-3 bg-white border border-slate-200 rounded-xl px-3 py-1 shadow-sm">
+                        <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-2 py-1">
                           <button
                             type="button"
                             onClick={() => handleUpdatePartQuantity(part.part_id, part.quantity - 1)}
-                            className="p-1 hover:bg-slate-50 rounded text-slate-500"
+                            className="w-6 h-6 flex items-center justify-center hover:bg-slate-50 rounded text-slate-500 text-lg"
                           >-</button>
-                          <span className="w-8 text-center font-bold text-slate-800">{part.quantity}</span>
+                          <span className="w-6 text-center text-xs font-bold text-slate-800">{part.quantity}</span>
                           <button
                             type="button"
                             onClick={() => handleUpdatePartQuantity(part.part_id, part.quantity + 1)}
-                            className="p-1 hover:bg-slate-50 rounded text-slate-500"
+                            className="w-6 h-6 flex items-center justify-center hover:bg-slate-50 rounded text-slate-500 text-lg"
                           >+</button>
                         </div>
-                        <div className="text-right min-w-[100px]">
-                          <p className="text-xs text-slate-400 uppercase font-bold tracking-tighter">Total</p>
-                          <p className="font-bold text-slate-900">₹{(part.quantity * part.unit_price).toLocaleString()}</p>
+                        <div className="text-right min-w-[80px]">
+                          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">Total</p>
+                          <p className="text-sm font-bold text-slate-900">₹{(part.quantity * part.unit_price).toLocaleString()}</p>
                         </div>
                         <button
                           type="button"
                           onClick={() => handleRemovePart(part.part_id)}
-                          className="p-3 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                          className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
                         >
-                          <Trash2 size={18} />
+                          <Trash2 size={16} />
                         </button>
                       </div>
                     ))}
-                    <div className="flex justify-end pt-4">
+                    <div className="flex justify-end pt-3 border-t border-slate-100 mt-4">
                       <div className="text-right">
-                        <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-1">Parts Total</p>
-                        <p className="text-2xl font-black text-slate-900 flex items-center gap-1">
-                          <IndianRupee size={20} />
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-0.5">Parts Total</p>
+                        <p className="text-xl font-bold text-slate-900 flex items-center gap-1 justify-end">
+                          <IndianRupee size={16} />
                           {partsTotal.toLocaleString()}
                         </p>
                       </div>
@@ -339,82 +348,84 @@ const CreateJob = () => {
           </div>
 
           {/* Sidebar Area - Summary & Extra Services */}
-          <div className="space-y-8">
-            {/* Extra Service Card */}
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden sticky top-8">
-              <div className="p-6 border-b border-slate-100 bg-slate-50/50 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600">
-                  <Plus size={20} />
+          <div className="space-y-6">
+            <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden sticky top-8">
+              <div className="p-5 border-b border-slate-100 bg-slate-50/50 flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
+                  <Plus size={18} />
                 </div>
-                <h2 className="text-xl font-bold text-slate-800">Extra Service</h2>
+                <h2 className="text-lg font-bold text-slate-800">Summary</h2>
               </div>
-              <div className="p-8 space-y-6">
+              <div className="p-6 space-y-5">
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">Service Description</label>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block ml-1">Extra Service</label>
                   <textarea
-                    rows={3}
+                    rows={2}
                     value={extraService.description}
                     onChange={(e) => setExtraService({ ...extraService, description: e.target.value })}
-                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 transition-all font-medium text-sm resize-none"
-                    placeholder="E.g. Car Wash, Polishing..."
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all text-sm resize-none"
+                    placeholder="Describe extra work..."
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">Service Amount (₹)</label>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block ml-1">Service Fee (₹)</label>
                   <div className="relative">
-                    <IndianRupee className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                    <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
                     <input
                       type="number"
                       value={extraService.amount}
                       onChange={(e) => setExtraService({ ...extraService, amount: e.target.value })}
-                      className="w-full pl-10 pr-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 transition-all font-bold"
+                      className="w-full pl-9 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all font-bold"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2 pt-4 border-t border-slate-100">
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">Discount (%)</label>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block ml-1">Discount (%)</label>
                   <div className="relative">
-                    <Percent className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                    <Percent className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
                     <input
                       type="number"
                       max="100"
                       min="0"
                       value={discount}
                       onChange={(e) => setDiscount(e.target.value)}
-                      className="w-full pl-10 pr-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-bold"
+                      className="w-full pl-9 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-bold"
                     />
                   </div>
                 </div>
 
                 {/* Final Calculation Summary */}
-                <div className="pt-6 space-y-3">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-500 font-medium">Subtotal</span>
-                    <span className="text-slate-800 font-bold">₹{subTotal.toLocaleString()}</span>
+                <div className="pt-4 space-y-2.5">
+                  <div className="flex justify-between text-[11px] font-medium uppercase tracking-tight">
+                    <span className="text-slate-400">Subtotal</span>
+                    <span className="text-slate-700">₹{subTotal.toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-500 font-medium">Discount ({discount}%)</span>
-                    <span className="text-red-500 font-bold">- ₹{discountAmount.toLocaleString()}</span>
+                  <div className="flex justify-between text-[11px] font-medium uppercase tracking-tight">
+                    <span className="text-slate-400">Discount</span>
+                    <span className="text-red-500">- ₹{discountAmount.toLocaleString()}</span>
                   </div>
-                  <div className="h-px bg-slate-100 my-4" />
+                  <div className="h-px bg-slate-50 my-2" />
                   <div className="flex justify-between items-end">
-                    <span className="text-slate-500 font-bold uppercase tracking-tighter">Total Amount</span>
-                    <span className="text-3xl font-black text-slate-900 tracking-tight">₹{finalTotal.toLocaleString()}</span>
+                    <span className="text-xs font-bold text-slate-500 uppercase">Total Amount</span>
+                    <span className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-1">
+                      <IndianRupee size={20} />
+                      {finalTotal.toLocaleString()}
+                    </span>
                   </div>
                 </div>
 
                 <button
                   type="submit"
                   disabled={isCreatingJob}
-                  className="w-full mt-6 py-5 bg-slate-900 text-white font-black text-lg rounded-2xl hover:bg-blue-600 disabled:opacity-50 transition-all shadow-xl shadow-blue-500/10 flex items-center justify-center gap-3 active:scale-[0.98]"
+                  className="w-full mt-4 py-4 bg-slate-900 text-white font-bold rounded-lg hover:bg-blue-600 disabled:opacity-50 transition-all shadow-lg flex items-center justify-center gap-2 active:scale-[0.98]"
                 >
                   {isCreatingJob ? (
-                    <Loader2 className="animate-spin" size={24} />
+                    <Loader2 className="animate-spin" size={20} />
                   ) : (
                     <>
-                      <CheckCircle2 size={24} />
-                      Submit & Save Job
+                      <CheckCircle2 size={20} />
+                      Submit Job
                     </>
                   )}
                 </button>
@@ -423,6 +434,7 @@ const CreateJob = () => {
           </div>
         </form>
       </div>
+
       {/* Parts Selection Modal */}
       <AnimatePresence>
         {isPartModalOpen && (
@@ -432,95 +444,95 @@ const CreateJob = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsPartModalOpen(false)}
-              className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
+              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
             />
             <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-2xl bg-white rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[85vh]"
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="relative w-full max-w-2xl bg-white rounded-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
             >
               {/* Modal Header */}
-              <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-600">
-                    <Package size={24} />
+              <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+                    <Package size={20} />
                   </div>
                   <div>
-                    <h3 className="text-2xl font-black text-slate-800 tracking-tight">Select Parts</h3>
-                    <p className="text-sm text-slate-500 font-medium">Add parts from your current stock</p>
+                    <h3 className="text-xl font-bold text-slate-800 tracking-tight">Select Parts</h3>
+                    <p className="text-xs text-slate-500 font-medium">Add parts from your hand stock</p>
                   </div>
                 </div>
                 <button 
                   onClick={() => setIsPartModalOpen(false)}
-                  className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-all cursor-pointer"
+                  className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all"
                 >
-                  <X size={24} />
+                  <X size={20} />
                 </button>
               </div>
 
               {/* Modal Search */}
-              <div className="p-6 bg-white border-b border-slate-50">
+              <div className="p-4 bg-white border-b border-slate-50">
                 <div className="relative">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                   <input
                     type="text"
-                    placeholder="Search parts by name, SKU or category..."
+                    placeholder="Search name, SKU or category..."
                     value={localSearch}
                     onChange={(e) => setLocalSearch(e.target.value)}
-                    className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all font-medium"
+                    className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-sm"
                     autoFocus
                   />
                 </div>
               </div>
 
               {/* Modal Content - Parts List */}
-              <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
+              <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
                 {isInventoryPending ? (
                   <div className="h-64 flex flex-col items-center justify-center gap-3">
-                    <Loader2 className="animate-spin text-amber-500" size={40} />
-                    <p className="text-slate-500 font-bold">Fetching your inventory...</p>
+                    <Loader2 className="animate-spin text-amber-500" size={32} />
+                    <p className="text-xs text-slate-500 font-bold">Fetching inventory...</p>
                   </div>
                 ) : filteredInventory.length === 0 ? (
                   <div className="py-20 flex flex-col items-center justify-center text-center px-10">
-                    <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-200 mb-6 border border-slate-100">
-                      <Package size={40} />
+                    <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center text-slate-200 mb-4 border border-slate-100">
+                      <Package size={32} />
                     </div>
-                    <h4 className="text-xl font-bold text-slate-700">No parts found</h4>
-                    <p className="text-slate-400 mt-2">We couldn't find any parts matching your search. Try different keywords or check your stock.</p>
+                    <h4 className="text-lg font-bold text-slate-700">No parts found</h4>
+                    <p className="text-xs text-slate-400 mt-1">Try a different search term or check your inventory.</p>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {filteredInventory.map(item => {
                       const isAdded = usedParts.some(p => p.part_id === item.part_id);
                       return (
                         <div 
                           key={item.part_id}
-                          className={`p-4 rounded-3xl border transition-all flex items-center gap-4 ${
+                          className={`p-3 rounded-lg border transition-all flex items-center gap-3 cursor-pointer ${
                             isAdded 
-                            ? 'bg-blue-50 border-blue-200 ring-1 ring-blue-100' 
-                            : 'bg-white border-slate-100 hover:border-amber-200 hover:shadow-lg hover:shadow-amber-500/5 cursor-pointer'
+                            ? 'bg-blue-50 border-blue-200' 
+                            : 'bg-white border-slate-100 hover:border-blue-200 hover:shadow-sm'
                           }`}
                           onClick={() => !isAdded && handleAddPart(item)}
                         >
-                          <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 overflow-hidden shadow-inner">
+                          <div className="w-12 h-12 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 overflow-hidden">
                             {item.image_url ? (
                               <img src={item.image_url} alt={item.part_name} className="w-full h-full object-cover" />
                             ) : (
-                              <Package size={24} className="text-slate-200" />
+                              <Package size={20} className="text-slate-200" />
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h5 className="font-bold text-slate-800 text-sm truncate">{item.part_name}</h5>
-                            <div className="flex items-center justify-between mt-1">
-                              <p className="text-[11px] font-bold text-blue-600">Stock: {item.total_quantity}</p>
-                              <p className="text-[11px] font-black text-slate-900">₹{item.unit_price}</p>
+                            <h5 className="font-bold text-slate-800 text-xs truncate">{item.part_name}</h5>
+                            <div className="flex items-center justify-between mt-0.5">
+                              <p className="text-[10px] font-bold text-blue-600">Stock: {item.total_quantity}</p>
+                              <p className="text-[10px] font-bold text-slate-900">₹{item.unit_price}</p>
                             </div>
                           </div>
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
-                            isAdded ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-50 text-slate-300'
+                          <div className={`w-7 h-7 rounded-full flex items-center justify-center transition-all ${
+                            isAdded ? 'bg-blue-500 text-white' : 'bg-slate-50 text-slate-300'
                           }`}>
-                            {isAdded ? <CheckCircle2 size={16} /> : <Plus size={16} />}
+                            {isAdded ? <CheckCircle2 size={14} /> : <Plus size={14} />}
                           </div>
                         </div>
                       );
@@ -530,15 +542,15 @@ const CreateJob = () => {
               </div>
 
               {/* Modal Footer */}
-              <div className="p-6 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between">
-                <p className="text-sm font-bold text-slate-500">
-                  {usedParts.length} parts selected for this job
+              <div className="p-4 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between">
+                <p className="text-[11px] font-bold text-slate-500">
+                  {usedParts.length} items added
                 </p>
                 <button
                   onClick={() => setIsPartModalOpen(false)}
-                  className="px-8 py-3 bg-slate-900 text-white font-black rounded-2xl hover:bg-blue-600 transition-all shadow-xl shadow-slate-900/10"
+                  className="px-6 py-2 bg-slate-900 text-white text-xs font-bold rounded-lg hover:bg-blue-600 transition-all shadow-sm"
                 >
-                  Done Selecting
+                  Done
                 </button>
               </div>
             </motion.div>
