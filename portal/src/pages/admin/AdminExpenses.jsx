@@ -40,7 +40,6 @@ const AdminExpenses = () => {
       });
    
   }, [expenses, searchQuery]);
-
   const {
     currentPage,
     totalPages,
@@ -82,7 +81,6 @@ const AdminExpenses = () => {
     await syncHistoricalPurchases();
     queryClient.invalidateQueries({ queryKey: ['expenses'] });
   };
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -237,7 +235,8 @@ const AdminExpenses = () => {
                                   <span className="block text-[10px] text-gray-500 font-bold uppercase mb-0.5">Vendor Name</span>
                                   <span className="text-sm font-medium text-gray-900">{exp.purchases.vendors?.name || 'N/A'}</span>
                                 </div>
-                                <div>
+                                <div className="flex items-center gap-1.5">
+                                <img className="w-5 h-5 rounded-sm" src={exp.purchases?.parts?.image_url} alt="" />
                                   <span className="block text-[10px] text-gray-500 font-bold uppercase mb-0.5">Part Name (SKU)</span>
                                   <span className="text-sm font-medium text-gray-900">{exp.purchases.parts?.part_name || 'N/A'} {exp.purchases.parts?.sku ? `(${exp.purchases.parts.sku})` : ''}</span>
                                 </div>

@@ -24,7 +24,8 @@ export async function fetchAllVendorsWithParts() {
         unit_price,
         purchase_date,
         parts (
-          part_name
+          part_name,
+          image_url
         )
       )
     `)

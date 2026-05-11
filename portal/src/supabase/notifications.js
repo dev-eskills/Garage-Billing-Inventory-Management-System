@@ -1,20 +1,33 @@
 import { supabase } from "../lib/supabaseClient";
+import { fetchMechanics } from "./adminMechanic";
 
 export const fetchAdminNotifications = async () => {
-  const { data, error, status } = await supabase
-    .from('notifications')
-    .select(`
-      *,
-      mechanic:profiles!mechanic_id (full_name, role),
-      jobs (*)
-    `)
-    .order('created_at', { ascending: false });
+  // Fetch everything separately to bypass missing FK relationships (PGRST200 errors)
+  const [notificationsRes, mechanics, jobsRes] = await Promise.all([
+    supabase.from('notifications').select('*').order('created_at', { ascending: false }),
+    fetchMechanics(),
+    supabase.from('jobs').select('*')
+  ]);
 
-  if (error) {
-    throw error;
-  }
+  if (notificationsRes.error) throw notificationsRes.error;
   
-  return data;
+  const notifications = notificationsRes.data;
+  const jobs = jobsRes.data || [];
+
+  // Manual client-side join
+  return notifications.map(notification => {
+    const mechanic = mechanics.find(m => m.id === notification.mechanic_id);
+    const job = jobs.find(j => j.id === notification.job_id);
+
+    return {
+      ...notification,
+      profiles: mechanic ? {
+        full_name: mechanic.full_name || mechanic.name,
+        role: mechanic.role
+      } : null,
+      jobs: job || null
+    };
+  });
 };
 
 export const markNotificationAsRead = async (notificationId) => {
