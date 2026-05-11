@@ -128,12 +128,8 @@ const MechanicParts = () => {
 
                   <div className="grid grid-cols-2 gap-4 py-4 border-t border-slate-50">
                     <div>
-                      <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider mb-1">
-                        Total Quantity
-                      </p>
-                      <p className="text-lg font-bold text-slate-900">
-                        {item.total_quantity}
-                      </p>
+                      <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider mb-1">Total Quantity</p>
+                      <p className="text-lg font-bold text-slate-900">{item.total_quantity ?? 0}</p>
                     </div>
                     <div className="text-right">
                       <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider mb-1">
@@ -141,7 +137,7 @@ const MechanicParts = () => {
                       </p>
                       <p className="text-lg font-bold text-slate-900 flex items-center justify-end gap-0.5">
                         <IndianRupee size={14} />
-                        {Number(item.unit_price).toLocaleString()}
+                        {Number(item.unit_price ?? (item.total_quantity > 0 ? item.total_amount / item.total_quantity : 0)).toLocaleString()}
                       </p>
                     </div>
                   </div>
@@ -155,7 +151,7 @@ const MechanicParts = () => {
                       </span>
                     </div>
                     <p className="text-sm font-bold text-blue-600">
-                      Value: ₹{Number(item.total_amount).toLocaleString()}
+                      Value: ₹{Number(item.total_amount ?? 0).toLocaleString()}
                     </p>
                   </div>
                 </div>

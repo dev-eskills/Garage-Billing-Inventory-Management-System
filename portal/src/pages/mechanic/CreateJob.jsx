@@ -62,12 +62,15 @@ const CreateJob = () => {
 
   // Calculations
   const partsTotal = useMemo(() => {
-    return usedParts.reduce((acc, part) => acc + (part.quantity * part.unit_price), 0);
+    return usedParts.reduce((acc, part) => {
+      const price = Number(part.unit_price ?? (part.total_quantity > 0 ? part.total_amount / part.total_quantity : 0));
+      return acc + (part.quantity * (isNaN(price) ? 0 : price));
+    }, 0);
   }, [usedParts]);
 
-  const subTotal = partsTotal + parseFloat(extraService.amount || 0);
-  const discountAmount = (subTotal * parseFloat(discount || 0)) / 100;
-  const finalTotal = subTotal - discountAmount;
+  const subTotal = partsTotal + (parseFloat(extraService.amount) || 0);
+  const discountAmount = (subTotal * (parseFloat(discount) || 0)) / 100;
+  const finalTotal = subTotal - (isNaN(discountAmount) ? 0 : discountAmount);
 
   const handleAddPart = (part) => {
     if (usedParts.find(p => p.part_id === part.part_id)) {
@@ -75,7 +78,8 @@ const CreateJob = () => {
     }
     setUsedParts([...usedParts, {
       ...part,
-      quantity: 1
+      quantity: 1,
+      unit_price: part.unit_price ?? (part.total_quantity > 0 ? part.total_amount / part.total_quantity : 0)
     }]);
   };
 
@@ -304,7 +308,7 @@ const CreateJob = () => {
                         </div>
                         <div className="flex-1 min-w-0">
                           <h4 className="text-sm font-bold text-slate-800 truncate">{part.part_name}</h4>
-                          <p className="text-[10px] text-slate-400 font-medium">Price: ₹{part.unit_price}</p>
+                          <p className="text-[10px] text-slate-400 font-medium">Price: ₹{Number(part.unit_price).toLocaleString()}</p>
                         </div>
                         <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-2 py-1">
                           <button
@@ -526,7 +530,7 @@ const CreateJob = () => {
                             <h5 className="font-bold text-slate-800 text-xs truncate">{item.part_name}</h5>
                             <div className="flex items-center justify-between mt-0.5">
                               <p className="text-[10px] font-bold text-blue-600">Stock: {item.total_quantity}</p>
-                              <p className="text-[10px] font-bold text-slate-900">₹{item.unit_price}</p>
+                              <p className="text-[10px] font-bold text-slate-900">₹{Number(item.unit_price ?? (item.total_quantity > 0 ? item.total_amount / item.total_quantity : 0)).toLocaleString()}</p>
                             </div>
                           </div>
                           <div className={`w-7 h-7 rounded-full flex items-center justify-center transition-all ${

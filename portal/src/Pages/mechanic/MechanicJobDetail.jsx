@@ -185,7 +185,7 @@ const MechanicJobDetail = () => {
               <ArrowRight size={18} />
             </button> */}
 
-            <GenerateInvoiceModel />
+            <GenerateInvoiceModel jobDetails={jobDetails} />
           </div>
 
           {/* Mechanic */}

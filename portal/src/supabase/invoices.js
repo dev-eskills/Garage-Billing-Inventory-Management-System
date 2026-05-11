@@ -8,15 +8,48 @@ export const fetchAllInvoices = async () => {
       *,
       jobs (
         *,
-        mechanic:profiles (
+        customers (
+          customer_details,
+          vehicle_details
+        ),
+        mechanic:profiles!jobs_mechanic_id_fkey (
           full_name,
-          role
+          email
         )
       )
     `)
     .order('created_at', { ascending: false });
 
-  if (error) throw error;
+  console.log("fetchAllInvoices from supabase hook: ", data);
+  if (error) {
+    console.error("DEBUG INVOICES:", error.message, error.details, error.hint);
+    throw error;
+  }
+  return data;
+};
+
+export const fetchAllCustomers = async () => {
+  const { data, error } = await supabase
+    .from('customers')
+    .select(`
+      *,
+      mechanic:profiles!customers_mechanic_id_fkey (
+        full_name,
+        email,
+        phone
+      ),
+      jobs (
+        id,
+        service_date,
+        job_info,
+        total_amount_full_service
+      )
+    `)
+    .order('created_at', { ascending: false });
+  console.log("fetchAllCustomers from supabase hook: ", data);
+  if (error) {
+    console.error("DEBUG CUSTOMERS:", error.message, error.details, error.hint);
+    throw error;}
   return data;
 };
 
@@ -144,7 +177,7 @@ export const generateAndSaveInvoice = async (job, userId) => {
     const savedRecord = await uploadAndRecordInvoice(job.id, pdfBlob, userId);
 
     console.log("Invoice processed successfully:", savedRecord.public_url);
-    
+
     return {
       publicUrl: savedRecord.public_url,
       storagePath: savedRecord.storage_path,
