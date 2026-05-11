@@ -9,9 +9,7 @@ const MechanicWorkOrders = lazy(
   () => import("../Pages/mechanic/MechanicWorkOrders"),
 );
 const MechanicParts = lazy(() => import("../Pages/mechanic/MechanicParts"));
-const MechanicPartDetail = lazy(
-  () => import("../Pages/mechanic/MechanicPartDetail"),
-);
+
 const MechanicInvoices = lazy(
   () => import("../Pages/mechanic/MechanicInvoices"),
 );
@@ -30,11 +28,15 @@ const MechanicJobDetail = lazy(
   () => import("../Pages/mechanic/MechanicJobDetail"),
 );
 const ALL_JOBS = lazy(() => import("../Pages/mechanic/AllAssignedJobs"));
-const CompletedJobs = lazy(() => import("../components/Mechanic/CompletedJobs"));
+const CompletedJobs = lazy(
+  () => import("../components/Mechanic/CompletedJobs"),
+);
 const PendingJobs = lazy(() => import("../components/Mechanic/PendingJobs"));
 const PartsRequest = lazy(() => import("../components/Mechanic/PartsRequest"));
 const CreateCustomer = lazy(() => import("../Pages/mechanic/CreateCustomer"));
-const MechanicPurchase = lazy(() => import("../Pages/mechanic/MechanicPurchase"));
+const MechanicPurchase = lazy(
+  () => import("../Pages/mechanic/MechanicPurchase"),
+);
 
 const mechanicRoutes = [
   {
@@ -65,10 +67,7 @@ const mechanicRoutes = [
     path: "/mechanic/parts",
     element: <MechanicParts />,
   },
-  {
-    path: "/mechanic/parts/:id",
-    element: <MechanicPartDetail />,
-  },
+
   {
     path: "/mechanic/invoices",
     element: <MechanicInvoices />,
