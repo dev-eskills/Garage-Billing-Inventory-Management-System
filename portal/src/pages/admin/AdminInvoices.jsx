@@ -11,7 +11,7 @@ const AdminInvoices = () => {
   const { allInvoices, allInvoicesPending, downloadInvoice } = useInvoices();
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
-
+  console.log("allInvoices from admin invoices: ",allInvoices);
   // RPC returns flat columns now
   const filtered = allInvoices.filter(inv => {
     const q = searchQuery.toLowerCase();
@@ -24,11 +24,11 @@ const AdminInvoices = () => {
     );
   });
 
-  const totalAmount = allInvoices.reduce((acc, inv) => acc + (inv.total_amount || 0), 0);
+  const totalAmount = allInvoices.reduce((acc, inv) => acc + (inv?.jobs?.total_amount_full_service || 0), 0);
   const thisMonth = allInvoices.filter(
     i => new Date(i.created_at).getMonth() === new Date().getMonth()
   ).length;
-
+  console.log("totalAmount from admin invoices component: ", totalAmount)
   if (allInvoicesPending) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-gray-500 bg-white rounded-md border border-gray-100 shadow-sm min-h-[400px]">
@@ -124,11 +124,11 @@ const AdminInvoices = () => {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-1.5 font-bold text-gray-900 text-sm">
                         <User size={14} className="text-blue-500 shrink-0" />
-                        {inv.customer_name || '—'}
+                        {inv?.jobs?.customers?.customer_details?.name || '—'}
                       </div>
                       <div className="flex items-center gap-1.5 text-[11px] text-gray-500 font-medium mt-0.5">
                         <Car size={12} className="shrink-0" />
-                        {[inv.vehicle_model, inv.vehicle_number ? `(${inv.vehicle_number})` : ''].filter(Boolean).join(' ') || '—'}
+                        {[inv?.jobs?.customers?.vehicle_details?.model, inv?.jobs?.customers?.vehicle_details?.vehicle_number ? `(${inv?.jobs?.customers?.vehicle_details?.vehicle_number})` : ''].filter(Boolean).join(' ') || '—'}
                       </div>
                     </td>
 

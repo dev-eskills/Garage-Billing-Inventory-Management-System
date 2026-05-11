@@ -74,10 +74,13 @@ export const fetchMechanicsJobs = async (mechanicId) => {
     .select(`
       id,
       created_at,
-      service_type,
+      service_date,
       total_amount_full_service,
-      customer_details,
-      vehicle_details,
+      job_info,
+      customers (
+        customer_details,
+        vehicle_details
+      ),
       invoices (
         storage_path,
         file_name
@@ -86,6 +89,9 @@ export const fetchMechanicsJobs = async (mechanicId) => {
     .eq('mechanic_id', mechanicId)
     .order('created_at', { ascending: false });
 
-  if (error) throw error;
+  if (error) {
+    console.error("DEBUG FETCH MECHANICS JOB:", error.message, error.details, error.hint);
+    throw error;
+  }
   return data;
 };

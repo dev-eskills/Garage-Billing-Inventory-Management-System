@@ -7,6 +7,7 @@ export const useInvoices = () => {
   const invoicesQuery = useQuery({
     queryKey: ['invoices'],
     queryFn: fetchAllInvoices,
+    enabled: !!user
   });
 
   const customersQuery = useQuery({
