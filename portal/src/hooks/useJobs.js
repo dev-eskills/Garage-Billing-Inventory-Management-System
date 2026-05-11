@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createJob, fetchJobDetails, fetchJobs } from "../supabase/jobs";
+import { createJob, fetchJobDetails, fetchJobs, updateJobParts } from "../supabase/jobs";
 import { toast } from "react-hot-toast";
 
 export const useJobs = (mechanicId, jobId = null) => {
@@ -33,6 +33,20 @@ export const useJobs = (mechanicId, jobId = null) => {
     },
   });
 
+   // Update job mutation
+  const updateJobMutation = useMutation({
+    mutationFn: ({ jobId, updateData }) => updateJobParts(jobId, updateData),
+    onSuccess: () => {
+      // Invalidate related queries
+      queryClient.invalidateQueries({ queryKey: ["jobs", mechanicId] });
+      queryClient.invalidateQueries({ queryKey: ["jobDetails", jobId] });
+      toast.success("Job updated successfully!");
+    },
+    onError: (err) => {
+      toast.error(err.message);
+    },
+  });
+
   return {
     jobs: jobsQuery.data || [],
     isJobsLoading: jobsQuery.isLoading,
@@ -43,5 +57,8 @@ export const useJobs = (mechanicId, jobId = null) => {
 
     createJob: createJobMutation.mutateAsync,
     isCreatingJob: createJobMutation.isPending,
+
+    updateJob: updateJobMutation.mutateAsync,
+    isUpdatingJob: updateJobMutation.isPending,
   };
 };

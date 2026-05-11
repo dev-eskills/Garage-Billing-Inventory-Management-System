@@ -15,7 +15,7 @@ import {
   ChevronDown,
   X,
   AlertCircle,
-  ChevronRight
+  ChevronRight,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../hooks/useAuth";
@@ -28,18 +28,24 @@ const CreateJob = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { customers, customersLoading } = useCustomers(user?.id);
-  const { mechanicInventory, isInventoryPending } = useMechanicInventory(user?.id);
+  const { mechanicInventory, isInventoryPending } = useMechanicInventory(
+    user?.id,
+  );
   const { createJob, isCreatingJob } = useJobs(user?.id);
+
+  console.log(mechanicInventory);
 
   // Form State
   const [selectedCustomer, setSelectedCustomer] = useState(null);
 
   const [jobDetails, setJobDetails] = useState({
-    service_date: new Date().toISOString().split('T')[0],
-    expiry_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 30 days default
-    status: "completed",
-    repair_issue: "General Service",
-    service_type: "Full Diagnostic & Armor Repair"
+    service_date: new Date().toISOString().split("T")[0],
+    expiry_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+      .toISOString()
+      .split("T")[0], // 30 days default
+    status: "pending",
+    repair_issue: "",
+    service_type: "",
   });
 
   const [usedParts, setUsedParts] = useState([]);
@@ -47,22 +53,27 @@ const CreateJob = () => {
   const [localSearch, setLocalSearch] = useState("");
 
   const filteredInventory = useMemo(() => {
-    return mechanicInventory.filter(item =>
-      item.part_name?.toLowerCase().includes(localSearch.toLowerCase()) ||
-      item.sku?.toLowerCase().includes(localSearch.toLowerCase())
+    return mechanicInventory.filter(
+      (item) =>
+        item.part_name?.toLowerCase().includes(localSearch.toLowerCase()) ||
+        item.sku?.toLowerCase().includes(localSearch.toLowerCase()),
     );
   }, [mechanicInventory, localSearch]);
+  console.log(filteredInventory, "filteredInventory");
 
   const [extraService, setExtraService] = useState({
     amount: 0,
-    description: ""
+    description: "",
   });
 
   const [discount, setDiscount] = useState(0);
 
   // Calculations
   const partsTotal = useMemo(() => {
-    return usedParts.reduce((acc, part) => acc + (part.quantity * part.unit_price), 0);
+    return usedParts.reduce(
+      (acc, part) => acc + part.quantity * part.weighted_avg_unit_price,
+      0,
+    );
   }, [usedParts]);
 
   const subTotal = partsTotal + parseFloat(extraService.amount || 0);
@@ -70,25 +81,32 @@ const CreateJob = () => {
   const finalTotal = subTotal - discountAmount;
 
   const handleAddPart = (part) => {
-    if (usedParts.find(p => p.part_id === part.part_id)) {
+    if (usedParts.find((p) => p.part_id === part.part_id)) {
       return;
     }
-    setUsedParts([...usedParts, {
-      ...part,
-      quantity: 1
-    }]);
+    setUsedParts([
+      ...usedParts,
+      {
+        ...part,
+        quantity: 1,
+      },
+    ]);
   };
 
   const handleUpdatePartQuantity = (partId, qty) => {
-    const inventoryItem = mechanicInventory.find(i => i.part_id === partId);
+    const inventoryItem = mechanicInventory.find((i) => i.part_id === partId);
     const maxQty = inventoryItem?.total_quantity || 0;
 
     const newQty = Math.max(1, Math.min(qty, maxQty));
-    setUsedParts(usedParts.map(p => p.part_id === partId ? { ...p, quantity: newQty } : p));
+    setUsedParts(
+      usedParts.map((p) =>
+        p.part_id === partId ? { ...p, quantity: newQty } : p,
+      ),
+    );
   };
 
   const handleRemovePart = (partId) => {
-    setUsedParts(usedParts.filter(p => p.part_id !== partId));
+    setUsedParts(usedParts.filter((p) => p.part_id !== partId));
   };
 
   const handleSubmit = async (e) => {
@@ -106,21 +124,21 @@ const CreateJob = () => {
       job_info: {
         status: jobDetails.status,
         repair_issue: jobDetails.repair_issue,
-        service_type: jobDetails.service_type
+        service_type: jobDetails.service_type,
       },
-      parts_items: usedParts.map(p => ({
+      parts_items: usedParts.map((p) => ({
         part_id: p.part_id,
         part_name: p.part_name,
         quantity: p.quantity,
         unit_price: p.unit_price,
-        total_price: p.quantity * p.unit_price
+        total_price: p.quantity * p.unit_price,
       })),
       extra_service: {
         amount: parseFloat(extraService.amount),
-        description: extraService.description
+        description: extraService.description,
       },
       discount_percentage: parseFloat(discount),
-      total_amount_full_service: finalTotal
+      total_amount_full_service: finalTotal,
     };
 
     try {
@@ -134,7 +152,6 @@ const CreateJob = () => {
   return (
     <div className="min-h-screen bg-slate-50/50 p-6 lg:p-8">
       <div className="max-w-6xl mx-auto space-y-8">
-        
         {/* Header Section */}
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
@@ -144,7 +161,9 @@ const CreateJob = () => {
               </div>
               Create New Job
             </h1>
-            <p className="text-slate-500 mt-2">Register a new service and deduct used parts from your inventory.</p>
+            <p className="text-slate-500 mt-2">
+              Register a new service and deduct used parts from your inventory.
+            </p>
           </div>
           <button
             onClick={() => navigate(-1)}
@@ -155,50 +174,69 @@ const CreateJob = () => {
           </button>
         </header>
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 lg:grid-cols-3 gap-8"
+        >
           {/* Main Form Area */}
           <div className="lg:col-span-2 space-y-6">
-
             {/* Customer Selection Card */}
             <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
               <div className="p-5 border-b border-slate-100 bg-slate-50/50 flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
                   <User size={18} />
                 </div>
-                <h2 className="text-lg font-bold text-slate-800">Customer Details</h2>
+                <h2 className="text-lg font-bold text-slate-800">
+                  Customer Details
+                </h2>
               </div>
               <div className="p-6">
                 <div className="space-y-4">
                   <div className="relative">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                    <User
+                      className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                      size={18}
+                    />
                     <select
                       value={selectedCustomer?.id || ""}
                       onChange={(e) => {
-                        const customer = customers.find(c => c.id === e.target.value);
+                        const customer = customers.find(
+                          (c) => c.id === e.target.value,
+                        );
                         setSelectedCustomer(customer);
                       }}
                       className="w-full pl-12 pr-12 py-3 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-slate-800 appearance-none cursor-pointer"
                       required
                     >
-                      <option value="" disabled>Choose a customer...</option>
-                      {customers.map(c => (
+                      <option value="" disabled>
+                        Choose a customer...
+                      </option>
+                      {customers.map((c) => (
                         <option key={c.id} value={c.id}>
-                          {c?.customer_details?.name} ({c.customer_details?.contact})
+                          {c?.customer_details?.name} (
+                          {c.customer_details?.contact})
                         </option>
                       ))}
                     </select>
-                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={18} />
+                    <ChevronDown
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                      size={18}
+                    />
                   </div>
 
                   {selectedCustomer && (
-                    <motion.div 
+                    <motion.div
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       className="p-4 bg-emerald-50 rounded-lg border border-emerald-100 flex items-center justify-between"
                     >
                       <div>
-                        <p className="text-sm font-bold text-emerald-900">{selectedCustomer.customer_details.name}</p>
-                        <p className="text-xs text-emerald-600 font-medium">{selectedCustomer.customer_details?.contact}</p>
+                        <p className="text-sm font-bold text-emerald-900">
+                          {selectedCustomer.customer_details.name}
+                        </p>
+                        <p className="text-xs text-emerald-600 font-medium">
+                          {selectedCustomer.customer_details?.contact}
+                        </p>
                       </div>
                       <div className="text-emerald-500">
                         <CheckCircle2 size={20} />
@@ -215,25 +253,43 @@ const CreateJob = () => {
                 <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
                   <FileText size={18} />
                 </div>
-                <h2 className="text-lg font-bold text-slate-800">Job Information</h2>
+                <h2 className="text-lg font-bold text-slate-800">
+                  Job Information
+                </h2>
               </div>
               <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block ml-1">Repair Issue</label>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block ml-1">
+                    Repair Issue
+                  </label>
                   <input
                     type="text"
+                    placeholder="Enter repair issue"
                     value={jobDetails.repair_issue}
-                    onChange={(e) => setJobDetails({ ...jobDetails, repair_issue: e.target.value })}
+                    onChange={(e) =>
+                      setJobDetails({
+                        ...jobDetails,
+                        repair_issue: e.target.value,
+                      })
+                    }
                     className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block ml-1">Service Type</label>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block ml-1">
+                    Service Type
+                  </label>
                   <input
+                    placeholder="Enter Service Type"
                     type="text"
                     value={jobDetails.service_type}
-                    onChange={(e) => setJobDetails({ ...jobDetails, service_type: e.target.value })}
+                    onChange={(e) =>
+                      setJobDetails({
+                        ...jobDetails,
+                        service_type: e.target.value,
+                      })
+                    }
                     className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
                     required
                   />
@@ -245,7 +301,12 @@ const CreateJob = () => {
                   <input
                     type="date"
                     value={jobDetails.service_date}
-                    onChange={(e) => setJobDetails({ ...jobDetails, service_date: e.target.value })}
+                    onChange={(e) =>
+                      setJobDetails({
+                        ...jobDetails,
+                        service_date: e.target.value,
+                      })
+                    }
                     className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
                     required
                   />
@@ -257,7 +318,12 @@ const CreateJob = () => {
                   <input
                     type="date"
                     value={jobDetails.expiry_date}
-                    onChange={(e) => setJobDetails({ ...jobDetails, expiry_date: e.target.value })}
+                    onChange={(e) =>
+                      setJobDetails({
+                        ...jobDetails,
+                        expiry_date: e.target.value,
+                      })
+                    }
                     className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
                     required
                   />
@@ -272,7 +338,9 @@ const CreateJob = () => {
                   <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
                     <Package size={18} />
                   </div>
-                  <h2 className="text-lg font-bold text-slate-800">Parts Used</h2>
+                  <h2 className="text-lg font-bold text-slate-800">
+                    Parts Used
+                  </h2>
                 </div>
                 <button
                   type="button"
@@ -288,40 +356,78 @@ const CreateJob = () => {
                 {usedParts.length === 0 ? (
                   <div className="py-10 flex flex-col items-center justify-center border-2 border-dashed border-slate-100 rounded-lg text-slate-400">
                     <Package size={40} className="mb-3 opacity-20" />
-                    <p className="text-sm font-medium">No parts selected from stock</p>
-                    <p className="text-[10px] mt-1">Click the button above to select parts</p>
+                    <p className="text-sm font-medium">
+                      No parts selected from stock
+                    </p>
+                    <p className="text-[10px] mt-1">
+                      Click the button above to select parts
+                    </p>
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {usedParts.map(part => (
-                      <div key={part.part_id} className="flex items-center gap-4 p-4 bg-slate-50/50 border border-slate-100 rounded-lg hover:border-blue-100 transition-all group">
+                    {usedParts.map((part) => (
+                      <div
+                        key={part.part_id}
+                        className="flex items-center gap-4 p-4 bg-slate-50/50 border border-slate-100 rounded-lg hover:border-blue-100 transition-all group"
+                      >
                         <div className="w-10 h-10 rounded-lg bg-white border border-slate-200 flex items-center justify-center shrink-0 shadow-sm overflow-hidden">
                           {part.image_url ? (
-                            <img src={part.image_url} alt={part.part_name} className="w-full h-full object-cover" />
+                            <img
+                              src={part.image_url}
+                              alt={part.part_name}
+                              className="w-full h-full object-cover"
+                            />
                           ) : (
                             <Package size={18} className="text-slate-300" />
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h4 className="text-sm font-bold text-slate-800 truncate">{part.part_name}</h4>
-                          <p className="text-[10px] text-slate-400 font-medium">Price: ₹{part.unit_price}</p>
+                          <h4 className="text-sm font-bold text-slate-800 truncate">
+                            {part.part_name}
+                          </h4>
+                          <p className="text-[10px] text-slate-400 font-medium">
+                            Price: ₹{part.weighted_avg_unit_price}
+                          </p>
                         </div>
                         <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-2 py-1">
                           <button
                             type="button"
-                            onClick={() => handleUpdatePartQuantity(part.part_id, part.quantity - 1)}
+                            onClick={() =>
+                              handleUpdatePartQuantity(
+                                part.part_id,
+                                part.quantity - 1,
+                              )
+                            }
                             className="w-6 h-6 flex items-center justify-center hover:bg-slate-50 rounded text-slate-500 text-lg"
-                          >-</button>
-                          <span className="w-6 text-center text-xs font-bold text-slate-800">{part.quantity}</span>
+                          >
+                            -
+                          </button>
+                          <span className="w-6 text-center text-xs font-bold text-slate-800">
+                            {part.quantity}
+                          </span>
                           <button
                             type="button"
-                            onClick={() => handleUpdatePartQuantity(part.part_id, part.quantity + 1)}
+                            onClick={() =>
+                              handleUpdatePartQuantity(
+                                part.part_id,
+                                part.quantity + 1,
+                              )
+                            }
                             className="w-6 h-6 flex items-center justify-center hover:bg-slate-50 rounded text-slate-500 text-lg"
-                          >+</button>
+                          >
+                            +
+                          </button>
                         </div>
-                        <div className="text-right min-w-[80px]">
-                          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">Total</p>
-                          <p className="text-sm font-bold text-slate-900">₹{(part.quantity * part.unit_price).toLocaleString()}</p>
+                        <div className="text-right min-w-20">
+                          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">
+                            Total
+                          </p>
+                          <p className="text-sm font-bold text-slate-900">
+                            ₹
+                            {Number(
+                              part.quantity * part.weighted_avg_unit_price,
+                            ).toFixed(2)}
+                          </p>
                         </div>
                         <button
                           type="button"
@@ -334,7 +440,9 @@ const CreateJob = () => {
                     ))}
                     <div className="flex justify-end pt-3 border-t border-slate-100 mt-4">
                       <div className="text-right">
-                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-0.5">Parts Total</p>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-0.5">
+                          Parts Total
+                        </p>
                         <p className="text-xl font-bold text-slate-900 flex items-center gap-1 justify-end">
                           <IndianRupee size={16} />
                           {partsTotal.toLocaleString()}
@@ -358,32 +466,54 @@ const CreateJob = () => {
               </div>
               <div className="p-6 space-y-5">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block ml-1">Extra Service</label>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block ml-1">
+                    Extra Service
+                  </label>
                   <textarea
                     rows={2}
                     value={extraService.description}
-                    onChange={(e) => setExtraService({ ...extraService, description: e.target.value })}
+                    onChange={(e) =>
+                      setExtraService({
+                        ...extraService,
+                        description: e.target.value,
+                      })
+                    }
                     className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all text-sm resize-none"
                     placeholder="Describe extra work..."
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block ml-1">Service Fee (₹)</label>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block ml-1">
+                    Service Fee (₹)
+                  </label>
                   <div className="relative">
-                    <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+                    <IndianRupee
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                      size={14}
+                    />
                     <input
                       type="number"
                       value={extraService.amount}
-                      onChange={(e) => setExtraService({ ...extraService, amount: e.target.value })}
+                      onChange={(e) =>
+                        setExtraService({
+                          ...extraService,
+                          amount: e.target.value,
+                        })
+                      }
                       className="w-full pl-9 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all font-bold"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2 pt-4 border-t border-slate-100">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block ml-1">Discount (%)</label>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block ml-1">
+                    Discount (%)
+                  </label>
                   <div className="relative">
-                    <Percent className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+                    <Percent
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                      size={14}
+                    />
                     <input
                       type="number"
                       max="100"
@@ -399,15 +529,21 @@ const CreateJob = () => {
                 <div className="pt-4 space-y-2.5">
                   <div className="flex justify-between text-[11px] font-medium uppercase tracking-tight">
                     <span className="text-slate-400">Subtotal</span>
-                    <span className="text-slate-700">₹{subTotal.toLocaleString()}</span>
+                    <span className="text-slate-700">
+                      ₹{subTotal.toLocaleString()}
+                    </span>
                   </div>
                   <div className="flex justify-between text-[11px] font-medium uppercase tracking-tight">
                     <span className="text-slate-400">Discount</span>
-                    <span className="text-red-500">- ₹{discountAmount.toLocaleString()}</span>
+                    <span className="text-red-500">
+                      - ₹{discountAmount.toLocaleString()}
+                    </span>
                   </div>
                   <div className="h-px bg-slate-50 my-2" />
                   <div className="flex justify-between items-end">
-                    <span className="text-xs font-bold text-slate-500 uppercase">Total Amount</span>
+                    <span className="text-xs font-bold text-slate-500 uppercase">
+                      Total Amount
+                    </span>
                     <span className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-1">
                       <IndianRupee size={20} />
                       {finalTotal.toLocaleString()}
@@ -459,11 +595,15 @@ const CreateJob = () => {
                     <Package size={20} />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-slate-800 tracking-tight">Select Parts</h3>
-                    <p className="text-xs text-slate-500 font-medium">Add parts from your hand stock</p>
+                    <h3 className="text-xl font-bold text-slate-800 tracking-tight">
+                      Select Parts
+                    </h3>
+                    <p className="text-xs text-slate-500 font-medium">
+                      Add parts from your hand stock
+                    </p>
                   </div>
                 </div>
-                <button 
+                <button
                   onClick={() => setIsPartModalOpen(false)}
                   className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all"
                 >
@@ -474,7 +614,10 @@ const CreateJob = () => {
               {/* Modal Search */}
               <div className="p-4 bg-white border-b border-slate-50">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                  <Search
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                    size={18}
+                  />
                   <input
                     type="text"
                     placeholder="Search name, SKU or category..."
@@ -490,49 +633,81 @@ const CreateJob = () => {
               <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
                 {isInventoryPending ? (
                   <div className="h-64 flex flex-col items-center justify-center gap-3">
-                    <Loader2 className="animate-spin text-amber-500" size={32} />
-                    <p className="text-xs text-slate-500 font-bold">Fetching inventory...</p>
+                    <Loader2
+                      className="animate-spin text-amber-500"
+                      size={32}
+                    />
+                    <p className="text-xs text-slate-500 font-bold">
+                      Fetching inventory...
+                    </p>
                   </div>
                 ) : filteredInventory.length === 0 ? (
                   <div className="py-20 flex flex-col items-center justify-center text-center px-10">
                     <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center text-slate-200 mb-4 border border-slate-100">
                       <Package size={32} />
                     </div>
-                    <h4 className="text-lg font-bold text-slate-700">No parts found</h4>
-                    <p className="text-xs text-slate-400 mt-1">Try a different search term or check your inventory.</p>
+                    <h4 className="text-lg font-bold text-slate-700">
+                      No parts found
+                    </h4>
+                    <p className="text-xs text-slate-400 mt-1">
+                      Try a different search term or check your inventory.
+                    </p>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {filteredInventory.map(item => {
-                      const isAdded = usedParts.some(p => p.part_id === item.part_id);
+                    {filteredInventory.map((item) => {
+                      const isAdded = usedParts.some(
+                        (p) => p.part_id === item.part_id,
+                      );
                       return (
-                        <div 
+                        <div
                           key={item.part_id}
                           className={`p-3 rounded-lg border transition-all flex items-center gap-3 cursor-pointer ${
-                            isAdded 
-                            ? 'bg-blue-50 border-blue-200' 
-                            : 'bg-white border-slate-100 hover:border-blue-200 hover:shadow-sm'
+                            isAdded
+                              ? "bg-blue-50 border-blue-200"
+                              : "bg-white border-slate-100 hover:border-blue-200 hover:shadow-sm"
                           }`}
                           onClick={() => !isAdded && handleAddPart(item)}
                         >
                           <div className="w-12 h-12 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 overflow-hidden">
                             {item.image_url ? (
-                              <img src={item.image_url} alt={item.part_name} className="w-full h-full object-cover" />
+                              <img
+                                src={item.image_url}
+                                alt={item.part_name}
+                                className="w-full h-full object-cover"
+                              />
                             ) : (
                               <Package size={20} className="text-slate-200" />
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h5 className="font-bold text-slate-800 text-xs truncate">{item.part_name}</h5>
+                            <h5 className="font-bold text-slate-800 text-xs truncate">
+                              {item.part_name}
+                            </h5>
                             <div className="flex items-center justify-between mt-0.5">
-                              <p className="text-[10px] font-bold text-blue-600">Stock: {item.total_quantity}</p>
-                              <p className="text-[10px] font-bold text-slate-900">₹{item.unit_price}</p>
+                              <p className="text-[10px] font-bold text-blue-600">
+                                Stock: {item.total_quantity}
+                              </p>
+                              <p className="text-[10px] font-bold text-slate-900">
+                                ₹
+                                {Number(item.weighted_avg_unit_price).toFixed(
+                                  2,
+                                )}
+                              </p>
                             </div>
                           </div>
-                          <div className={`w-7 h-7 rounded-full flex items-center justify-center transition-all ${
-                            isAdded ? 'bg-blue-500 text-white' : 'bg-slate-50 text-slate-300'
-                          }`}>
-                            {isAdded ? <CheckCircle2 size={14} /> : <Plus size={14} />}
+                          <div
+                            className={`w-7 h-7 rounded-full flex items-center justify-center transition-all ${
+                              isAdded
+                                ? "bg-blue-500 text-white"
+                                : "bg-slate-50 text-slate-300"
+                            }`}
+                          >
+                            {isAdded ? (
+                              <CheckCircle2 size={14} />
+                            ) : (
+                              <Plus size={14} />
+                            )}
                           </div>
                         </div>
                       );

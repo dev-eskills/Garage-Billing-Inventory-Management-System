@@ -132,7 +132,7 @@ const MechanicParts = () => {
                         Total Quantity
                       </p>
                       <p className="text-lg font-bold text-slate-900">
-                        {item.total_quantity}
+                         {item.total_quantity}
                       </p>
                     </div>
                     <div className="text-right">

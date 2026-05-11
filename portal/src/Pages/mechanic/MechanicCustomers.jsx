@@ -11,7 +11,8 @@ import {
   Loader2,
   X,
   Save,
-  MessageCircle
+  MessageCircle,
+  Wrench,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
@@ -26,14 +27,16 @@ const MechanicCustomers = () => {
     updateCustomer,
     updateCustomerPending,
     deleteCustomer,
-    deleteCustomerPending
+    deleteCustomerPending,
   } = useCustomers(user?.id);
+
+  console.log("Customers Data:", customers);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [editingCustomer, setEditingCustomer] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
 
-  const filteredCustomers = customers.filter(customer => {
+  const filteredCustomers = customers.filter((customer) => {
     const details = customer.customer_details || {};
     const vehicle = customer.vehicle_details || {};
     const searchStr = searchTerm.toLowerCase();
@@ -50,10 +53,10 @@ const MechanicCustomers = () => {
     const formData = new FormData(e.target);
     const updateData = {
       id: editingCustomer.id,
-      name: formData.get('name'),
-      contact: formData.get('contact'),
-      model: formData.get('model'),
-      vehicle_number: formData.get('vehicle_number'),
+      name: formData.get("name"),
+      contact: formData.get("contact"),
+      model: formData.get("model"),
+      vehicle_number: formData.get("vehicle_number"),
     };
 
     try {
@@ -74,8 +77,13 @@ const MechanicCustomers = () => {
   };
 
   const handleWhatsApp = (contact, name, vehicle) => {
-    const message = encodeURIComponent(`Hello ${name}, regarding your ${vehicle}...`);
-    window.open(`https://wa.me/${contact.replace(/\D/g, '')}?text=${message}`, '_blank');
+    const message = encodeURIComponent(
+      `Hello ${name}, regarding your ${vehicle}...`,
+    );
+    window.open(
+      `https://wa.me/${contact.replace(/\D/g, "")}?text=${message}`,
+      "_blank",
+    );
   };
 
   return (
@@ -84,8 +92,12 @@ const MechanicCustomers = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Your Customers</h1>
-            <p className="text-slate-500 mt-2 font-medium">Manage all customers and vehicles assigned to you.</p>
+            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+              Your Customers
+            </h1>
+            <p className="text-slate-500 mt-2 font-medium">
+              Manage all customers and vehicles assigned to you.
+            </p>
           </div>
           <Link
             to="/mechanic/create-customer"
@@ -98,7 +110,10 @@ const MechanicCustomers = () => {
 
         {/* Search Bar */}
         <div className="relative max-w-md">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+          <Search
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+            size={20}
+          />
           <input
             type="text"
             placeholder="Search by name, vehicle or contact..."
@@ -112,16 +127,22 @@ const MechanicCustomers = () => {
         {customersLoading ? (
           <div className="flex flex-col items-center justify-center py-20 gap-4">
             <Loader2 className="animate-spin text-blue-600" size={40} />
-            <p className="text-slate-500 font-bold animate-pulse">Loading your customers...</p>
+            <p className="text-slate-500 font-bold animate-pulse">
+              Loading your customers...
+            </p>
           </div>
         ) : filteredCustomers.length === 0 ? (
           <div className="bg-white rounded-3xl p-12 text-center border border-slate-200 shadow-sm">
             <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6 text-slate-200">
               <User size={40} />
             </div>
-            <h3 className="text-xl font-bold text-slate-900 mb-2">No customers found</h3>
+            <h3 className="text-xl font-bold text-slate-900 mb-2">
+              No customers found
+            </h3>
             <p className="text-slate-500 mb-8 max-w-sm mx-auto">
-              {searchTerm ? "Try adjusting your search terms to find what you're looking for." : "Start by adding your first customer to the system."}
+              {searchTerm
+                ? "Try adjusting your search terms to find what you're looking for."
+                : "Start by adding your first customer to the system."}
             </p>
             {!searchTerm && (
               <Link
@@ -153,7 +174,9 @@ const MechanicCustomers = () => {
                       </h3>
                       <div className="flex items-center gap-1.5 text-slate-400 mt-1">
                         <Phone size={12} />
-                        <span className="text-xs font-bold">{customer.customer_details?.contact}</span>
+                        <span className="text-xs font-bold">
+                          {customer.customer_details?.contact}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -176,7 +199,9 @@ const MechanicCustomers = () => {
                 <div className="bg-slate-50/80 rounded-2xl p-4 space-y-3 mb-6">
                   <div className="flex items-center gap-3">
                     <Car size={16} className="text-slate-400" />
-                    <span className="text-sm font-bold text-slate-700 uppercase">{customer.vehicle_details?.model}</span>
+                    <span className="text-sm font-bold text-slate-700 uppercase">
+                      {customer.vehicle_details?.model}
+                    </span>
                   </div>
                   <div className="flex items-center gap-3">
                     <Tag size={16} className="text-slate-400" />
@@ -188,16 +213,25 @@ const MechanicCustomers = () => {
 
                 <div className="flex gap-3">
                   <button
-                    onClick={() => handleWhatsApp(
-                      customer.customer_details?.contact,
-                      customer.customer_details?.name,
-                      customer.vehicle_details?.model
-                    )}
+                    onClick={() =>
+                      handleWhatsApp(
+                        customer.customer_details?.contact,
+                        customer.customer_details?.name,
+                        customer.vehicle_details?.model,
+                      )
+                    }
                     className="flex-1 flex items-center justify-center gap-2 py-3 bg-emerald-50 text-emerald-600 rounded-2xl text-xs font-bold hover:bg-emerald-600 hover:text-white transition-all cursor-pointer"
                   >
                     <MessageCircle size={16} />
                     WhatsApp
                   </button>
+                  <Link
+                    to="/mechanic/create-job"
+                    className="flex-1 flex items-center justify-center gap-2 py-3 bg-emerald-50 text-blue-500 rounded-2xl text-xs font-bold hover:bg-blue-600 hover:text-white transition-all cursor-pointer"
+                  >
+                    <Wrench size={18} />
+                    Job
+                  </Link>
                   <Link
                     to={`/mechanic/customers/${customer.id}`}
                     className="flex-1 flex items-center justify-center py-3 bg-slate-900 text-white rounded-2xl text-xs font-bold hover:bg-slate-800 transition-all cursor-pointer"
@@ -230,7 +264,9 @@ const MechanicCustomers = () => {
             >
               <div className="p-8">
                 <div className="flex items-center justify-between mb-8">
-                  <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Edit Customer</h2>
+                  <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
+                    Edit Customer
+                  </h2>
                   <button
                     onClick={() => setEditingCustomer(null)}
                     className="p-2 text-slate-400 hover:text-slate-600 transition"
@@ -280,7 +316,9 @@ const MechanicCustomers = () => {
                       </label>
                       <input
                         name="vehicle_number"
-                        defaultValue={editingCustomer.vehicle_details?.vehicle_number}
+                        defaultValue={
+                          editingCustomer.vehicle_details?.vehicle_number
+                        }
                         required
                         className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition text-sm font-semibold uppercase"
                       />
@@ -337,9 +375,12 @@ const MechanicCustomers = () => {
               <div className="w-16 h-16 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Trash2 size={32} />
               </div>
-              <h2 className="text-2xl font-bold text-slate-900 mb-2">Are you sure?</h2>
+              <h2 className="text-2xl font-bold text-slate-900 mb-2">
+                Are you sure?
+              </h2>
               <p className="text-slate-500 mb-8 font-medium">
-                This action cannot be undone. All vehicle data associated with this customer will be removed.
+                This action cannot be undone. All vehicle data associated with
+                this customer will be removed.
               </p>
               <div className="flex gap-3">
                 <button

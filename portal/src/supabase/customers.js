@@ -62,3 +62,19 @@ export const deleteCustomer = async (id) => {
   if (error) throw error;
   return true;
 };
+
+
+export const fetchCustomerById = async (id) => {
+  const { data, error } = await supabase
+    .from("customers")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) {
+    console.error("Error fetching customer:", error.message);
+    throw error;
+  }
+
+  return data;
+};

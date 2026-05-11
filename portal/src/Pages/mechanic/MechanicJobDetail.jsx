@@ -49,7 +49,7 @@ const MechanicJobDetail = () => {
         </div>
 
         <div className="flex gap-3 flex-wrap">
-          <AssignPartsModal />
+          <AssignPartsModal jobId={jobDetails?.id} />
 
           <button className="bg-green-500 hover:bg-green-600 text-white px-5 py-3 rounded-xl font-semibold shadow transition">
             Mark Complete
@@ -157,7 +157,7 @@ const MechanicJobDetail = () => {
 
           {/* Parts Used */}
           <PartsUsed jobDetails={jobDetails} />
-          <MechanicParts />
+          {/* <MechanicParts /> */}
         </div>
 
         {/* Right Side */}
@@ -166,7 +166,7 @@ const MechanicJobDetail = () => {
           {/* <JobTimeline /> */}
 
           {/* Summary */}
-          <div className="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl p-6 text-black shadow-xl">
+          <div className="bg-linear-to-br from-yellow-400 to-orange-500 rounded-2xl p-6 text-black shadow-xl">
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium opacity-80">Estimated Total</p>
@@ -180,32 +180,11 @@ const MechanicJobDetail = () => {
               <Wrench size={50} />
             </div>
 
-            {/* <button className="mt-6 w-full bg-black text-white hover:bg-gray-900 rounded-xl py-3 font-semibold flex items-center justify-center gap-2 transition-all duration-300">
-              Generate Invoice
-              <ArrowRight size={18} />
-            </button> */}
-
             <GenerateInvoiceModel />
           </div>
 
           {/* Mechanic */}
-          <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-            <div className="flex items-center gap-3 mb-5">
-              <User className="text-blue-500" />
-              <h2 className="text-xl font-semibold">Assigned Mechanic</h2>
-            </div>
 
-            <div className="bg-gray-50 rounded-xl p-5 border border-gray-100">
-              <h3 className="text-lg font-semibold">Akshay Mechanic</h3>
-
-              <p className="text-gray-500 mt-2">Senior Technician</p>
-
-              <div className="mt-4 flex items-center gap-2 text-gray-600">
-                <CalendarDays size={16} />
-                <p className="text-sm">Working Since 2021</p>
-              </div>
-            </div>
-          </div>
           <AssignedMechanicCard />
         </div>
       </div>

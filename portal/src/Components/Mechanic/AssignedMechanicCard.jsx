@@ -6,13 +6,11 @@ const AssignedMechanicCard = () => {
 
   if (!user) return null;
 
-  const { full_name, role, created_at } = user.user_metadata;
+  const { full_name, role } = user.user_metadata;
 
   // Format the created_at date
-  const workingSince = created_at
-    ? new Date(created_at).toLocaleDateString("en-GB", {
-        day: "numeric",
-        month: "short",
+  const workingSince = user?.created_at
+    ? new Date(user.created_at).toLocaleDateString("en-GB", {
         year: "numeric",
       })
     : null;

@@ -11,6 +11,7 @@ import {
   AlertCircle,
   ShoppingCart,
   ChevronDown,
+  UserRound,
 } from "lucide-react";
 import MechanicProfileButton from "../../Components/MechanicProfileButton";
 import MechanicInvoices from "./MechanicInvoices";
@@ -232,6 +233,20 @@ const MechanicDashboard = () => {
               <AlertCircle size={18} className="text-amber-500" />
               Pending Jobs
             </Link> */}
+            <Link
+              to="/mechanic/invoices"
+              className=" flex gap-2 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 px-5 py-3 text-sm font-semibold hover:bg-emerald-100"
+            >
+              <CheckCircle2 size={18} className="text-emerald-500" />
+              Invoice
+            </Link>
+            <Link
+              to="/mechanic/customers"
+              className="flex gap-2 rounded-full bg-amber-50 text-amber-800 border border-amber-200 px-5 py-3 text-sm font-semibold hover:bg-amber-100"
+            >
+              <UserRound size={18} className="text-amber-500" />
+              Customers
+            </Link>
 
             {/* Inventory Dropdown */}
             <div className="relative group">

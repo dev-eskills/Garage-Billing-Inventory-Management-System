@@ -1,29 +1,80 @@
 import { supabase } from "../lib/supabaseClient";
 import { jsPDF } from "jspdf";
 
-export const fetchAllInvoices = async () => {
-  const { data, error } = await supabase
-    .from('invoices')
-    .select(`
+export const fetchAllInvoices = async ({
+  mechanicId,
+  page = 1,
+  limit = 10,
+  search = "",
+} = {}) => {
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
+
+  let query = supabase
+    .from("invoices")
+    .select(
+      `
       *,
       jobs (
         *,
         mechanic:profiles (
           full_name,
           role
-        )
+        ),
+        customers (*)
       )
-    `)
-    .order('created_at', { ascending: false });
+    `,
+      { count: "exact" },
+    )
+    .eq("created_by", mechanicId)
+    .order("created_at", { ascending: false })
+    .range(from, to);
+
+  // 🔎 Search
+  if (search) {
+    query = query.or(`file_name.ilike.%${search}%`);
+  }
+
+  const { data, error, count } = await query;
 
   if (error) throw error;
+
+  return {
+    data,
+    total: count,
+    page,
+    limit,
+  };
+};
+
+export const fetchInvoiceById = async (invoiceId) => {
+  const { data, error } = await supabase
+    .from("invoices")
+    .select(
+      `
+      *,
+      jobs (
+        *,
+        mechanic:profiles (
+          id,
+          full_name,
+          role
+        ),
+        customers (*)
+      )
+    `,
+    )
+    .eq("id", invoiceId)
+    .single();
+
+  if (error) throw error;
+
   return data;
 };
 
-
 export const downloadInvoice = async (path, name) => {
   const { data, error } = await supabase.storage
-    .from('invoices')
+    .from("invoices")
     .download(path);
 
   if (error) {
@@ -33,9 +84,9 @@ export const downloadInvoice = async (path, name) => {
 
   // Create a temporary link to trigger the browser download
   const url = URL.createObjectURL(data);
-  const a = document.createElement('a');
+  const a = document.createElement("a");
   a.href = url;
-  a.download = name || 'invoice.pdf';
+  a.download = name || "invoice.pdf";
   a.click();
   URL.revokeObjectURL(url);
 };
@@ -64,8 +115,8 @@ export const generateInvoicePDF = (job) => {
   doc.text("Bill To:", 20, 55);
   doc.text("Job Details:", 140, 55);
   doc.setFont("helvetica", "normal");
-  doc.text(`${job.customers?.customer_details?.name || 'Walk-in'}`, 20, 62);
-  doc.text(`${job.job_info?.service_type || 'General Service'}`, 140, 62);
+  doc.text(`${job.customers?.customer_details?.name || "Walk-in"}`, 20, 62);
+  doc.text(`${job.job_info?.service_type || "General Service"}`, 140, 62);
 
   doc.line(20, 75, 190, 75);
 
@@ -79,8 +130,11 @@ export const generateInvoicePDF = (job) => {
 
   doc.setFont("helvetica", "normal");
   if (job.parts_items?.length > 0) {
-    job.parts_items.forEach(part => {
-      if (yPos > 270) { doc.addPage(); yPos = 20; }
+    job.parts_items.forEach((part) => {
+      if (yPos > 270) {
+        doc.addPage();
+        yPos = 20;
+      }
       doc.text(`${part.part_name}`, 20, yPos);
       doc.text(`${part.quantity}`, 120, yPos);
       doc.text(`${part.total_price}`, 175, yPos);
@@ -93,9 +147,13 @@ export const generateInvoicePDF = (job) => {
   doc.setFont("helvetica", "bold");
   doc.text("Grand Total:", 120, yPos);
   doc.setTextColor(22, 163, 74);
-  doc.text(`INR ${parseFloat(job.total_amount_full_service || 0).toLocaleString()}`, 160, yPos);
+  doc.text(
+    `INR ${parseFloat(job.total_amount_full_service || 0).toLocaleString()}`,
+    160,
+    yPos,
+  );
 
-  return doc.output('blob');
+  return doc.output("blob");
 };
 
 export const uploadAndRecordInvoice = async (jobId, pdfBlob, userId) => {
@@ -104,28 +162,28 @@ export const uploadAndRecordInvoice = async (jobId, pdfBlob, userId) => {
 
   // 1. Upload to Storage
   const { data: uploadData, error: uploadError } = await supabase.storage
-    .from('invoices')
+    .from("invoices")
     .upload(storagePath, pdfBlob, {
-      contentType: 'application/pdf',
-      upsert: false
+      contentType: "application/pdf",
+      upsert: false,
     });
 
   if (uploadError) throw uploadError;
 
   // 2. Get Public URL
   const { data: publicUrlData } = supabase.storage
-    .from('invoices')
+    .from("invoices")
     .getPublicUrl(storagePath);
 
   // 3. Save to Table
   const { data, error: dbError } = await supabase
-    .from('invoices')
+    .from("invoices")
     .insert({
       job_id: jobId,
       file_name: fileName,
       public_url: publicUrlData.publicUrl,
       storage_path: storagePath,
-      created_by: userId
+      created_by: userId,
     })
     .select()
     .single();
@@ -144,13 +202,12 @@ export const generateAndSaveInvoice = async (job, userId) => {
     const savedRecord = await uploadAndRecordInvoice(job.id, pdfBlob, userId);
 
     console.log("Invoice processed successfully:", savedRecord.public_url);
-    
+
     return {
       publicUrl: savedRecord.public_url,
       storagePath: savedRecord.storage_path,
-      fileName: savedRecord.file_name
+      fileName: savedRecord.file_name,
     };
-
   } catch (error) {
     console.error("Failed to generate/save invoice:", error.message);
     throw error;

@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 
 const PartsUsed = ({ jobDetails }) => {
   const partsItems = jobDetails?.parts_items || [];
+  console.log(jobDetails);
 
   return (
     <div className="flex flex-col h-[60vh] bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm relative">
@@ -78,7 +79,8 @@ const PartsUsed = ({ jobDetails }) => {
                       </p>
                       <p className="text-lg font-bold text-slate-900 flex items-center justify-end gap-0.5">
                         <IndianRupee size={14} />
-                        {Number(item.unit_price).toLocaleString()}
+                        {Number(item.total_price).toLocaleString() /
+                          item.quantity}
                       </p>
                     </div>
                   </div>
