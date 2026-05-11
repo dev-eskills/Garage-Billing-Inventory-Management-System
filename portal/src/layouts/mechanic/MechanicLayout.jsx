@@ -6,7 +6,7 @@ const MechanicLayout = () => {
   return (
     <div className="min-h-screen no-scrollbar  bg-slate-50">
       {/* Shared Header/Navbar for Mechanic */}
-      <nav className="bg-white border-b border-slate-200 px-4 py-4 sm:px-6 lg:px-8">
+      {/* <nav className="bg-white border-b border-slate-200 px-4 py-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl flex justify-between items-center">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center text-white font-bold">
@@ -20,7 +20,7 @@ const MechanicLayout = () => {
             <MechanicProfileButton />
           </div>
         </div>
-      </nav>
+      </nav> */}
 
       {/* Main Content Area */}
       <main className="no-scrollbar mx-auto max-w-7xl">
