@@ -1,11 +1,5 @@
 import React, { useState, useMemo } from "react";
-import {
-  Plus,
-  ShoppingCart,
-  Search,
-  Package,
-  Loader2,
-} from "lucide-react";
+import { Plus, ShoppingCart, Search, Package, Loader2 } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { useParts } from "../../hooks/useParts";
 import { useAdminInventory } from "../../hooks/useAdminInventory";
@@ -18,8 +12,8 @@ const MechanicPurchase = () => {
   const { currentStock, inventoryPending } = useAdminInventory();
   const { decreasePartStock } = useParts();
   const { user } = useAuth();
-  const { addPartMechanicInventory, addPartMechanicInventoryIsPending } = useMechanicInventory(user?.id);
-
+  const { addPartMechanicInventory, addPartMechanicInventoryIsPending } =
+    useMechanicInventory(user?.id);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -32,22 +26,28 @@ const MechanicPurchase = () => {
 
   // Get unique categories
   const categories = useMemo(() => {
-    const cats = (currentStock || []).map(item => item.category).filter(Boolean);
+    const cats = (currentStock || [])
+      .map((item) => item.category)
+      .filter(Boolean);
     return ["All", ...new Set(cats)];
   }, [currentStock]);
 
   // Filter and Sort Stock
   const filteredStock = useMemo(() => {
-    let result = (currentStock || []).filter(item => {
+    let result = (currentStock || []).filter((item) => {
       const matchesSearch =
         item.part_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.sku?.toLowerCase().includes(searchTerm.toLowerCase());
 
-      const matchesCategory = selectedCategory === "All" || item.category === selectedCategory;
+      const matchesCategory =
+        selectedCategory === "All" || item.category === selectedCategory;
 
-      const matchesStock = stockStatus === "all" ||
+      const matchesStock =
+        stockStatus === "all" ||
         (stockStatus === "inStock" && item.stock_quantity > 0) ||
-        (stockStatus === "lowStock" && item.stock_quantity > 0 && item.stock_quantity <= (item.min_stock_level || 5));
+        (stockStatus === "lowStock" &&
+          item.stock_quantity > 0 &&
+          item.stock_quantity <= (item.min_stock_level || 5));
 
       return matchesSearch && matchesCategory && matchesStock;
     });
@@ -62,15 +62,15 @@ const MechanicPurchase = () => {
   }, [currentStock, searchTerm, selectedCategory, stockStatus, priceSort]);
 
   const addToCart = (part) => {
-    setCart(prev => {
-      const existing = prev.find(item => item.id === part.id);
+    setCart((prev) => {
+      const existing = prev.find((item) => item.id === part.id);
       if (existing) {
         if (existing.quantity >= part.stock_quantity) {
           toast.error("Not enough stock available!");
           return prev;
         }
-        return prev.map(item =>
-          item.id === part.id ? { ...item, quantity: item.quantity + 1 } : item
+        return prev.map((item) =>
+          item.id === part.id ? { ...item, quantity: item.quantity + 1 } : item,
         );
       }
       return [...prev, { ...part, quantity: 1 }];
@@ -79,25 +79,27 @@ const MechanicPurchase = () => {
   };
 
   const updateQuantity = (id, delta, maxStock) => {
-    setCart(prev => prev.map(item => {
-      if (item.id === id) {
-        const newQty = item.quantity + delta;
-        if (newQty > maxStock) {
-          toast.error("Maximum available stock reached");
-          return item;
+    setCart((prev) =>
+      prev.map((item) => {
+        if (item.id === id) {
+          const newQty = item.quantity + delta;
+          if (newQty > maxStock) {
+            toast.error("Maximum available stock reached");
+            return item;
+          }
+          return newQty > 0 ? { ...item, quantity: newQty } : item;
         }
-        return newQty > 0 ? { ...item, quantity: newQty } : item;
-      }
-      return item;
-    }));
+        return item;
+      }),
+    );
   };
 
   const removeFromCart = (id) => {
-    setCart(prev => prev.filter(item => item.id !== id));
+    setCart((prev) => prev.filter((item) => item.id !== id));
   };
 
   const cartTotal = useMemo(() => {
-    return cart.reduce((acc, item) => acc + (item.sale_price * item.quantity), 0);
+    return cart.reduce((acc, item) => acc + item.sale_price * item.quantity, 0);
   }, [cart]);
 
   const handleCheckout = async () => {
@@ -106,13 +108,13 @@ const MechanicPurchase = () => {
     setIsProcessing(true);
     try {
       // 1. Record in mechanic_inventory (Trigger handles stock_quantity sync in 'parts' table)
-      const inventoryData = cart.map(item => ({
+      const inventoryData = cart.map((item) => ({
         mechanic_id: user.id,
         part_id: item.id,
         quantity: item.quantity,
         unit_price: item.sale_price,
         total_price: item.sale_price * item.quantity,
-        purchased_at: new Date().toISOString()
+        purchased_at: new Date().toISOString(),
       }));
 
       console.log(inventoryData, "invetory data added to cart");
@@ -128,18 +130,21 @@ const MechanicPurchase = () => {
     } finally {
       setIsProcessing(false);
     }
-
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row overflow-hidden relative">
+    <div className="min-h-screen flex flex-col md:flex-row overflow-hidden relative">
       {/* Main Content */}
       <div className="flex-1 flex flex-col h-screen overflow-hidden">
         {/* Header */}
-        <div className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between sticky top-0 z-20">
+        <div className="  px-6 py-4 flex items-center justify-between sticky top-0 z-20">
           <div>
-            <h1 className="text-xl font-semibold text-slate-800">Inventory Store</h1>
-            <p className="text-sm text-slate-500">Search and buy spare parts for work orders.</p>
+            <h1 className="text-xl font-semibold text-slate-800">
+              Inventory Store
+            </h1>
+            <p className="text-sm text-slate-500">
+              Search and buy spare parts for work orders.
+            </p>
           </div>
           <button
             onClick={() => setShowCart(true)}
@@ -155,10 +160,13 @@ const MechanicPurchase = () => {
         </div>
 
         {/* Filter Bar */}
-        <div className="bg-white border-b border-slate-200 px-6 py-3 flex flex-wrap items-center gap-3">
+        <div className="px-6 py-3 flex flex-wrap items-center gap-3">
           {/* Search */}
           <div className="relative flex-1 min-w-[240px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+            <Search
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+              size={16}
+            />
             <input
               type="text"
               placeholder="Search name or SKU..."
@@ -170,21 +178,27 @@ const MechanicPurchase = () => {
 
           {/* Category Filter */}
           <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">Category:</span>
+            <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">
+              Category:
+            </span>
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
               className="bg-slate-100 border-none rounded-lg px-3 py-2 text-sm text-slate-600 outline-none focus:ring-2 focus:ring-blue-500/20 transition cursor-pointer"
             >
-              {categories.map(cat => (
-                <option key={cat} value={cat}>{cat}</option>
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
               ))}
             </select>
           </div>
 
           {/* Price Sort */}
           <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">Price:</span>
+            <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">
+              Price:
+            </span>
             <select
               value={priceSort}
               onChange={(e) => setPriceSort(e.target.value)}
@@ -198,7 +212,9 @@ const MechanicPurchase = () => {
 
           {/* Stock Filter */}
           <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">Stock:</span>
+            <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">
+              Stock:
+            </span>
             <select
               value={stockStatus}
               onChange={(e) => setStockStatus(e.target.value)}
@@ -221,8 +237,12 @@ const MechanicPurchase = () => {
           ) : filteredStock.length === 0 ? (
             <div className="h-full no-scrollbar flex flex-col items-center justify-center text-center p-8">
               <Package size={48} className="text-slate-200 mb-4" />
-              <h3 className="text-lg font-medium text-slate-600">No items found</h3>
-              <p className="text-sm text-slate-400 mt-1">Try adjusting your filters or search term.</p>
+              <h3 className="text-lg font-medium text-slate-600">
+                No items found
+              </h3>
+              <p className="text-sm text-slate-400 mt-1">
+                Try adjusting your filters or search term.
+              </p>
               <button
                 onClick={() => {
                   setSearchTerm("");
@@ -237,7 +257,7 @@ const MechanicPurchase = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {filteredStock.map(item => (
+              {filteredStock.map((item) => (
                 <motion.div
                   layout
                   key={item.id}
@@ -255,10 +275,13 @@ const MechanicPurchase = () => {
                     )}
 
                     <div className="absolute top-2 right-2">
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-medium uppercase tracking-tight border ${item.stock_quantity <= (item.min_stock_level || 5)
-                        ? 'bg-amber-50 text-amber-600 border-amber-100'
-                        : 'bg-emerald-50 text-emerald-600 border-emerald-100'
-                        }`}>
+                      <span
+                        className={`px-2 py-0.5 rounded text-[10px] font-medium uppercase tracking-tight border ${
+                          item.stock_quantity <= (item.min_stock_level || 5)
+                            ? "bg-amber-50 text-amber-600 border-amber-100"
+                            : "bg-emerald-50 text-emerald-600 border-emerald-100"
+                        }`}
+                      >
                         {item.stock_quantity} available
                       </span>
                     </div>
@@ -266,13 +289,21 @@ const MechanicPurchase = () => {
 
                   <div className="p-4 flex flex-col h-40">
                     <div className="flex-1">
-                      <p className="text-[10px] text-blue-500 font-medium uppercase tracking-widest mb-1 truncate">{item.category}</p>
-                      <h3 className="text-sm font-medium text-slate-800 line-clamp-2 leading-snug mb-1">{item.part_name}</h3>
-                      <p className="text-xs text-slate-400 font-normal">SKU: {item.sku}</p>
+                      <p className="text-[10px] text-blue-500 font-medium uppercase tracking-widest mb-1 truncate">
+                        {item.category}
+                      </p>
+                      <h3 className="text-sm font-medium text-slate-800 line-clamp-2 leading-snug mb-1">
+                        {item.part_name}
+                      </h3>
+                      <p className="text-xs text-slate-400 font-normal">
+                        SKU: {item.sku}
+                      </p>
                     </div>
 
                     <div className="flex items-center justify-between pt-3 mt-auto">
-                      <p className="text-base font-semibold text-slate-900">₹{item.sale_price}</p>
+                      <p className="text-base font-semibold text-slate-900">
+                        ₹{item.sale_price}
+                      </p>
                       <button
                         onClick={() => addToCart(item)}
                         disabled={item.stock_quantity <= 0}
