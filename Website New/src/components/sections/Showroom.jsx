@@ -43,7 +43,7 @@ export default function Showroom() {
                ))}
             </div>
 
-            <Link to="/contact" className="btn-red" style={{ padding: '12px 30px', fontSize: '0.85rem', textDecoration: 'none', display: 'inline-block' }}>
+            <Link to="/contact" className="btn-red">
               Join <span style={{ marginLeft: 4, fontWeight: 900 }}>MOIN MOTORS</span> Network
             </Link>
           </motion.div>

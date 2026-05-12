@@ -14,7 +14,7 @@ export default function About() {
           .about-main-grid { grid-template-columns: 1fr !important; gap: 2.5rem !important; }
           .about-checklist { grid-template-columns: 1fr !important; }
           .about-img { height: 300px !important; }
-          .about-cta-row { flex-direction: column !important; align-items: flex-start !important; }
+          .about-cta-row { flex-direction: column !important; align-items: center !important; gap: 1.2rem !important; }
         }
       `}} />
       <div className="container-pro">
@@ -59,9 +59,9 @@ export default function About() {
               ))}
             </div>
 
-            <div className="about-cta-row">
-              <Link to="/contact" className="btn-red" style={{ padding: '14px 36px', textDecoration: 'none' }}>Humse Judein</Link>
-              <div style={{ display: 'flex', gap: 4, color: '#FFB800', alignItems: 'center' }}>
+            <div className="about-cta-row mobile-center">
+              <Link to="/contact" className="btn-red">Humse Judein</Link>
+              <div style={{ display: 'flex', gap: 4, color: '#FFB800', alignItems: 'center' }} className="mobile-center">
                 {[1, 2, 3, 4, 5].map(i => <Star key={i} size={14} fill="#FFB800" />)}
                 <span style={{ color: '#111', fontSize: '0.82rem', fontWeight: 800, marginLeft: 8 }}>Top Rated</span>
               </div>
