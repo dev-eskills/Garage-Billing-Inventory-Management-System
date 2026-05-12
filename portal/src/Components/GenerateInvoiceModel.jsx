@@ -828,12 +828,14 @@
 
 import React, { useMemo, useState } from "react";
 import { ArrowRight, X } from "lucide-react";
+import { useAuth } from "../hooks/useAuth";
 import { generateAndSaveInvoice } from "../supabase/invoices";
 
-const GenerateInvoiceModel = ({ jobDetails, user, toast }) => {
+const GenerateInvoiceModel = ({ jobDetails }) => {
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
-  const [generatedInvoices, setGeneratedInvoices] = useState({});
-  const [isGenerating, setIsGenerating] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   // DATA
   const customer = jobDetails?.customers?.customer_details || {};
@@ -841,14 +843,32 @@ const GenerateInvoiceModel = ({ jobDetails, user, toast }) => {
   const parts = jobDetails?.parts_items || [];
   const serviceInfo = jobDetails?.job_info || {};
 
-  // CALCULATIONS
-  const subtotal = useMemo(() => {
-    return parts.reduce(
-      (acc, item) =>
-        acc + Number(item.quantity || 0) * Number(item.total_price || 0),
-      0,
-    );
-  }, [parts]);
+  // Pre-fill form when jobDetails or open changes
+  React.useEffect(() => {
+    if (open && jobDetails) {
+      setInvoiceForm({
+        customerName: jobDetails.customers?.customer_details?.name || "",
+        customerPhone: jobDetails.customers?.customer_details?.contact || "",
+        vehicleName: jobDetails.customers?.vehicle_details?.model || "",
+        vehicleNumber: jobDetails.customers?.vehicle_details?.vehicle_number || "",
+        serviceType: jobDetails.job_info?.service_type || "",
+        serviceDate: jobDetails.service_date || "",
+        status: jobDetails.job_info?.status || "Pending",
+        parts: jobDetails.parts_items?.map(p => ({
+          name: p.part_name,
+          qty: p.quantity,
+          price: p.unit_price
+        })) || [{ name: "", qty: 1, price: 0 }],
+        tax: 0,
+      });
+    }
+  }, [open, jobDetails]);
+
+  // Handle input changes
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setInvoiceForm((prev) => ({ ...prev, [name]: value }));
+  };
 
   const discountPercentage = Number(jobDetails?.discount_percentage || 0);
 
@@ -862,34 +882,59 @@ const GenerateInvoiceModel = ({ jobDetails, user, toast }) => {
     return subtotal - discount + extraServiceAmount;
   }, [subtotal, discount, extraServiceAmount]);
 
-  // GENERATE INVOICE
-  const handleGenerateInvoice = async () => {
-    if (!jobDetails?.id || !user?.id) return;
+  // Submit invoice
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!jobDetails || !user) {
+      alert("Job details or user session not ready. Please try again in a moment.");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
 
     try {
-      setIsGenerating((prev) => ({
-        ...prev,
-        [jobDetails.id]: true,
-      }));
-      const job = jobDetails;
+      // Map form back to job structure for PDF generation
+      const updatedJob = {
+        ...jobDetails,
+        customers: {
+          ...(jobDetails.customers || {}),
+          customer_details: {
+            ...(jobDetails.customers?.customer_details || {}),
+            name: invoiceForm.customerName,
+            contact: invoiceForm.customerPhone
+          },
+          vehicle_details: {
+            ...(jobDetails.customers?.vehicle_details || {}),
+            model: invoiceForm.vehicleName,
+            vehicle_number: invoiceForm.vehicleNumber
+          }
+        },
+        job_info: {
+          ...(jobDetails.job_info || {}),
+          service_type: invoiceForm.serviceType,
+          status: invoiceForm.status
+        },
+        parts_items: (invoiceForm.parts || []).map((part) => ({
+          part_name: part.name,
+          quantity: part.qty,
+          unit_price: part.price,
+          total_price: part.qty * part.price,
+        })),
+        total_amount_full_service: total,
+      };
 
-      
-      const result = await generateAndSaveInvoice(job, user.id);
+      await generateAndSaveInvoice(updatedJob, user.id);
 
-      setGeneratedInvoices((prev) => ({
-        ...prev,
-        [jobDetails.id]: result.publicUrl,
-      }));
-
-      toast?.success?.("Invoice generated successfully!");
-    } catch (error) {
-      console.error("Error generating invoice:", error);
-      toast?.error?.("Failed to generate invoice.");
+      alert("Invoice generated successfully!");
+      setOpen(false);
+    } catch (err) {
+      console.error("Failed to generate invoice:", err);
+      setError(err.message);
+      alert("Failed to generate invoice: " + err.message);
     } finally {
-      setIsGenerating((prev) => ({
-        ...prev,
-        [jobDetails.id]: false,
-      }));
+      setLoading(false);
     }
   };
 
@@ -905,129 +950,136 @@ const GenerateInvoiceModel = ({ jobDetails, user, toast }) => {
       </button>
 
       {/* MODAL */}
-      {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-4xl bg-white rounded-3xl shadow-2xl max-h-[90vh] overflow-auto relative p-6">
-            {/* CLOSE */}
-            <button
-              onClick={() => setOpen(false)}
-              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-gray-100 hover:bg-red-100 flex items-center justify-center"
-            >
-              <X size={20} />
-            </button>
+      {open &&
+        (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <div className="w-full max-w-4xl bg-white rounded-3xl shadow-2xl max-h-[90vh] overflow-auto relative p-6">
+              {/* CLOSE */}
+              <button
+                onClick={() => setOpen(false)}
+                className="absolute top-4 right-4 w-10 h-10 rounded-full bg-gray-100 hover:bg-red-100 flex items-center justify-center"
+              >
+                <X size={20} />
+              </button>
 
-            {/* HEADER */}
-            <div className="mb-6">
-              <h2 className="text-3xl font-bold">Invoice Preview</h2>
-              <p className="text-sm text-gray-500">Review before generating</p>
-            </div>
+              {/* HEADER */}
+              <div className="mb-6">
+                <h2 className="text-3xl font-bold">Invoice Preview</h2>
+                <p className="text-sm text-gray-500">Review before generating</p>
+              </div>
 
-            {/* CONTENT (NO FORM) */}
-            <div className="space-y-6">
-              {/* CUSTOMER + VEHICLE */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* CUSTOMER */}
+              {/* CONTENT (NO FORM) */}
+              <div className="space-y-6">
+                {/* CUSTOMER + VEHICLE */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* CUSTOMER */}
+                  <div className="border rounded-2xl overflow-hidden">
+                    <div className="bg-slate-100 px-4 py-3 font-semibold">
+                      Customer Information
+                    </div>
+                    <table className="w-full text-sm">
+                      <tbody>
+                        <TableRow label="Name" value={customer?.name} />
+                        <TableRow label="Phone" value={customer?.contact} />
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* VEHICLE */}
+                  <div className="border rounded-2xl overflow-hidden">
+                    <div className="bg-slate-100 px-4 py-3 font-semibold">
+                      Vehicle Information
+                    </div>
+                    <table className="w-full text-sm">
+                      <tbody>
+                        <TableRow label="Vehicle" value={vehicle?.model} />
+                        <TableRow
+                          label="Number"
+                          value={vehicle?.vehicle_number}
+                        />
+                        <TableRow
+                          label="Service"
+                          value={serviceInfo?.service_type}
+                        />
+                        <TableRow label="Date" value={jobDetails?.service_date} />
+                        <TableRow
+                          label="Status"
+                          value={
+                            <span className="text-green-600 font-semibold">
+                              {serviceInfo?.status}
+                            </span>
+                          }
+                        />
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* PARTS */}
                 <div className="border rounded-2xl overflow-hidden">
                   <div className="bg-slate-100 px-4 py-3 font-semibold">
-                    Customer Information
+                    Parts Details
                   </div>
+
                   <table className="w-full text-sm">
+                    <thead className="bg-slate-50">
+                      <tr>
+                        <th className="p-3 text-left">Part</th>
+                        <th className="p-3 text-center">Qty</th>
+                        <th className="p-3 text-right">Price</th>
+                        <th className="p-3 text-right">Total</th>
+                      </tr>
+                    </thead>
+
                     <tbody>
-                      <TableRow label="Name" value={customer?.name} />
-                      <TableRow label="Phone" value={customer?.contact} />
+                      {parts.map((p, i) => {
+                        const qty = Number(p.quantity || 0);
+                        const price = Number(p.total_price || 0);
+
+                        return (
+                          <tr key={i} className="border-t">
+                            <td className="p-3">{p.part_name}</td>
+                            <td className="p-3 text-center">{qty}</td>
+                            <td className="p-3 text-right">
+                              ₹{price.toFixed(2)}
+                            </td>
+                            <td className="p-3 text-right font-medium">
+                              ₹{(qty * price).toFixed(2)}
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
 
-                {/* VEHICLE */}
-                <div className="border rounded-2xl overflow-hidden">
-                  <div className="bg-slate-100 px-4 py-3 font-semibold">
-                    Vehicle Information
-                  </div>
-                  <table className="w-full text-sm">
-                    <tbody>
-                      <TableRow label="Vehicle" value={vehicle?.model} />
-                      <TableRow
-                        label="Number"
-                        value={vehicle?.vehicle_number}
-                      />
-                      <TableRow
-                        label="Service"
-                        value={serviceInfo?.service_type}
-                      />
-                      <TableRow label="Date" value={jobDetails?.service_date} />
-                      <TableRow
-                        label="Status"
-                        value={
-                          <span className="text-green-600 font-semibold">
-                            {serviceInfo?.status}
-                          </span>
-                        }
-                      />
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+                {/* SUMMARY */}
+                <div className="border rounded-2xl p-4 space-y-2">
+                  <Row label="Subtotal" value={`₹${subtotal.toFixed(2)}`} />
 
-              {/* PARTS */}
-              <div className="border rounded-2xl overflow-hidden">
-                <div className="bg-slate-100 px-4 py-3 font-semibold">
-                  Parts Details
-                </div>
-
-                <table className="w-full text-sm">
-                  <thead className="bg-slate-50">
-                    <tr>
-                      <th className="p-3 text-left">Part</th>
-                      <th className="p-3 text-center">Qty</th>
-                      <th className="p-3 text-right">Price</th>
-                      <th className="p-3 text-right">Total</th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    {parts.map((p, i) => {
-                      const qty = Number(p.quantity || 0);
-                      const price = Number(p.total_price || 0);
-
-                      return (
-                        <tr key={i} className="border-t">
-                          <td className="p-3">{p.part_name}</td>
-                          <td className="p-3 text-center">{qty}</td>
-                          <td className="p-3 text-right">
-                            ₹{price.toFixed(2)}
-                          </td>
-                          <td className="p-3 text-right font-medium">
-                            ₹{(qty * price).toFixed(2)}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* SUMMARY */}
-              <div className="border rounded-2xl p-4 space-y-2">
-                <Row label="Subtotal" value={`₹${subtotal.toFixed(2)}`} />
-
-                <Row
-                  label={`Discount (${discountPercentage}%)`}
-                  value={`- ₹${discount.toFixed(2)}`}
-                  color="text-red-500"
-                />
-
-                {jobDetails?.extra_service && (
                   <Row
-                    label="Extra Service"
-                    value={`+ ₹${extraServiceAmount.toFixed(2)}`}
-                    color="text-green-600"
+                    label={`Discount (${discountPercentage}%)`}
+                    value={`- ₹${discount.toFixed(2)}`}
+                    color="text-red-500"
                   />
-                )}
 
-                <div className="border-t pt-3 flex justify-between font-bold text-lg">
-                  <span>Total</span>
-                  <span>₹{total.toFixed(2)}</span>
+                  {jobDetails?.extra_service && (
+                    <Row
+                      label="Extra Service"
+                      value={`+ ₹${extraServiceAmount.toFixed(2)}`}
+                      color="text-green-600"
+                    />
+                  )}
+                </div>
+                <div className="border p-4 rounded-3xl bg-slate-50">
+                  <div className="flex justify-between mb-2">
+                    <span>Subtotal</span>
+                    <span>₹{subtotal.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between font-semibold">
+                    <span>Total</span>
+                    <span>₹{total.toFixed(2)}</span>
+                  </div>
                 </div>
               </div>
 
@@ -1043,8 +1095,8 @@ const GenerateInvoiceModel = ({ jobDetails, user, toast }) => {
               </button>
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
     </div>
   );
 };

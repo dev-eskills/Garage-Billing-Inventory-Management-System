@@ -1,11 +1,21 @@
 import { supabase } from "../lib/supabaseClient";
 
 export const createCustomer = async (customerData) => {
+  // Ensure mechanic_id is always the authenticated user's id
+  // to satisfy the RLS policy (mechanic_id = auth.uid())
+  let mechanicId = customerData.mechanic_id;
+  if (!mechanicId) {
+    const { data: { user } } = await supabase.auth.getUser();
+    mechanicId = user?.id;
+  }
+
+  if (!mechanicId) throw new Error("User not authenticated.");
+
   const { data, error } = await supabase
     .from('customers')
     .insert([
       {
-        mechanic_id: customerData.mechanic_id,
+        mechanic_id: mechanicId,
         customer_details: {
           name: customerData.name,
           contact: customerData.contact
@@ -27,6 +37,27 @@ export const fetchMechanicCustomers = async (mechanicId) => {
     .from('customers')
     .select('*')
     .eq('mechanic_id', mechanicId)
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data;
+};
+
+// Admin: fetch ALL customers across all mechanics, with mechanic profile and jobs joined
+export const fetchAllCustomers = async () => {
+  const { data, error } = await supabase
+    .from('customers')
+    .select(`
+      *,
+      mechanic:profiles ( id, full_name, role ),
+      jobs (
+        id,
+        service_date,
+        job_info,
+        total_amount_full_service,
+        invoices ( id, public_url, file_name )
+      )
+    `)
     .order('created_at', { ascending: false });
 
   if (error) throw error;

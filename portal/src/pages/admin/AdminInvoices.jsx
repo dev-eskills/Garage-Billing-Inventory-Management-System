@@ -13,7 +13,7 @@ const AdminInvoices = () => {
   const navigate = useNavigate();
   console.log("allInvoices from admin invoices: ",allInvoices);
   // RPC returns flat columns now
-  const filtered = allInvoices.filter(inv => {
+  const filtered = (allInvoices || []).filter(inv => {
     const q = searchQuery.toLowerCase();
     return (
       (inv.customer_name || '').toLowerCase().includes(q) ||
@@ -24,8 +24,8 @@ const AdminInvoices = () => {
     );
   });
 
-  const totalAmount = allInvoices.reduce((acc, inv) => acc + (inv?.jobs?.total_amount_full_service || 0), 0);
-  const thisMonth = allInvoices.filter(
+  const totalAmount = (allInvoices || []).reduce((acc, inv) => acc + (inv?.jobs?.total_amount_full_service || 0), 0);
+  const thisMonth = (allInvoices || []).filter(
     i => new Date(i.created_at).getMonth() === new Date().getMonth()
   ).length;
   console.log("totalAmount from admin invoices component: ", totalAmount)
@@ -49,7 +49,7 @@ const AdminInvoices = () => {
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
-          { label: 'Total Invoices', value: allInvoices.length, icon: ReceiptText, colorClass: 'bg-blue-50 text-blue-600' },
+          { label: 'Total Invoices', value: (allInvoices || []).length, icon: ReceiptText, colorClass: 'bg-blue-50 text-blue-600' },
           { label: 'Total Billed', value: `₹${totalAmount.toLocaleString()}`, icon: IndianRupee, colorClass: 'bg-green-50 text-green-600' },
           { label: 'This Month', value: thisMonth, icon: Calendar, colorClass: 'bg-purple-50 text-purple-600' },
         ].map(({ label, value, icon: Icon, colorClass }) => (
