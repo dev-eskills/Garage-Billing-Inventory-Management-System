@@ -829,8 +829,9 @@
 import React, { useMemo, useState } from "react";
 import { ArrowRight, X } from "lucide-react";
 import { generateAndSaveInvoice } from "../supabase/invoices";
+import toast from "react-hot-toast";
 
-const GenerateInvoiceModel = ({ jobDetails, user, toast }) => {
+const GenerateInvoiceModel = ({ jobDetails, disabled }) => {
   const [open, setOpen] = useState(false);
   const [generatedInvoices, setGeneratedInvoices] = useState({});
   const [isGenerating, setIsGenerating] = useState({});
@@ -864,17 +865,19 @@ const GenerateInvoiceModel = ({ jobDetails, user, toast }) => {
 
   // GENERATE INVOICE
   const handleGenerateInvoice = async () => {
-    if (!jobDetails?.id || !user?.id) return;
+    console.log(jobDetails);
+    if (!jobDetails?.id || !jobDetails?.mechanic_id) return;
 
     try {
       setIsGenerating((prev) => ({
         ...prev,
         [jobDetails.id]: true,
       }));
-      const job = jobDetails;
 
-      
-      const result = await generateAndSaveInvoice(job, user.id);
+      const result = await generateAndSaveInvoice(
+        jobDetails,
+        jobDetails.mechanic_id,
+      );
 
       setGeneratedInvoices((prev) => ({
         ...prev,
@@ -897,8 +900,18 @@ const GenerateInvoiceModel = ({ jobDetails, user, toast }) => {
     <div>
       {/* OPEN BUTTON */}
       <button
-        onClick={() => setOpen(true)}
-        className="mt-6 w-full bg-black text-white hover:bg-gray-900 rounded-xl py-3 font-semibold flex items-center justify-center gap-2"
+        onClick={() => {
+          if (disabled) return;
+          setOpen(true);
+        }}
+        disabled={disabled}
+        className={`mt-6 w-full rounded-xl py-3 font-semibold flex items-center justify-center gap-2 transition-all duration-300
+    ${
+      disabled
+        ? "bg-gray-400 cursor-not-allowed text-white"
+        : "bg-black hover:bg-gray-900 text-white"
+    }
+  `}
       >
         Generate Invoice
         <ArrowRight size={18} />

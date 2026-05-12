@@ -7,7 +7,7 @@ const PartsUsed = ({ jobDetails }) => {
   console.log(jobDetails);
 
   return (
-    <div className="flex flex-col h-[60vh] bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm relative">
+    <div className="flex flex-col h-[70vh] bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm relative">
       {/* Header */}
       <div className="p-6 border-b border-slate-100 bg-slate-50/50">
         <div className="flex items-center gap-3">

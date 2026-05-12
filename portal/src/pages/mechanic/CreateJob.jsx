@@ -30,7 +30,7 @@ const CreateJob = () => {
   const { customers, customersLoading } = useCustomers(user?.id);
   const { mechanicInventory, isInventoryPending } = useMechanicInventory(
     user?.id,
-  );  
+  );
   const { createJob, isCreatingJob } = useJobs(user?.id);
 
   console.log(mechanicInventory);
@@ -61,22 +61,36 @@ const CreateJob = () => {
   }, [mechanicInventory, localSearch]);
   console.log(filteredInventory, "filteredInventory");
 
-  const [extraService, setExtraService] = useState({
-    amount: 0,
-    description: "",
-  });
+  const [extraServices, setExtraServices] = useState([
+    {
+      description: "",
+      amount: 0,
+    },
+  ]);
 
   const [discount, setDiscount] = useState(0);
 
   // Calculations
   const partsTotal = useMemo(() => {
     return usedParts.reduce((acc, part) => {
-      const price = Number(part.unit_price ?? (part.total_quantity > 0 ? part.total_amount / part.total_quantity : 0));
-      return acc + (part.quantity * (isNaN(price) ? 0 : price));
+      const price = Number(
+        part.unit_price ??
+          (part.total_quantity > 0
+            ? part.total_amount / part.total_quantity
+            : 0),
+      );
+      return acc + part.quantity * (isNaN(price) ? 0 : price);
     }, 0);
   }, [usedParts]);
 
-  const subTotal = partsTotal + (parseFloat(extraService.amount) || 0);
+  const extraServicesTotal = useMemo(() => {
+    return extraServices.reduce(
+      (acc, service) => acc + (parseFloat(service.amount) || 0),
+      0,
+    );
+  }, [extraServices]);
+
+  const subTotal = partsTotal + extraServicesTotal || 0;
   const discountAmount = (subTotal * (parseFloat(discount) || 0)) / 100;
   const finalTotal = subTotal - (isNaN(discountAmount) ? 0 : discountAmount);
 
@@ -84,14 +98,21 @@ const CreateJob = () => {
     if (usedParts.find((p) => p.part_id === part.part_id)) {
       return;
     }
-    setUsedParts([...usedParts, {
-      ...part,
-      quantity: 1,
-      unit_price: part.unit_price ?? (part.total_quantity > 0 ? part.total_amount / part.total_quantity : 0)
-    }]);
+    setUsedParts([
+      ...usedParts,
+      {
+        ...part,
+        quantity: 1,
+        unit_price:
+          part.unit_price ??
+          (part.total_quantity > 0
+            ? part.total_amount / part.total_quantity
+            : 0),
+      },
+    ]);
   };
 
-  const handleUpdatePartQuantity = (partId, qty) => {       
+  const handleUpdatePartQuantity = (partId, qty) => {
     const inventoryItem = mechanicInventory.find((i) => i.part_id === partId);
     const maxQty = inventoryItem?.total_quantity || 0;
 
@@ -105,6 +126,28 @@ const CreateJob = () => {
 
   const handleRemovePart = (partId) => {
     setUsedParts(usedParts.filter((p) => p.part_id !== partId));
+  };
+
+  const handleExtraServiceChange = (index, field, value) => {
+    setExtraServices((prev) =>
+      prev.map((service, i) =>
+        i === index ? { ...service, [field]: value } : service,
+      ),
+    );
+  };
+
+  const addExtraService = () => {
+    setExtraServices((prev) => [
+      ...prev,
+      {
+        description: "",
+        amount: 0,
+      },
+    ]);
+  };
+
+  const removeExtraService = (index) => {
+    setExtraServices((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e) => {
@@ -131,10 +174,7 @@ const CreateJob = () => {
         unit_price: p.unit_price,
         total_price: p.quantity * p.unit_price,
       })),
-      extra_service: {
-        amount: parseFloat(extraService.amount),
-        description: extraService.description,
-      },
+      extra_service: extraServices,
       discount_percentage: parseFloat(discount),
       total_amount_full_service: finalTotal,
     };
@@ -380,8 +420,12 @@ const CreateJob = () => {
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h4 className="text-sm font-bold text-slate-800 truncate">{part.part_name}</h4>
-                          <p className="text-[10px] text-slate-400 font-medium">Price: ₹{Number(part.unit_price).toLocaleString()}</p>
+                          <h4 className="text-sm font-bold text-slate-800 truncate">
+                            {part.part_name}
+                          </h4>
+                          <p className="text-[10px] text-slate-400 font-medium">
+                            Price: ₹{Number(part.unit_price).toLocaleString()}
+                          </p>
                         </div>
                         <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-2 py-1">
                           <button
@@ -452,62 +496,117 @@ const CreateJob = () => {
           {/* Sidebar Area - Summary & Extra Services */}
           <div className="space-y-6">
             <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden sticky top-8">
-              <div className="p-5 border-b border-slate-100 bg-slate-50/50 flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
-                  <Plus size={18} />
-                </div>
-                <h2 className="text-lg font-bold text-slate-800">Summary</h2>
-              </div>
-              <div className="p-6 space-y-5">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block ml-1">
-                    Extra Service
-                  </label>
-                  <textarea
-                    rows={2}
-                    value={extraService.description}
-                    onChange={(e) =>
-                      setExtraService({
-                        ...extraService,
-                        description: e.target.value,
-                      })
-                    }
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all text-sm resize-none"
-                    placeholder="Describe extra work..."
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block ml-1">
-                    Service Fee (₹)
-                  </label>
-                  <div className="relative">
-                    <IndianRupee
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-                      size={14}
-                    />
-                    <input
-                      type="number"
-                      value={extraService.amount}
-                      onChange={(e) =>
-                        setExtraService({
-                          ...extraService,
-                          amount: e.target.value,
-                        })
-                      }
-                      className="w-full pl-9 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all font-bold"
-                    />
+              {/* HEADER */}
+              <div className="p-5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
+                    <Plus size={18} />
                   </div>
+
+                  <h2 className="text-lg font-bold text-slate-800">Summary</h2>
                 </div>
 
+                <button
+                  type="button"
+                  onClick={() =>
+                    setExtraServices((prev) => [
+                      ...prev,
+                      {
+                        amount: 0,
+                        description: "",
+                      },
+                    ])
+                  }
+                  className="px-3 py-2 text-sm bg-slate-900 text-white rounded-lg hover:bg-slate-800"
+                >
+                  Add Service
+                </button>
+              </div>
+
+              <div className="p-6 space-y-5">
+                {/* EXTRA SERVICES */}
+                {extraServices.map((service, index) => (
+                  <div
+                    key={index}
+                    className="border border-slate-200 rounded-xl p-4 space-y-4 relative"
+                  >
+                    {/* REMOVE */}
+                    {extraServices.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setExtraServices((prev) =>
+                            prev.filter((_, i) => i !== index),
+                          )
+                        }
+                        className="absolute top-3 right-3 text-red-500 text-sm"
+                      >
+                        Remove
+                      </button>
+                    )}
+
+                    {/* DESCRIPTION */}
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block ml-1">
+                        Extra Service
+                      </label>
+
+                      <textarea
+                        rows={2}
+                        value={service.description}
+                        onChange={(e) => {
+                          const updated = [...extraServices];
+
+                          updated[index].description = e.target.value;
+
+                          setExtraServices(updated);
+                        }}
+                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all text-sm resize-none"
+                        placeholder="Describe extra work..."
+                      />
+                    </div>
+
+                    {/* AMOUNT */}
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block ml-1">
+                        Service Fee (₹)
+                      </label>
+
+                      <div className="relative">
+                        <IndianRupee
+                          className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                          size={14}
+                        />
+
+                        <input
+                          type="number"
+                          value={service.amount}
+                          onChange={(e) => {
+                            const updated = [...extraServices];
+
+                            updated[index].amount = e.target.value;
+
+                            setExtraServices(updated);
+                          }}
+                          className="w-full pl-9 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all font-bold"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                {/* DISCOUNT */}
                 <div className="space-y-2 pt-4 border-t border-slate-100">
                   <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block ml-1">
                     Discount (%)
                   </label>
+
                   <div className="relative">
                     <Percent
                       className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
                       size={14}
                     />
+
                     <input
                       type="number"
                       max="100"
@@ -519,25 +618,39 @@ const CreateJob = () => {
                   </div>
                 </div>
 
-                {/* Final Calculation Summary */}
+                {/* TOTALS */}
                 <div className="pt-4 space-y-2.5">
                   <div className="flex justify-between text-[11px] font-medium uppercase tracking-tight">
-                    <span className="text-slate-400">Subtotal</span>
+                    <span className="text-slate-400">Parts Total</span>
+
                     <span className="text-slate-700">
-                      ₹{subTotal.toLocaleString()}
+                      ₹{partsTotal.toLocaleString()}
                     </span>
                   </div>
+
+                  <div className="flex justify-between text-[11px] font-medium uppercase tracking-tight">
+                    <span className="text-slate-400">Extra Services</span>
+
+                    <span className="text-green-600">
+                      ₹{extraServicesTotal.toLocaleString()}
+                    </span>
+                  </div>
+
                   <div className="flex justify-between text-[11px] font-medium uppercase tracking-tight">
                     <span className="text-slate-400">Discount</span>
+
                     <span className="text-red-500">
                       - ₹{discountAmount.toLocaleString()}
                     </span>
                   </div>
+
                   <div className="h-px bg-slate-50 my-2" />
+
                   <div className="flex justify-between items-end">
                     <span className="text-xs font-bold text-slate-500 uppercase">
                       Total Amount
                     </span>
+
                     <span className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-1">
                       <IndianRupee size={20} />
                       {finalTotal.toLocaleString()}
@@ -545,6 +658,7 @@ const CreateJob = () => {
                   </div>
                 </div>
 
+                {/* SUBMIT */}
                 <button
                   type="submit"
                   disabled={isCreatingJob}
@@ -679,8 +793,18 @@ const CreateJob = () => {
                               {item.part_name}
                             </h5>
                             <div className="flex items-center justify-between mt-0.5">
-                              <p className="text-[10px] font-bold text-blue-600">Stock: {item.total_quantity}</p>
-                              <p className="text-[10px] font-bold text-slate-900">₹{Number(item.unit_price ?? (item.total_quantity > 0 ? item.total_amount / item.total_quantity : 0)).toLocaleString()}</p>
+                              <p className="text-[10px] font-bold text-blue-600">
+                                Stock: {item.total_quantity}
+                              </p>
+                              <p className="text-[10px] font-bold text-slate-900">
+                                ₹
+                                {Number(
+                                  item.unit_price ??
+                                    (item.total_quantity > 0
+                                      ? item.total_amount / item.total_quantity
+                                      : 0),
+                                ).toLocaleString()}
+                              </p>
                             </div>
                           </div>
                           <div

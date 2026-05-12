@@ -20,7 +20,10 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { useJobs } from "../../hooks/useJobs";
 import { motion } from "framer-motion";
-import { generateAndSaveInvoice } from "../../supabase/invoices";
+import {
+  fetchInvoiceByJobId,
+  generateAndSaveInvoice,
+} from "../../supabase/invoices";
 import toast from "react-hot-toast";
 
 const AllAssignedJobs = () => {
@@ -71,6 +74,25 @@ const AllAssignedJobs = () => {
     } finally {
       setIsGenerating((prev) => ({ ...prev, [job.id]: false }));
     }
+  };
+
+  const handleDownload = async (jobId) => {
+    const data = await fetchInvoiceByJobId(jobId);
+    const url = data.public_url;
+
+    const response = await fetch(url);
+    const blob = await response.blob();
+
+    const blobUrl = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = blobUrl;
+    a.download = `Invoice_${jobId}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+
+    a.remove();
+    window.URL.revokeObjectURL(blobUrl);
   };
 
   if (isJobsLoading) {
@@ -246,16 +268,13 @@ const AllAssignedJobs = () => {
                       View Details <ChevronRight size={16} />
                     </Link>
 
-                    {generatedInvoices[job.id] ? (
-                      <a
-                        href={generatedInvoices[job.id]}
-                        download={`Invoice_${job.id}.pdf`}
-                        target="_blank"
-                        rel="noreferrer"
+                    {job.job_info?.status === "completed" ? (
+                      <button
+                        onClick={() => handleDownload(job.id)}
                         className="w-full py-3 bg-emerald-50 border border-emerald-200 text-emerald-700 font-medium text-sm rounded-xl hover:bg-emerald-100 flex items-center justify-center gap-2"
                       >
                         <Download size={16} /> Download Invoice
-                      </a>
+                      </button>
                     ) : (
                       <button
                         onClick={() => handleGenerateInvoice(job)}
@@ -264,12 +283,13 @@ const AllAssignedJobs = () => {
                       >
                         {isGenerating[job.id] ? (
                           <>
-                            <Loader2 size={16} className="animate-spin" />{" "}
+                            <Loader2 size={16} className="animate-spin" />
                             Generating...
                           </>
                         ) : (
                           <>
-                            <FileText size={16} /> Generate Invoice
+                            <FileText size={16} />
+                            Generate Invoice
                           </>
                         )}
                       </button>

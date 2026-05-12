@@ -52,12 +52,27 @@ export async function fetchJobDetails(jobId) {
   return data;
 }
 
-/**
- * Update a job by ID
- * @param {string} jobId - ID of the job to update
- * @param {Array} newParts - Array of new parts to add to the job
- * @returns {object} - The updated job record
- */
+export async function markJobComplete(job) {
+  const { data, error } = await supabase
+    .from("jobs")
+    .update({
+      job_info: {
+        ...job.job_info,
+        status: "completed",
+      },
+    })
+    .eq("id", job.id)
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Error updating job:", error.message);
+    throw error;
+  }
+
+  return data;
+}
+
 export async function updateJobParts(jobId, updateData) {
   const parts = updateData.parts_items;
 
