@@ -30,15 +30,15 @@ const MechanicJobDetail = () => {
       {/* Header */}
       <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 mb-8">
         <div>
-          {/* <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3">
             <span className="bg-yellow-100 text-yellow-700 px-4 py-1 rounded-full text-sm font-medium border border-yellow-200">
-              In Progress
+              {jobDetails?.job_info?.status}
             </span>
 
-            <span className="bg-red-100 text-red-600 px-4 py-1 rounded-full text-sm font-medium border border-red-200">
+            {/* <span className="bg-red-100 text-red-600 px-4 py-1 rounded-full text-sm font-medium border border-red-200">
               High Priority
-            </span>
-          </div> */}
+            </span> */}
+          </div>
 
           <h1 className="text-3xl font-bold mt-4">Job Details</h1>
 

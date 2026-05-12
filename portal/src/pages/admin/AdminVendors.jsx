@@ -94,6 +94,7 @@ const AdminVendors = () => {
         onPageChange,
         totalResults
     } = usePagination(filteredVendors, 10);
+    console.log("filteredVendors: ", filteredVendors)
     return (
         <div className="space-y-6">
             {/* Header Section */}
@@ -310,7 +311,7 @@ const AdminVendors = () => {
                                                                             <thead>
                                                                                 <tr className="bg-gray-50 text-[10px] text-gray-500 uppercase tracking-wider border-b border-gray-100 font-black">
                                                                                     <th className="px-4 py-3 font-bold">Purchase Date</th>
-                                                                                    <th className="px-4 py-3 font-bold">Part Name</th>
+                                                                                    <th className="px-4 py-3 font-bold">Part Details</th>
                                                                                     <th className="px-4 py-3 font-bold text-right">Unit Price</th>
                                                                                     <th className="px-4 py-3 font-bold text-center">Quantity</th>
                                                                                     <th className="px-4 py-3 font-bold text-right">Total Amount</th>
@@ -325,8 +326,9 @@ const AdminVendors = () => {
                                                                                                 {new Date(pur.purchase_date).toLocaleDateString()}
                                                                                             </div>
                                                                                         </td>
-                                                                                        <td className="px-4 py-3 font-bold text-gray-900 flex items-center gap-2">
-                                                                                            <Package size={12} className="text-blue-500" />
+                                                                                        <td className="px-4 py-3 font-bold text-gray-900 flex items-center gap-7">
+                                                                                            {/* <Package size={12} className="text-blue-500" /> */}
+                                                                                            <img className="w-9 h-9 rounded-md" src={pur?.parts?.image_url} alt="" />
                                                                                             {pur.parts?.part_name || 'N/A'}
                                                                                         </td>
                                                                                         <td className="px-4 py-3 text-right font-medium text-gray-700">₹ {Number(pur.unit_price || 0).toLocaleString()}</td>

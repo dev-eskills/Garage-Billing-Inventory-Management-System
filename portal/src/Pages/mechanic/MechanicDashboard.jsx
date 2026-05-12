@@ -238,36 +238,14 @@ const MechanicDashboard = () => {
             >
               <UserRound size={18} className="text-amber-500" />
               Customers
+            </Link>{" "}
+            <Link
+              to="/mechanic/parts"
+              className="rounded-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-5 py-3 text-sm font-semibold flex items-center gap-2"
+            >
+              <Package size={18} className="text-indigo-500" />
+              My Inventory
             </Link>
-
-            {/* Inventory Dropdown */}
-            <div className="relative group">
-              <button className="rounded-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-5 py-3 text-sm font-semibold flex items-center gap-2">
-                <Package size={16} />
-                Inventory
-                <ChevronDown className="ml-2 w-4 h-4" />
-              </button>
-
-              <div className="absolute mt-0.5 w-44 bg-white border border-slate-200 rounded-xl shadow-lg z-50 overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none group-hover:pointer-events-auto">
-                {" "}
-                <Link
-                  to="/mechanic/parts"
-                  className="flex items-center gap-3 px-5 py-3 text-sm text-indigo-700 hover:bg-indigo-50 transition duration-150 ease-in-out"
-                >
-                  <Package size={18} className="text-indigo-500" />
-                  My Inventory
-                </Link>
-                <div className="border-t border-slate-200"></div>
-                <Link
-                  to="/mechanic/parts-requests"
-                  className="flex items-center gap-3 px-5 py-3 text-sm text-indigo-700 hover:bg-indigo-50 transition duration-150 ease-in-out"
-                >
-                  <Inbox size={18} className="text-indigo-500" />
-                  Request Parts
-                </Link>
-              </div>
-            </div>
-
             {/* Purchases Dropdown */}
             <div className="relative group inline-block">
               <button className="rounded-full bg-slate-50 hover:bg-slate-200 text-slate-700 border border-slate-200 px-5 py-3 text-sm font-semibold flex items-center gap-2">

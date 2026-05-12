@@ -203,6 +203,7 @@ export const generateAndSaveInvoice = async (job, userId) => {
 
     console.log("Invoice processed successfully:", savedRecord.public_url);
 
+
     return {
       publicUrl: savedRecord.public_url,
       storagePath: savedRecord.storage_path,

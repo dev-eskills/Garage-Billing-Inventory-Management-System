@@ -15,6 +15,7 @@ export const useAdminMechanic = (mechanicId = "") => {
   const getMechanicJobsFn = useQuery({
     queryKey: ['mechanic-jobs', mechanicId],
     queryFn: () => fetchMechanicsJobs(mechanicId),
+    enabled: !!mechanicId,
   });
 
   const adminAddMechanicFn = useMutation({

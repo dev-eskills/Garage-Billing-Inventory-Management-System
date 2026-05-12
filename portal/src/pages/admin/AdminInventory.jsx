@@ -29,7 +29,7 @@ const AdminInventory = () => {
     currentStock,
     stockLoading
   } = useAdminInventory();
-
+  console.log("stockOut: ", stockOut)
   const [activeTab, setActiveTab] = useState('levels');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -70,7 +70,9 @@ const AdminInventory = () => {
     else {
       return stockOut.filter(p =>
         p.parts?.part_name?.toLowerCase().includes(query) ||
-        p.profiles?.full_name?.toLowerCase().includes(query)
+        p.profiles?.full_name?.toLowerCase().includes(query) ||
+        p.profiles?.email?.toLowerCase().includes(query) ||
+        p.profiles?.phone?.toLowerCase().includes(query)
       );
     }
   };
@@ -108,7 +110,7 @@ const AdminInventory = () => {
     (activeTab === 'levels' && stockLoading) ||
     (activeTab === 'in' && stockInLoading) ||
     (activeTab === 'out' && stockOutLoading);
-
+  console.log("currentData: ", currentData)
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -330,12 +332,13 @@ const AdminInventory = () => {
                       <th className="px-6 py-4 text-[10px] font-black text-gray-500 uppercase tracking-widest border-b border-gray-100">Part Details</th>
                       <th className="px-6 py-4 text-[10px] font-black text-gray-500 uppercase tracking-widest border-b border-gray-100">Mechanic Assigned</th>
                       <th className="px-6 py-4 text-[10px] font-black text-gray-500 uppercase tracking-widest border-b border-gray-100 text-center">QTY</th>
-                      <th className="px-6 py-4 text-[10px] font-black text-gray-500 uppercase tracking-widest border-b border-gray-100 text-right">Value</th>
+                      <th className="px-6 py-4 text-[10px] font-black text-gray-500 uppercase tracking-widest border-b border-gray-100 text-right">Price/Unit</th>
+                      <th className="px-6 py-4 text-[10px] font-black text-gray-500 uppercase tracking-widest border-b border-gray-100 text-right">Total Value</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50">
                     {currentData.length === 0 ? (
-                      <tr><td colSpan="5" className="px-6 py-10 text-center text-gray-400 italic">No mechanic distribution history found.</td></tr>
+                      <tr><td colSpan="6" className="px-6 py-10 text-center text-gray-400 italic">No mechanic distribution history found.</td></tr>
                     ) : (
                       currentData.map((item) => (
                         <tr key={item.id} className="hover:bg-gray-50/50 transition-colors">
@@ -361,16 +364,27 @@ const AdminInventory = () => {
                             </div>
                           </td>
                           <td className="px-6 py-4">
-                            <div className="flex items-center gap-2 text-gray-700">
-                              <User size={14} className="text-gray-400" />
-                              <span className="text-xs font-bold">{item.profiles?.full_name || 'Generic Service'}</span>
+                            <div className="flex flex-col gap-0.5">
+                              <div className="flex items-center gap-2 text-gray-900">
+                                <User size={12} className="text-blue-500" />
+                                <span className="text-xs font-bold">{item.profiles?.full_name || 'Generic Service'}</span>
+                              </div>
+                              {item.profiles?.email && (
+                                <p className="text-[10px] text-gray-500 ml-5">{item.profiles.email}</p>
+                              )}
+                              {item.profiles?.phone && (
+                                <p className="text-[10px] text-gray-500 ml-5">{item.profiles.phone}</p>
+                              )}
                             </div>
                           </td>
                           <td className="px-6 py-4 text-center">
-                            <span className="text-xs font-black text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full">- {item.quantity}</span>
+                            <span className="text-xs font-black text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full">-{item.quantity}</span>
                           </td>
                           <td className="px-6 py-4 text-right">
-                            <span className="text-sm font-bold text-gray-900">₹ {Number(item.total_price).toLocaleString()}</span>
+                             <span className="text-xs font-bold text-gray-600">₹ {Number(item.total_price / item.quantity).toLocaleString()}</span>
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                            <span className="text-sm font-bold text-[#2b5ae3]">₹ {Number(item.total_price).toLocaleString()}</span>
                           </td>
                         </tr>
                       ))
