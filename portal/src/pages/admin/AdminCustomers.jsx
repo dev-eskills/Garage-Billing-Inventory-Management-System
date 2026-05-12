@@ -15,7 +15,7 @@ const AdminCustomers = () => {
 
   const filtered = useMemo(() => {
     const q = searchQuery.toLowerCase();
-    return allCustomers.filter(c =>
+    return (allCustomers || []).filter(c =>
       c.customer_details?.name?.toLowerCase().includes(q) ||
       c.customer_details?.contact?.toLowerCase().includes(q) ||
       c.vehicle_details?.model?.toLowerCase().includes(q) ||
@@ -24,8 +24,8 @@ const AdminCustomers = () => {
     );
   }, [allCustomers, searchQuery]);
 
-  const totalJobs = allCustomers.reduce((acc, c) => acc + (c.jobs?.length || 0), 0);
-  const totalRevenue = allCustomers.reduce(
+  const totalJobs = (allCustomers || []).reduce((acc, c) => acc + (c.jobs?.length || 0), 0);
+  const totalRevenue = (allCustomers || []).reduce(
     (acc, c) => acc + (c.jobs || []).reduce((s, j) => s + (j.total_amount_full_service || 0), 0), 0
   );
 
@@ -49,7 +49,7 @@ const AdminCustomers = () => {
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
-          { label: 'Total Customers', value: allCustomers.length, icon: Users, color: 'blue' },
+          { label: 'Total Customers', value: (allCustomers || []).length, icon: Users, color: 'blue' },
           { label: 'Total Jobs', value: totalJobs, icon: Wrench, color: 'orange' },
           { label: 'Total Revenue', value: `₹${totalRevenue.toLocaleString()}`, icon: IndianRupee, color: 'green' },
         ].map(({ label, value, icon: Icon, color }) => (
@@ -88,6 +88,7 @@ const AdminCustomers = () => {
           <span>Vehicle</span>
           <span>Assigned Mechanic</span>
           <span>Jobs</span>
+          <span>Services</span>
           <span />
         </div>
 

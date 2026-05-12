@@ -12,6 +12,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { useCustomers } from "../../hooks/useCustomers";
+import { toast } from "react-hot-toast";
 
 const CreateCustomer = () => {
   const navigate = useNavigate();
@@ -34,12 +35,16 @@ const CreateCustomer = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!user?.id) {
+      toast.error("You must be logged in to create a customer.");
+      return;
+    }
     try {
       await createCustomer({
         ...formData,
         mechanic_id: user.id
       });
-      navigate("/mechanic/customers")
+      navigate("/mechanic/customers");
     } catch (err) {
       console.error(err);
     }

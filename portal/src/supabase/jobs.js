@@ -20,6 +20,7 @@ export async function fetchJobs(mechanicId) {
     .select(
       `
       *,
+      job_info,
       customers (*)
     `,
     )
