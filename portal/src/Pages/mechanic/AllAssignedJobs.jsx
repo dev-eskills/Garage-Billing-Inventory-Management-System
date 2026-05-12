@@ -278,7 +278,7 @@ const AllAssignedJobs = () => {
                     ) : (
                       <button
                         onClick={() => handleGenerateInvoice(job)}
-                        disabled={isGenerating[job.id]}
+                        disabled={job.job_info?.status !== "completed"}
                         className="w-full py-3 bg-white border border-slate-200 text-slate-600 text-sm rounded-xl hover:bg-slate-50 flex items-center justify-center gap-2 disabled:opacity-50"
                       >
                         {isGenerating[job.id] ? (
