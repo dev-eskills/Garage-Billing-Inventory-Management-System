@@ -65,7 +65,7 @@ export default function WorkshopGallery() {
 
         <div className="wg-cards">
           {images.map((img, i) => (
-            <motion.div key={i} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="wg-card">
+            <motion.div key={i} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="wg-card">
               <img src={img.url} alt={img.title} style={{ width: '100%', height: '90%', objectFit: 'cover' }} />
               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.1) 60%, transparent 100%)', padding: '1.8rem', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
                 <h3 style={{ color: 'white', marginBottom: '0.4rem', fontSize: '1.2rem' }}>{img.title}</h3>

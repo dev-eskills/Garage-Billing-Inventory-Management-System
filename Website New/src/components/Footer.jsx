@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+ import { Link } from 'react-router-dom'
 import { Car, MapPin, Phone, Mail, Globe, Send, MessageCircle } from 'lucide-react'
 
 export default function Footer() {
@@ -40,51 +40,54 @@ export default function Footer() {
       <div className="container-pro">
         {/* ===== DESKTOP LAYOUT ===== */}
         <div className="footer-top">
-          <div className="footer-desktop-grid">
+          <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1.2fr', gap: '4rem', marginBottom: '4rem' }} className="footer-desktop-grid">
             <div>
-              <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', marginBottom: '1rem' }}>
-                <div style={{ background: 'var(--accent-red)', width: 34, height: 34, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', flexShrink: 0 }}>
-                  <Car size={18} />
-                </div>
-                <span style={{ fontSize: '1.25rem', fontWeight: 900, color: '#111', textTransform: 'uppercase' }}>
-                  Moin Motors <span style={{ color: 'var(--accent-red)' }}>Garage World</span>
-                </span>
-              </Link>
-              <p style={{ color: '#666', lineHeight: 1.7, fontSize: '0.88rem', marginBottom: '1.8rem' }}>
-                Digital Bharat ka sabse trusted workshop platform. Moin Motors ki reliability, ab har garage mein.
-              </p>
-              <div style={{ display: 'flex', gap: '0.8rem' }}>
-                {[Globe, MessageCircle, Send].map((Icon, i) => (
-                  <a key={i} href="#" className="f-social"><Icon size={16} /></a>
-                ))}
+              <div style={{ fontSize: '1.5rem', fontWeight: 900, marginBottom: '1.5rem', letterSpacing: '-0.02em' }}>
+                AutoBill<span style={{ color: 'var(--accent-red)' }}>Pro.</span>
               </div>
+              <p style={{ color: '#777', fontSize: '0.9rem', lineHeight: 1.6, marginBottom: '2rem', maxWidth: '280px' }}>
+                <span style={{ fontWeight: 800, color: '#111' }}>INDORE'S BEST GARAGE</span> — Moin Motors aur AutoBill Pro ka bharosa.
+              </p>
             </div>
+
             <div>
-              <h4 style={{ fontWeight: 900, marginBottom: '1.2rem', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Explore</h4>
-              {[{ name: 'Home', path: '/' }, { name: 'Services', path: '/services' }, { name: 'About Us', path: '/about' }, { name: 'Contact', path: '/contact' }].map(l => (
-                <Link key={l.name} to={l.path} className="f-link">{l.name}</Link>
-              ))}
+              <h4 style={{ fontWeight: 900, marginBottom: '1.5rem', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Quick Links</h4>
+              <Link to="/" className="f-link">Home</Link>
+              <Link to="/about" className="f-link">About Moin Motors</Link>
+              <Link to="/services" className="f-link">Our Services</Link>
+              <Link to="/contact" className="f-link">Book Now</Link>
             </div>
+
             <div>
-              <h4 style={{ fontWeight: 900, marginBottom: '1.2rem', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Standards</h4>
-              {['Digital Billing', 'Smart Inventory', 'Job Cards', 'Staff Tracking'].map(item => (
-                <span key={item} className="f-link" style={{ cursor: 'default' }}>{item}</span>
-              ))}
+              <h4 style={{ fontWeight: 900, marginBottom: '1.5rem', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Services</h4>
+              <span className="f-link">Digital Billing</span>
+              <span className="f-link">Smart Inventory</span>
+              <span className="f-link">Job Cards</span>
+              <span className="f-link">Indore Elite Support</span>
             </div>
+
             <div>
-              <h4 style={{ fontWeight: 900, marginBottom: '1.2rem', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Connect</h4>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                  <MapPin size={15} color="var(--accent-red)" style={{ marginTop: 2, flexShrink: 0 }} />
-                  <span style={{ fontSize: '0.87rem', color: '#555', fontWeight: 600, lineHeight: 1.5 }}>Moin Motors Hub, New Delhi</span>
-                </div>
+              <h4 style={{ fontWeight: 900, marginBottom: '1.5rem', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Connect</h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+                <a 
+                  href="https://www.google.com/maps/search/?api=1&query=Moin+Motors+Indore+Nemawar+Road" 
+                  target="_blank" 
+                  rel="noreferrer"
+                  className="footer-loc"
+                  style={{ display: 'flex', gap: 10, alignItems: 'flex-start', textDecoration: 'none', transition: 'color 0.3s ease' }}
+                >
+                  <MapPin size={16} color="var(--accent-red)" style={{ marginTop: 2, flexShrink: 0 }} />
+                  <span style={{ fontSize: '0.87rem', color: '#555', fontWeight: 600, lineHeight: 1.5 }}>
+                    <b style={{ color: 'var(--accent-red)', fontSize: '0.95rem' }}>INDORE</b> — Nemawar Road, Near Shivani Multi Venture, Khudel (452016)
+                  </span>
+                </a>
                 <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
                   <Phone size={15} color="var(--accent-red)" style={{ flexShrink: 0 }} />
-                  <span style={{ fontSize: '0.87rem', color: '#555', fontWeight: 600 }}>+91 98765 43210</span>
+                  <span style={{ fontSize: '0.87rem', color: '#555', fontWeight: 600 }}>+91 91794 44342</span>
                 </div>
                 <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
                   <Mail size={15} color="var(--accent-red)" style={{ flexShrink: 0 }} />
-                  <span style={{ fontSize: '0.87rem', color: '#555', fontWeight: 600 }}>moin@garageworld.com</span>
+                  <span style={{ fontSize: '0.87rem', color: '#555', fontWeight: 600 }}>moin@moinmotors.com</span>
                 </div>
               </div>
             </div>

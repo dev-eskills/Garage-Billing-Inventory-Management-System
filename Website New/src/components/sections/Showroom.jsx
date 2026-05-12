@@ -53,9 +53,12 @@ export default function Showroom() {
             className="showroom-visual"
             style={{ 
               position: 'relative', 
-              height: '450px', 
-              background: 'radial-gradient(circle at center, rgba(230, 57, 70, 0.05) 0%, transparent 70%)', 
-              borderRadius: '40px' 
+              height: '500px', 
+              background: 'linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 100%)', 
+              borderRadius: '48px',
+              border: '1px solid rgba(0,0,0,0.06)',
+              boxShadow: '0 40px 100px rgba(0,0,0,0.04)',
+              overflow: 'hidden'
             }}
           >
              <motion.div 
