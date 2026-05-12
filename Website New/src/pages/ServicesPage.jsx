@@ -24,7 +24,7 @@ const detailedServices = [
   {
     title: "Superbike & Bike Specialist",
     subtitle: "Precision Tuning",
-    desc: "Har bike ki rarfataar alag hoti hai. Hum Dewas mein har tarah ki bikes (Sport, Cruiser, Daily) ki deep service karte hain — chain tuning se lekar engine calibration tak.",
+    desc: "Har bike ki rarfataar alag hoti hai. Hum Indore mein har tarah ki bikes (Sport, Cruiser, Daily) ki deep service karte hain — chain tuning se lekar engine calibration tak.",
     img: "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=1000",
     points: ["Engine Tuning", "Clutch Adjustment", "Safety Check"],
     reversed: true,
@@ -119,7 +119,7 @@ export default function ServicesPage() {
                 lineHeight: 1.6,
               }}
             >
-              Dewas mein car aur bike repair ka naya level. Hum quality,
+              Indore  mein car aur bike repair ka naya level. Hum quality,
               technology aur digital transparency par koi compromise nahi karte.
             </p>
           </motion.div>
@@ -297,7 +297,7 @@ export default function ServicesPage() {
               margin: "0 auto 2.5rem",
             }}
           >
-            Ab Dewas mein car service ke liye darna nahi, digital billing aur
+            Ab Indore  mein car service ke liye darna nahi, digital billing aur
             transparency ka faida uthao.
           </p>
           <Link

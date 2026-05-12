@@ -41,11 +41,11 @@ export default function About() {
             <div className="badge-pro"><Target size={12} /> Hamari Kahani</div>
             <h2 style={{ marginBottom: '1rem', lineHeight: 1.1 }}>
               Moin Motors —{' '}
-              <span style={{ color: 'var(--accent-red)' }}>Dewas ka Sabse Trusted Garage.</span>
+              <span style={{ color: 'var(--accent-red)' }}>Indore ka Sabse Trusted Garage.</span>
             </h2>
             <div style={{ marginBottom: '2rem' }}>
               <p style={{ fontSize: '1rem', color: '#555', lineHeight: 1.7 }}>
-                Dewas mein ab car repair ka andaz badal gaya hai. <strong style={{ color: '#111' }}>Moin Motors</strong> laya hai 
+                Indore mein ab car repair ka andaz badal gaya hai. <strong style={{ color: '#111' }}>Moin Motors</strong> laya hai 
                 transparency aur world-class service, ab aapke apne shehar mein.
               </p>
             </div>
