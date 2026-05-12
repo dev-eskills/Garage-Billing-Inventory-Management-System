@@ -86,24 +86,24 @@ export default function Hero() {
                </div>
             </div>
             
-            <div style={{ display: 'flex', gap: '1.2rem', marginBottom: '4rem', flexWrap: 'wrap' }}>
-               <Link to="/contact" className="btn-red" style={{ padding: '16px 42px', fontSize: '1rem', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ display: 'flex', gap: '1.2rem', marginBottom: '4rem', flexWrap: 'wrap' }} className="mobile-center">
+               <Link to="/contact" className="btn-red">
                   Book Free Demo <ArrowRight size={18} />
                </Link>
-               <Link to="/about" style={{ padding: '16px 42px', fontSize: '1rem', background: '#111', color: 'white', borderRadius: '12px', fontWeight: 800, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
+               <Link to="/about" className="btn-black">
                   Learn More
                </Link>
             </div>
 
-            <div className="hero-stats" style={{ marginTop: '2rem', display: 'flex', alignItems: 'center', gap: '3rem' }}>
-               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                  <div style={{ display: 'flex', gap: 2, color: '#FFB800' }}>
+            <div className="hero-stats mobile-center" style={{ marginTop: '2rem', display: 'flex', alignItems: 'center', gap: '2rem', flexWrap: 'wrap' }}>
+               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }} className="mobile-center">
+                  <div style={{ display: 'flex', gap: 2, color: '#FFB800' }} className="mobile-center">
                      {[1,2,3,4,5].map(i => <Star key={i} size={14} fill="#FFB800" />)}
                   </div>
                   <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#999' }}>TOP-CLASS GARAGE STANDARD</span>
                </div>
                <div className="stat-sep" style={{ width: 1, height: '40px', background: '#EEE' }} />
-               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }} className="mobile-center">
                   <span style={{ fontSize: '1.2rem', fontWeight: 900, color: '#111' }}>MOIN MOTORS</span>
                   <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#999' }}>ELITE WORKSHOP PARTNER</span>
                </div>
