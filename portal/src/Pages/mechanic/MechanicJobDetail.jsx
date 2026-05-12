@@ -15,17 +15,16 @@ import AssignPartsModal from "../../Components/AssignPartsModal";
 import JobTimeline from "../../Components/JobTimeline";
 import MechanicParts from "./MechanicParts";
 import Backbutton from "../../Components/Backbutton";
-import GenerateInvoiceModel from "../../components/GenerateInvoiceModel";
 import { useParams } from "react-router-dom";
 import { useJobs } from "../../hooks/useJobs";
 import PartsUsed from "../../Components/Mechanic/Partsused";
 import AssignedMechanicCard from "../../Components/Mechanic/AssignedMechanicCard";
+import GenerateInvoiceModel from "../../Components/GenerateInvoiceModel";
 
 const MechanicJobDetail = () => {
   const { id } = useParams();
   const { jobDetails, isJobDetailsLoading } = useJobs(null, id);
 
-  console.log("Job Details:", jobDetails);
   return (
     <div className="min-h-screen text-gray-900 p-6">
       {/* Header */}
@@ -180,12 +179,38 @@ const MechanicJobDetail = () => {
               <Wrench size={50} />
             </div>
 
-            <GenerateInvoiceModel />
+            <GenerateInvoiceModel jobDetails={jobDetails} />
           </div>
 
           {/* Mechanic */}
 
           <AssignedMechanicCard />
+
+          <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm mt-4">
+            <div className="flex items-center gap-3 mb-4">
+              <Wrench className="text-blue-500" size={20} />
+              <h3 className="text-lg font-semibold text-gray-900">
+                Extra Service
+              </h3>
+            </div>
+
+            <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+              {jobDetails?.extra_service ? (
+                <div className="flex justify-between items-center text-gray-700">
+                  <span className="font-medium">
+                    {jobDetails?.extra_service.description}
+                  </span>
+                  <span className="font-semibold text-gray-900">
+                    ₹ {jobDetails?.extra_service.amount}
+                  </span>
+                </div>
+              ) : (
+                <p className="text-gray-400 italic text-sm">
+                  No extra services added.
+                </p>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>

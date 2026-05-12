@@ -59,7 +59,6 @@ export const useInvoices = ({
     invoiceLoading: invoiceQuery.isLoading,
     invoiceError: invoiceQuery.error,
 
-    // --- Utilities ---
     downloadInvoice,
   };
 };

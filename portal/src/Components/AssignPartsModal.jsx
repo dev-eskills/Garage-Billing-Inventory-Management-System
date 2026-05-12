@@ -442,8 +442,6 @@ const AssignPartsModal = ({ jobId }) => {
     }
   };
 
-  console.log("Mechanic Inventory:", jobDetails);
-
   return (
     <>
       {/* Open Button */}

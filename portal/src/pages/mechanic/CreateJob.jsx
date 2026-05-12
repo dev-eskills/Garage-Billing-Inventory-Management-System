@@ -30,7 +30,7 @@ const CreateJob = () => {
   const { customers, customersLoading } = useCustomers(user?.id);
   const { mechanicInventory, isInventoryPending } = useMechanicInventory(
     user?.id,
-  );
+  );  
   const { createJob, isCreatingJob } = useJobs(user?.id);
 
   console.log(mechanicInventory);
