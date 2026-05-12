@@ -140,7 +140,7 @@ export default function Footer() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
               <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
                 <MapPin size={14} color="var(--accent-red)" style={{ flexShrink: 0 }} />
-                <span style={{ fontSize: '0.82rem', color: '#555', fontWeight: 600 }}>Moin Motors Hub, Dewas (MP)</span>
+                <span style={{ fontSize: '0.82rem', color: '#555', fontWeight: 600 }}>Moin Motors Hub, indore (MP)</span>
               </div>
               <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
                 <Phone size={14} color="var(--accent-red)" style={{ flexShrink: 0 }} />

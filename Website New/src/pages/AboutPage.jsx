@@ -130,7 +130,7 @@ export default function AboutPage() {
               >
                 Moin Motors —{" "}
                 <span style={{ color: "var(--accent-red)" }}>
-                  Dewas ka Sabse Modern Garage.
+                  Indore ka Sabse Modern Garage.
                 </span>
               </h1>
               <p
@@ -142,7 +142,7 @@ export default function AboutPage() {
                 }}
               >
                 Jab <strong style={{ color: "#111" }}>Moin Bhai</strong> ne
-                Dewas mein apna setup shuru kiya, unka ek hi sapna tha — ki har
+                Indore mein apna setup shuru kiya, unka ek hi sapna tha — ki har
                 gadi ki repair digital transparency ke saath ho. Purane tarike
                 chhodo, ab smart bano.
               </p>
@@ -158,7 +158,7 @@ export default function AboutPage() {
                 <strong style={{ color: "#111" }}>
                   Moin Motors Garage World
                 </strong>{" "}
-                Dewas ki pehchan ban chuka hai. Hum sirf gadi theek nahi karte,
+                Indore ki pehchan ban chuka hai. Hum sirf gadi theek nahi karte,
                 hum trust build karte hain technology ke saath.
               </p>
               <div
