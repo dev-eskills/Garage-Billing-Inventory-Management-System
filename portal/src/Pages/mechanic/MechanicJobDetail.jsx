@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 import AssignPartsModal from "../../Components/AssignPartsModal";
 import JobTimeline from "../../Components/JobTimeline";
-import MechanicParts from "./MechanicParts";
 import Backbutton from "../../Components/Backbutton";
 import { useParams } from "react-router-dom";
 import { useJobs } from "../../hooks/useJobs";

@@ -14,7 +14,6 @@ import {
   UserRound,
 } from "lucide-react";
 import MechanicProfileButton from "../../Components/MechanicProfileButton";
-import MechanicInvoices from "./MechanicInvoices";
 import { useAuth } from "../../hooks/useAuth";
 import { useJobs } from "../../hooks/useJobs";
 import { useDashboard } from "../../hooks/useDashboard";

@@ -1,40 +1,66 @@
+import React, { lazy, Suspense } from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
-import Login from "../pages/Login";
-import ForgotPassword from "../pages/ForgotPassword";
-import ResetPassword from "../pages/ResetPassword";
-import ProtectedRoute from "../components/ProtectedRoute";
-import AdminDashboard from "../layouts/admin/AdminDashboard";
-import AdminOverview from "../pages/admin/AdminOverview";
-import AdminMechanics from "../pages/admin/AdminMechanics";
-import AdminVendors from "../pages/admin/AdminVendors";
-import AdminInventory from "../pages/admin/AdminInventory";
-import AdminCustomers from "../pages/admin/AdminCustomers";
-import AdminInvoices from "../pages/admin/AdminInvoices";
-import AdminSettings from "../pages/admin/AdminSettings";
-import AdminParts from "../pages/admin/AdminParts";
-import AdminPurchase from "../pages/admin/AdminPurchase";
-import AdminExpenses from "../pages/admin/AdminExpenses";
-import MechanicDetails from "../pages/admin/MechanicDetails";
-import AdminLosses from "../pages/admin/AdminLosses";
-import MechanicDashboard from "../pages/mechanic/MechanicDashboard";
-import MechanicProfile from "../pages/mechanic/MechanicProfile";
-import MechanicWorkOrders from "../pages/mechanic/MechanicWorkOrders";
-import MechanicParts from "../pages/mechanic/MechanicParts";
-import MechanicInvoices from "../pages/mechanic/MechanicInvoices";
-import MechanicInvoiceDetail from "../pages/mechanic/MechanicInvoiceDetail";
-import MechanicCustomers from "../pages/mechanic/MechanicCustomers";
-import MechanicCustomerDetail from "../pages/mechanic/MechanicCustomerDetail";
-import MechanicReports from "../pages/mechanic/MechanicReports";
-import MechanicJobDetail from "../pages/mechanic/MechanicJobDetail";
-import CompletedJobs from "../components/Mechanic/CompletedJobs";
-import PendingJobs from "../components/Mechanic/PendingJobs";
-import PartsRequest from "../components/Mechanic/PartsRequest";
-import MechanicLayout from "../layouts/mechanic/MechanicLayout";
-import CreateCustomer from "../pages/mechanic/CreateCustomer";
-import MechanicPurchase from "../pages/mechanic/MechanicPurchase";
-import CreateJob from "../pages/mechanic/CreateJob";
-import AllAssignedJobs from "../pages/mechanic/AllAssignedJobs";
-import MechanicPurchases from "../pages/mechanic/MechanicPurchases";
+
+// Auth & Protected Routes
+import ProtectedRoute from "../Components/ProtectedRoute";
+
+// Auth Pages
+const Login = lazy(() => import("../pages/Login"));
+const ForgotPassword = lazy(() => import("../pages/ForgotPassword"));
+const ResetPassword = lazy(() => import("../pages/ResetPassword"));
+
+// Layouts
+const AdminDashboard = lazy(() => import("../layouts/admin/AdminDashboard"));
+const MechanicLayout = lazy(() => import("../layouts/mechanic/MechanicLayout"));
+
+// Admin Pages
+const AdminOverview = lazy(() => import("../pages/admin/AdminOverview"));
+const AdminMechanics = lazy(() => import("../pages/admin/AdminMechanics"));
+const AdminVendors = lazy(() => import("../pages/admin/AdminVendors"));
+const AdminInventory = lazy(() => import("../pages/admin/AdminInventory"));
+const AdminCustomers = lazy(() => import("../pages/admin/AdminCustomers"));
+const AdminInvoices = lazy(() => import("../pages/admin/AdminInvoices"));
+const AdminSettings = lazy(() => import("../pages/admin/AdminSettings"));
+const AdminParts = lazy(() => import("../pages/admin/AdminParts"));
+const AdminPurchase = lazy(() => import("../pages/admin/AdminPurchase"));
+const AdminExpenses = lazy(() => import("../pages/admin/AdminExpenses"));
+const MechanicDetails = lazy(() => import("../pages/admin/MechanicDetails"));
+const AdminLosses = lazy(() => import("../pages/admin/AdminLosses"));
+
+// Mechanic Pages
+const MechanicDashboard = lazy(() => import("../pages/mechanic/MechanicDashboard"));
+const MechanicProfile = lazy(() => import("../pages/mechanic/MechanicProfile"));
+const MechanicWorkOrders = lazy(() => import("../pages/mechanic/MechanicWorkOrders"));
+const MechanicParts = lazy(() => import("../pages/mechanic/MechanicParts"));
+const MechanicInvoices = lazy(() => import("../pages/mechanic/MechanicInvoices"));
+const MechanicInvoiceDetail = lazy(() => import("../pages/mechanic/MechanicInvoiceDetail"));
+const MechanicCustomers = lazy(() => import("../pages/mechanic/MechanicCustomers"));
+const MechanicCustomerDetail = lazy(() => import("../pages/mechanic/MechanicCustomerDetail"));
+const MechanicReports = lazy(() => import("../pages/mechanic/MechanicReports"));
+const MechanicJobDetail = lazy(() => import("../pages/mechanic/MechanicJobDetail"));
+const CreateCustomer = lazy(() => import("../pages/mechanic/CreateCustomer"));
+const MechanicPurchase = lazy(() => import("../pages/mechanic/MechanicPurchase"));
+const CreateJob = lazy(() => import("../pages/mechanic/CreateJob"));
+const AllAssignedJobs = lazy(() => import("../pages/mechanic/AllAssignedJobs"));
+const MechanicPurchases = lazy(() => import("../pages/mechanic/MechanicPurchases"));
+
+// Mechanic Components (if used as pages)
+const CompletedJobs = lazy(() => import("../Components/Mechanic/CompletedJobs"));
+const PendingJobs = lazy(() => import("../components/Mechanic/PendingJobs"));
+const PartsRequest = lazy(() => import("../components/Mechanic/PartsRequest"));
+
+// Loading Fallback
+const PageLoader = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+  </div>
+);
+
+const LazyComponent = ({ Component }) => (
+  <Suspense fallback={<PageLoader />}>
+    <Component />
+  </Suspense>
+);
 
 const router = createBrowserRouter([
   {
@@ -49,7 +75,7 @@ const router = createBrowserRouter([
     path: "/login",
     element: (
       <ProtectedRoute onlyGuest={true}>
-        <Login />
+        <LazyComponent Component={Login} />
       </ProtectedRoute>
     ),
   },
@@ -57,7 +83,7 @@ const router = createBrowserRouter([
     path: "/forgot-password",
     element: (
       <ProtectedRoute onlyGuest={true}>
-        <ForgotPassword />
+        <LazyComponent Component={ForgotPassword} />
       </ProtectedRoute>
     ),
   },
@@ -65,7 +91,7 @@ const router = createBrowserRouter([
     path: "/reset-password",
     element: (
       <ProtectedRoute>
-        <ResetPassword />
+        <LazyComponent Component={ResetPassword} />
       </ProtectedRoute>
     ),
   },
@@ -73,100 +99,51 @@ const router = createBrowserRouter([
     path: "/mechanic",
     element: (
       <ProtectedRoute requiredRole="mechanic">
-        <MechanicLayout />
+        <LazyComponent Component={MechanicLayout} />
       </ProtectedRoute>
     ),
     children: [
-      { index: true, element: <MechanicDashboard /> },
-      { path: "profile", element: <MechanicProfile /> },
-      {
-        path: "work-orders",
-        element: <MechanicWorkOrders />,
-      },
-      {
-        path: "parts",
-        element: <MechanicParts />,
-      },
-
-      {
-        path: "invoices",
-        element: <MechanicInvoices />,
-      },
-      {
-        path: "invoices/:id",
-        element: <MechanicInvoiceDetail />,
-      },
-      {
-        path: "customers",
-        element: <MechanicCustomers />,
-      },
-      {
-        path: "create-customer",
-        element: <CreateCustomer />,
-      },
-      {
-        path: "purchase",
-        element: <MechanicPurchase />,
-      },
-      {
-        path: "customers/:id",
-        element: <MechanicCustomerDetail />,
-      },
-      {
-        path: "reports",
-        element: <MechanicReports />,
-      },
-      {
-        path: "all-jobs",
-        element: <AllAssignedJobs />,
-      },
-      {
-        path: "jobs/:id",
-        element: <MechanicJobDetail />,
-      },
-      {
-        path: "completed-jobs",
-        element: <CompletedJobs />,
-      },
-      {
-        path: "pending-jobs",
-        element: <PendingJobs />,
-      },
-      {
-        path: "parts-requests",
-        element: <PartsRequest />,
-      },
-      {
-        path: "create-job",
-        element: <CreateJob />,
-      },
-      {
-        path: "purchase-history",
-        element: <MechanicPurchases />,
-      },
+      { index: true, element: <LazyComponent Component={MechanicDashboard} /> },
+      { path: "profile", element: <LazyComponent Component={MechanicProfile} /> },
+      { path: "work-orders", element: <LazyComponent Component={MechanicWorkOrders} /> },
+      { path: "parts", element: <LazyComponent Component={MechanicParts} /> },
+      { path: "invoices", element: <LazyComponent Component={MechanicInvoices} /> },
+      { path: "invoices/:id", element: <LazyComponent Component={MechanicInvoiceDetail} /> },
+      { path: "customers", element: <LazyComponent Component={MechanicCustomers} /> },
+      { path: "create-customer", element: <LazyComponent Component={CreateCustomer} /> },
+      { path: "purchase", element: <LazyComponent Component={MechanicPurchase} /> },
+      { path: "customers/:id", element: <LazyComponent Component={MechanicCustomerDetail} /> },
+      { path: "reports", element: <LazyComponent Component={MechanicReports} /> },
+      { path: "all-jobs", element: <LazyComponent Component={AllAssignedJobs} /> },
+      { path: "jobs/:id", element: <LazyComponent Component={MechanicJobDetail} /> },
+      { path: "completed-jobs", element: <LazyComponent Component={CompletedJobs} /> },
+      { path: "pending-jobs", element: <LazyComponent Component={PendingJobs} /> },
+      { path: "parts-requests", element: <LazyComponent Component={PartsRequest} /> },
+      { path: "create-job", element: <LazyComponent Component={CreateJob} /> },
+      { path: "purchase-history", element: <LazyComponent Component={MechanicPurchases} /> },
     ],
   },
   {
     path: "/admin",
     element: (
       <ProtectedRoute requiredRole="admin">
-        <AdminDashboard />
+        <LazyComponent Component={AdminDashboard} />
       </ProtectedRoute>
     ),
     children: [
       { index: true, element: <Navigate to="overview" replace /> },
-      { path: "overview", element: <AdminOverview /> },
-      { path: "parts", element: <AdminParts /> },
-      { path: "mechanics", element: <AdminMechanics /> },
-      { path: "mechanics/:id", element: <MechanicDetails /> },
-      { path: "vendors", element: <AdminVendors /> },
-      { path: "inventory", element: <AdminInventory /> },
-      { path: "purchase", element: <AdminPurchase /> },
-      { path: "expenses", element: <AdminExpenses /> },
-      { path: "losses", element: <AdminLosses /> },
-      { path: "customers", element: <AdminCustomers /> },
-      { path: "invoices", element: <AdminInvoices /> },
-      { path: "settings", element: <AdminSettings /> },
+      { path: "overview", element: <LazyComponent Component={AdminOverview} /> },
+      { path: "parts", element: <LazyComponent Component={AdminParts} /> },
+      { path: "mechanics", element: <LazyComponent Component={AdminMechanics} /> },
+      { path: "mechanics/:id", element: <LazyComponent Component={MechanicDetails} /> },
+      { path: "vendors", element: <LazyComponent Component={AdminVendors} /> },
+      { path: "inventory", element: <LazyComponent Component={AdminInventory} /> },
+      { path: "purchase", element: <LazyComponent Component={AdminPurchase} /> },
+      { path: "expenses", element: <LazyComponent Component={AdminExpenses} /> },
+      { path: "losses", element: <LazyComponent Component={AdminLosses} /> },
+      { path: "customers", element: <LazyComponent Component={AdminCustomers} /> },
+      { path: "invoices", element: <LazyComponent Component={AdminInvoices} /> },
+      { path: "settings", element: <LazyComponent Component={AdminSettings} /> },
     ],
   },
 ]);
