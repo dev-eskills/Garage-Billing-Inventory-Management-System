@@ -8,6 +8,7 @@ export async function addJob(jobData) {
       mechanic_id: jobData.mechanic_id,
       service_date:
         jobData.service_date || new Date().toISOString().slice(0, 10),
+      expiry_date: jobData.expiry_date,
       job_info: jobData.job_info || {
         status: "pending",
         repair_issue: "",

@@ -19,8 +19,12 @@ import { useAuth } from "../../hooks/useAuth";
 import { useJobs } from "../../hooks/useJobs";
 import { useDashboard } from "../../hooks/useDashboard";
 import { useInvoices } from "../../hooks/useInvoices";
-import RecentActivities from "../../Components/Mechanic/RecentActivities";
 import QuickActions from "../../Components/Mechanic/QuickActions";
+import { useNotifications } from "../../hooks/useNotifications";
+import NotificationList from "../../components/admin/NotificationList";
+import CreateReminderModal from "../../components/mechanic/CreateReminderModal";
+import { Bell, Clock } from "lucide-react";
+
 
 // const dashboardStats = [
 //   {
@@ -94,9 +98,13 @@ const MechanicDashboard = () => {
   const { jobs, isJobsLoading } = useJobs(user?.id);
   const [inventoryOpen, setInventoryOpen] = useState(false);
   const [purchaseOpen, setPurchaseOpen] = useState(false);
+  const [isReminderModalOpen, setIsReminderModalOpen] = useState(false);
+
   const { stats, statsLoading } = useDashboard();
-  const { allInvoices } = useInvoices();
-  console.log(allInvoices);
+  const { mechanicNotifications, markAsRead } = useNotifications(user?.id);
+
+  const unreadCount = mechanicNotifications?.filter(n => n.status === 'unread').length || 0;
+
   const dashboardStats = [
     {
       title: "Active Jobs",
@@ -199,8 +207,16 @@ const MechanicDashboard = () => {
                 <PlusCircle size={18} />
                 Create New Job
               </Link>
+              <button
+                onClick={() => setIsReminderModalOpen(true)}
+                className="rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 px-5 py-3 text-sm font-semibold transition hover:bg-indigo-100 hover:border-indigo-300 flex items-center gap-2 cursor-pointer"
+              >
+                <Clock size={18} />
+                Set Reminder
+              </button>
               <MechanicProfileButton />
             </div>
+
           </div>
           <div className="flex flex-wrap gap-3 mt-5 items-center">
             {/* Jobs Buttons */}
@@ -339,12 +355,11 @@ const MechanicDashboard = () => {
                           </h3>
                         </div>
                         <span
-                          className={`rounded-full px-3 py-1 text-sm font-semibold ${
-                            job.job_info?.status === "completed"
+                          className={`rounded-full px-3 py-1 text-sm font-semibold ${job.job_info?.status === "completed"
                               ? "bg-green-100 text-green-700"
                               : statusClasses[job.job_info?.status] ||
-                                "bg-gray-100 text-gray-600"
-                          }`}
+                              "bg-gray-100 text-gray-600"
+                            }`}
                         >
                           {job.job_info?.status || "Pending"}
                         </span>
@@ -392,51 +407,63 @@ const MechanicDashboard = () => {
 
             {/* <QuickActions /> */}
 
-            <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <h2 className="text-lg font-semibold text-slate-900">
-                    Inventory usage
-                  </h2>
-                  <p className="mt-2 text-sm text-slate-500">
-                    Parts being consumed fastest this week.
-                  </p>
-                </div>
-              </div>
+          </div>
+          {/* </div> */}
+        </section>
 
-              <div className="mt-6 space-y-4">
-                {inventoryItems.map((item) => (
-                  <div
-                    key={item.name}
-                    className="space-y-3 rounded-3xl border border-slate-200 bg-slate-50 p-4"
-                  >
-                    <div className="flex items-center justify-between gap-4">
-                      <div>
-                        <p className="font-semibold text-slate-900">
-                          {item.name}
-                        </p>
-                        <p className="text-sm text-slate-500">
-                          {item.available}
-                        </p>
-                      </div>
-                      <p className="text-sm font-semibold text-slate-700">
-                        {item.usage}
-                      </p>
-                    </div>
-                    <div className="h-2 overflow-hidden rounded-full bg-slate-200">
-                      <div
-                        className="h-full rounded-full bg-slate-900"
-                        style={{ width: item.usage }}
-                      />
-                    </div>
-                  </div>
-                ))}
+        {/* Notifications & Reminders Section */}
+        <section className="rounded-3xl bg-white p-8 shadow-sm ring-1 ring-slate-200">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl">
+                <Bell size={22} />
               </div>
+              <div>
+                <h2 className="text-xl font-bold text-slate-900">Notifications & Reminders</h2>
+                <p className="text-sm text-slate-500 font-medium">Updates from admin and your personal reminders.</p>
+              </div>
+            </div>
+            {unreadCount > 0 && (
+              <span className="px-3 py-1 bg-blue-600 text-white text-xs font-bold rounded-full">
+                {unreadCount} New
+              </span>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="bg-slate-50 rounded-2xl p-2 border border-slate-100">
+              <NotificationList
+                notifications={mechanicNotifications || []}
+                onMarkAsRead={markAsRead}
+              />
+            </div>
+            <div className="flex flex-col items-center justify-center text-center p-8 bg-indigo-50/30 rounded-2xl border border-dashed border-indigo-100">
+              <div className="w-16 h-16 rounded-full bg-white shadow-sm flex items-center justify-center text-indigo-500 mb-4">
+                <Clock size={32} />
+              </div>
+              <h3 className="text-lg font-bold text-slate-800">Need to remember something?</h3>
+              <p className="text-sm text-slate-500 max-w-xs mt-2 mb-6">
+                Set a personal reminder for inventory checks, customer calls, or vehicle follow-ups.
+              </p>
+              <button
+                onClick={() => setIsReminderModalOpen(true)}
+                className="px-6 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all cursor-pointer"
+              >
+                Create Reminder
+              </button>
             </div>
           </div>
         </section>
       </div>
+
+      {isReminderModalOpen && (
+        <CreateReminderModal
+          onClose={() => setIsReminderModalOpen(false)}
+          mechanicId={user?.id}
+        />
+      )}
     </div>
+
   );
 };
 

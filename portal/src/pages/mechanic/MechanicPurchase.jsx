@@ -13,6 +13,8 @@ import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 import MechanicCart from "../../components/Mechanic/MechanicCart";
 import { useMechanicInventory } from "../../hooks/useMechanicInventory";
+import { createNotification } from "../../supabase/notifications";
+
 
 const MechanicPurchase = () => {
   const { currentStock, inventoryPending } = useAdminInventory();
@@ -117,9 +119,21 @@ const MechanicPurchase = () => {
 
       console.log(inventoryData, "invetory data added to cart");
 
+
       await addPartMechanicInventory(inventoryData);
 
+      // 2. Notify Admin
+      const partNames = cart.map(item => `${item.part_name} (x${item.quantity})`).join(', ');
+      await createNotification({
+        mechanic_id: user.id,
+        receiver_id: null, // Send to admin
+        title: "Parts Purchase Request",
+        message: `${user?.user_metadata?.full_name || 'A mechanic'} has purchased: ${partNames}`,
+        notification_type: "repair_alert" // Using repair_alert for visibility
+      });
+
       toast.success("Purchase completed successfully!");
+
       setCart([]);
       setShowCart(false);
     } catch (error) {

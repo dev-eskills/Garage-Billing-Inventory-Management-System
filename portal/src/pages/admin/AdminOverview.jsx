@@ -13,7 +13,7 @@ import { useDashboard } from '../../hooks/useDashboard';
 
 const AdminOverview = () => {
   const { stats, statsLoading } = useDashboard();
-
+console.log("stats from admin state casrds: ",stats)
   if (statsLoading) {
     return (
       <div className="flex flex-col items-center justify-center py-20 min-h-[60vh]">

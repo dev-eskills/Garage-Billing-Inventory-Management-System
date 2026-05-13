@@ -27,7 +27,7 @@ const NotificationList = ({ notifications, onMarkAsRead }) => {
     }
   };
 
-  if (notifications?.length === 0) {
+  if (!notifications || notifications.length === 0) {
     return (
       <div className="p-8 text-center">
         <Bell size={32} className="mx-auto text-gray-200 mb-2" />
@@ -38,7 +38,7 @@ const NotificationList = ({ notifications, onMarkAsRead }) => {
 
   return (
     <div className="max-h-96 overflow-y-auto custom-scrollbar">
-      {notifications.map((notification) => (
+      {notifications?.map((notification) => (
         <div
           key={notification.id}
           className={`p-4 border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer group relative ${notification.status === 'unread' ? 'bg-blue-50/20' : ''}`}

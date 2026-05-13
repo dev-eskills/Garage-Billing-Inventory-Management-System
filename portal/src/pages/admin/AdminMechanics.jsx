@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Plus, Search, MoreVertical, Mail, Phone, Wrench, Calendar,
   Filter, Download, X as XIcon, Lock, WrenchIcon,
-  ChevronDown, ChevronUp, User, Car, IndianRupee,
+  ChevronDown, ChevronUp, User, Car, IndianRupee, Bell,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AddMechanicModal from '../../components/admin/AddMechanicModal';
@@ -12,6 +12,9 @@ import ConfirmationModal from '../../components/common/ConfirmationModal';
 import { useAdminMechanic } from '../../hooks/useAdminMechanic';
 import { usePagination } from '../../hooks/usePagination';
 import Pagination from '../../components/common/Pagination';
+import SendNotificationModal from '../../components/admin/SendNotificationModal';
+import { fetchMechanics } from '../../supabase/adminMechanic';
+
 
 // Lazy-loaded jobs panel per mechanic
 const MechanicJobsPanel = ({ mechanicId }) => {
@@ -95,6 +98,8 @@ const AdminMechanics = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [expandedId, setExpandedId] = useState(null);
+  const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
+
 
   const handleEdit = (mechanic) => {
     setSelectedMechanic(mechanic);
@@ -136,6 +141,12 @@ const AdminMechanics = () => {
 
   const handleJobsHistory = (mechanic) => {
     navigate(`/admin/mechanics/${mechanic.id}`);
+    setActiveDropdown(null);
+  };
+
+  const handleSendNotification = (mechanic) => {
+    setSelectedMechanic(mechanic);
+    setIsNotificationModalOpen(true);
     setActiveDropdown(null);
   };
 
@@ -303,6 +314,10 @@ const AdminMechanics = () => {
                                 <button onClick={() => handleJobsHistory(mechanic)} className="w-full text-left px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-2 cursor-pointer">
                                   <WrenchIcon size={14} className="text-gray-400" /> Jobs History
                                 </button>
+                                <button onClick={() => handleSendNotification(mechanic)} className="w-full text-left px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-2 cursor-pointer">
+                                  <Bell size={14} className="text-gray-400" /> Send Notification
+                                </button>
+
                                 <button onClick={() => handleDeleteClick(mechanic)} className="w-full text-left px-4 py-2 text-xs font-bold text-red-600 hover:bg-red-50 flex items-center gap-2 cursor-pointer">
                                   <XIcon size={14} /> Delete Mechanic
                                 </button>
@@ -391,6 +406,13 @@ const AdminMechanics = () => {
                           Change Password
                         </button>
                         <button
+                          onClick={() => handleSendNotification(mechanic)}
+                          className="w-full text-left px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-2 cursor-pointer"
+                        >
+                          <Bell size={14} className="text-gray-400" />
+                          Send Notification
+                        </button>
+                        <button
                           onClick={() => handleDeleteClick(mechanic)}
                           className="w-full text-left px-4 py-2 text-xs font-bold text-red-600 hover:bg-red-50 flex items-center gap-2"
                         >
@@ -459,7 +481,18 @@ const AdminMechanics = () => {
         confirmText="Delete"
         isLoading={adminDeleteMechanicPending}
       />
+
+      <AnimatePresence>
+        {isNotificationModalOpen && (
+          <SendNotificationModal
+            onClose={() => setIsNotificationModalOpen(false)}
+            mechanics={mechanics}
+            selectedMechanicId={selectedMechanic?.id}
+          />
+        )}
+      </AnimatePresence>
     </div>
+
   );
 };
 
