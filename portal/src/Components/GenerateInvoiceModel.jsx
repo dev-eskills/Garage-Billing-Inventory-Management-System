@@ -1,874 +1,27 @@
-// // // import React, { useState } from "react";
-// // // import { ArrowRight, X } from "lucide-react";
-// // // import { useInvoice } from "../hooks/useInvoice";
-
-// // // const GenerateInvoiceModel = () => {
-// // //   const [open, setOpen] = useState(false);
-// // //   const { loading, error, createInvoice } = useInvoice();
-
-// // //   // State to hold invoice form data
-// // //   const [invoiceForm, setInvoiceForm] = useState({
-// // //     customerName: "",
-// // //     customerPhone: "",
-// // //     vehicleName: "",
-// // //     vehicleNumber: "",
-// // //     serviceType: "",
-// // //     serviceDate: "",
-// // //     status: "Pending",
-// // //     parts: [{ name: "", qty: 1, price: 0 }],
-// // //     tax: 0,
-// // //   });
-
-// // //   // Handle input changes
-// // //   const handleChange = (e) => {
-// // //     const { name, value } = e.target;
-// // //     setInvoiceForm((prev) => ({ ...prev, [name]: value }));
-// // //   };
-
-// // //   // Handle part changes
-// // //   const handlePartChange = (index, field, value) => {
-// // //     const newParts = [...invoiceForm.parts];
-// // //     newParts[index][field] =
-// // //       field === "qty" || field === "price" ? Number(value) : value;
-// // //     setInvoiceForm((prev) => ({ ...prev, parts: newParts }));
-// // //   };
-
-// // //   // Add new part
-// // //   const addPart = () => {
-// // //     setInvoiceForm((prev) => ({
-// // //       ...prev,
-// // //       parts: [...prev.parts, { name: "", qty: 1, price: 0 }],
-// // //     }));
-// // //   };
-
-// // //   // Remove part
-// // //   const removePart = (index) => {
-// // //     const newParts = invoiceForm.parts.filter((_, i) => i !== index);
-// // //     setInvoiceForm((prev) => ({ ...prev, parts: newParts }));
-// // //   };
-
-// // //   // Calculate totals
-// // //   const subtotal = invoiceForm.parts.reduce(
-// // //     (acc, p) => acc + p.qty * p.price,
-// // //     0,
-// // //   );
-// // //   const total = subtotal + Number(invoiceForm.tax || 0);
-
-// // //   // Submit invoice
-// // //   const handleSubmit = async (e) => {
-// // //     e.preventDefault();
-
-// // //     const invoicePayload = {
-// // //       customer_name: invoiceForm.customerName,
-// // //       customer_phone: invoiceForm.customerPhone,
-// // //       vehicle_name: invoiceForm.vehicleName,
-// // //       vehicle_number: invoiceForm.vehicleNumber,
-// // //       service_type: invoiceForm.serviceType,
-// // //       service_date: invoiceForm.serviceDate,
-// // //       status: invoiceForm.status,
-// // //       tax: Number(invoiceForm.tax || 0),
-// // //       subtotal,
-// // //       total,
-// // //       items: invoiceForm.parts.map((part) => ({
-// // //         name: part.name,
-// // //         qty: part.qty,
-// // //         price: part.price,
-// // //         total: part.qty * part.price,
-// // //       })),
-// // //     };
-
-// // //     const result = await createInvoice(invoicePayload);
-
-// // //     if (result.success) {
-// // //       alert("Invoice generated successfully!");
-// // //       setInvoiceForm({
-// // //         customerName: "",
-// // //         customerPhone: "",
-// // //         vehicleName: "",
-// // //         vehicleNumber: "",
-// // //         serviceType: "",
-// // //         serviceDate: "",
-// // //         status: "Pending",
-// // //         parts: [{ name: "", qty: 1, price: 0 }],
-// // //         tax: 0,
-// // //       });
-// // //       setOpen(false);
-// // //     } else {
-// // //       alert("Failed to generate invoice: " + result.error);
-// // //     }
-// // //   };
-
-// // //   return (
-// // //     <div>
-// // //       <button
-// // //         onClick={() => setOpen(true)}
-// // //         className="mt-6 w-full bg-black text-white hover:bg-gray-900 rounded-xl py-3 font-semibold flex items-center justify-center gap-2 transition-all duration-300"
-// // //       >
-// // //         Generate Invoice
-// // //         <ArrowRight size={18} />
-// // //       </button>
-
-// // //       {open && (
-// // //         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-// // //           <div className="w-full max-w-3xl bg-white rounded-3xl shadow-2xl overflow-auto max-h-[90vh] relative p-6">
-// // //             <button
-// // //               onClick={() => setOpen(false)}
-// // //               className="absolute top-4 right-4 w-10 h-10 rounded-full bg-gray-100 hover:bg-red-100 hover:text-red-500 flex items-center justify-center"
-// // //             >
-// // //               <X size={20} />
-// // //             </button>
-
-// // //             <h2 className="text-2xl font-bold mb-4">Generate Invoice</h2>
-// // //             {error && <div className="text-sm text-red-600 mb-2">{error}</div>}
-// // //             <form className="space-y-4" onSubmit={handleSubmit}>
-// // //               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-// // //                 <input
-// // //                   name="customerName"
-// // //                   value={invoiceForm.customerName}
-// // //                   onChange={handleChange}
-// // //                   type="text"
-// // //                   placeholder="Customer Name"
-// // //                   className="border p-2 rounded-lg w-full"
-// // //                 />
-// // //                 <input
-// // //                   name="customerPhone"
-// // //                   value={invoiceForm.customerPhone}
-// // //                   onChange={handleChange}
-// // //                   type="text"
-// // //                   placeholder="Customer Phone"
-// // //                   className="border p-2 rounded-lg w-full"
-// // //                 />
-// // //                 <input
-// // //                   name="vehicleName"
-// // //                   value={invoiceForm.vehicleName}
-// // //                   onChange={handleChange}
-// // //                   type="text"
-// // //                   placeholder="Vehicle Name"
-// // //                   className="border p-2 rounded-lg w-full"
-// // //                 />
-// // //                 <input
-// // //                   name="vehicleNumber"
-// // //                   value={invoiceForm.vehicleNumber}
-// // //                   onChange={handleChange}
-// // //                   type="text"
-// // //                   placeholder="Vehicle Number"
-// // //                   className="border p-2 rounded-lg w-full"
-// // //                 />
-// // //                 <input
-// // //                   name="serviceType"
-// // //                   value={invoiceForm.serviceType}
-// // //                   onChange={handleChange}
-// // //                   type="text"
-// // //                   placeholder="Service Type"
-// // //                   className="border p-2 rounded-lg w-full"
-// // //                 />
-// // //                 <input
-// // //                   name="serviceDate"
-// // //                   value={invoiceForm.serviceDate}
-// // //                   onChange={handleChange}
-// // //                   type="date"
-// // //                   className="border p-2 rounded-lg w-full"
-// // //                 />
-// // //                 <select
-// // //                   name="status"
-// // //                   value={invoiceForm.status}
-// // //                   onChange={handleChange}
-// // //                   className="border p-2 rounded-lg w-full"
-// // //                 >
-// // //                   <option value="Pending">Pending</option>
-// // //                   <option value="In Progress">In Progress</option>
-// // //                   <option value="Completed">Completed</option>
-// // //                 </select>
-// // //               </div>
-
-// // //               <div className="space-y-4">
-// // //                 <div className="flex items-center justify-between gap-4">
-// // //                   <h3 className="text-lg font-semibold">Invoice Parts</h3>
-// // //                   <button
-// // //                     type="button"
-// // //                     onClick={addPart}
-// // //                     className="text-sm bg-slate-900 text-white px-3 py-2 rounded-lg"
-// // //                   >
-// // //                     Add Part
-// // //                   </button>
-// // //                 </div>
-
-// // //                 {invoiceForm.parts.map((part, index) => (
-// // //                   <div
-// // //                     key={index}
-// // //                     className="grid grid-cols-1 md:grid-cols-4 gap-3 items-end"
-// // //                   >
-// // //                     <input
-// // //                       value={part.name}
-// // //                       onChange={(e) =>
-// // //                         handlePartChange(index, "name", e.target.value)
-// // //                       }
-// // //                       type="text"
-// // //                       placeholder="Part Name"
-// // //                       className="border p-2 rounded-lg w-full"
-// // //                     />
-// // //                     <input
-// // //                       value={part.qty}
-// // //                       onChange={(e) =>
-// // //                         handlePartChange(index, "qty", e.target.value)
-// // //                       }
-// // //                       type="number"
-// // //                       min="1"
-// // //                       placeholder="Quantity"
-// // //                       className="border p-2 rounded-lg w-full"
-// // //                     />
-// // //                     <input
-// // //                       value={part.price}
-// // //                       onChange={(e) =>
-// // //                         handlePartChange(index, "price", e.target.value)
-// // //                       }
-// // //                       type="number"
-// // //                       min="0"
-// // //                       step="0.01"
-// // //                       placeholder="Price"
-// // //                       className="border p-2 rounded-lg w-full"
-// // //                     />
-// // //                     <button
-// // //                       type="button"
-// // //                       onClick={() => removePart(index)}
-// // //                       className="bg-red-500 text-white rounded-lg px-3 py-2"
-// // //                     >
-// // //                       Remove
-// // //                     </button>
-// // //                   </div>
-// // //                 ))}
-// // //               </div>
-
-// // //               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-// // //                 <div className="border p-4 rounded-3xl bg-slate-50">
-// // //                   <label className="block text-sm font-medium mb-2">
-// // //                     Tax Amount
-// // //                   </label>
-// // //                   <input
-// // //                     name="tax"
-// // //                     value={invoiceForm.tax}
-// // //                     onChange={handleChange}
-// // //                     type="number"
-// // //                     min="0"
-// // //                     step="0.01"
-// // //                     placeholder="Tax"
-// // //                     className="border p-2 rounded-lg w-full"
-// // //                   />
-// // //                 </div>
-// // //                 <div className="border p-4 rounded-3xl bg-slate-50">
-// // //                   <div className="flex justify-between mb-2">
-// // //                     <span>Subtotal</span>
-// // //                     <span>${subtotal.toFixed(2)}</span>
-// // //                   </div>
-// // //                   <div className="flex justify-between font-semibold">
-// // //                     <span>Total</span>
-// // //                     <span>${total.toFixed(2)}</span>
-// // //                   </div>
-// // //                 </div>
-// // //               </div>
-
-// // //               <button
-// // //                 type="submit"
-// // //                 disabled={loading}
-// // //                 className="w-full bg-green-500 text-white py-3 rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-// // //               >
-// // //                 {loading ? "Saving Invoice..." : "Generate Invoice"}
-// // //               </button>
-// // //             </form>
-// // //           </div>
-// // //         </div>
-// // //       )}
-// // //     </div>
-// // //   );
-// // // };
-
-// // // export default GenerateInvoiceModel;
-
-// // import React, { useEffect, useState } from "react";
-// // import { ArrowRight, X } from "lucide-react";
-// // import { useInvoice } from "../hooks/useInvoice";
-
-// // const GenerateInvoiceModel = ({ jobDetails }) => {
-// //   const [open, setOpen] = useState(false);
-// //   const { loading, error, createInvoice } = useInvoice();
-// //   // FORM STATE
-// //   const [invoiceForm, setInvoiceForm] = useState({
-// //     customerName: "",
-// //     customerPhone: "",
-// //     vehicleName: "",
-// //     vehicleNumber: "",
-// //     serviceType: "",
-// //     serviceDate: "",
-// //     status: "completed",
-// //     parts: [{ name: "", qty: 1, price: 0 }],
-// //     tax: 0,
-// //   });
-
-// //   useEffect(() => {
-// //     if (jobDetails) {
-// //       setInvoiceForm({
-// //         customerName: jobDetails?.customers?.customer_details?.name || "",
-
-// //         customerPhone: jobDetails?.customers?.customer_details?.contact || "",
-
-// //         vehicleName: jobDetails?.customers?.vehicle_details?.model || "",
-
-// //         vehicleNumber:
-// //           jobDetails?.customers?.vehicle_details?.vehicle_number || "",
-
-// //         serviceType: jobDetails?.job_info?.service_type || "",
-
-// //         serviceDate: jobDetails?.service_date || "",
-
-// //         status: "completed",
-
-// //         parts: jobDetails?.parts_items?.map((item) => ({
-// //           name: item.part_name || "",
-// //           qty: item.quantity || 1,
-// //           price: item.total_price || 0,
-// //         })) || [{ name: "", qty: 1, price: 0 }],
-
-// //         tax: 0,
-// //       });
-// //     }
-// //   }, [jobDetails]);
-
-// //   // HANDLE INPUT CHANGE
-// //   const handleChange = (e) => {
-// //     const { name, value } = e.target;
-
-// //     setInvoiceForm((prev) => ({
-// //       ...prev,
-// //       [name]: value,
-// //     }));
-// //   };
-
-// //   // CALCULATIONS
-// //   const subtotal = invoiceForm.parts.reduce(
-// //     (acc, p) => acc + p.qty * p.price,
-// //     0,
-// //   );
-
-// //   const discount =
-// //     (subtotal * Number(jobDetails?.discount_percentage || 0)) / 100;
-
-// //   const extraServiceAmount = Number(jobDetails?.extra_service?.amount || 0);
-
-// //   const total =
-// //     subtotal - discount + extraServiceAmount + Number(invoiceForm.tax || 0);
-
-// //   // SUBMIT
-// //   const handleSubmit = async (e) => {
-// //     e.preventDefault();
-
-// //     const invoicePayload = {};
-
-// //     const result = await createInvoice(invoicePayload);
-
-// //     if (result.success) {
-// //       alert("Invoice generated successfully!");
-
-// //       setOpen(false);
-// //     } else {
-// //       alert("Failed to generate invoice: " + result.error);
-// //     }
-// //   };
-
-// //   return (
-// //     <div>
-// //       {/* BUTTON */}
-// //       <button
-// //         onClick={() => setOpen(true)}
-// //         className="mt-6 w-full bg-black text-white hover:bg-gray-900 rounded-xl py-3 font-semibold flex items-center justify-center gap-2 transition-all duration-300"
-// //       >
-// //         Generate Invoice
-// //         <ArrowRight size={18} />
-// //       </button>
-
-// //       {/* MODAL */}
-// //       {open && (
-// //         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-// //           <div className="w-full max-w-3xl bg-white rounded-3xl shadow-2xl overflow-auto max-h-[90vh] relative p-6">
-// //             {/* CLOSE */}
-// //             <button
-// //               onClick={() => setOpen(false)}
-// //               className="absolute top-4 right-4 w-10 h-10 rounded-full bg-gray-100 hover:bg-red-100 hover:text-red-500 flex items-center justify-center"
-// //             >
-// //               <X size={20} />
-// //             </button>
-
-// //             {/* TITLE */}
-// //             <h2 className="text-2xl font-bold mb-4">Generate Invoice</h2>
-
-// //             {/* ERROR */}
-// //             {error && <div className="text-sm text-red-600 mb-2">{error}</div>}
-
-// //             {/* FORM */}
-// //             <form className="space-y-6" onSubmit={handleSubmit}>
-// //               {/* CUSTOMER INFO */}
-// //               <div className="border rounded-2xl overflow-hidden">
-// //                 <div className="bg-slate-100 px-4 py-3 font-semibold">
-// //                   Customer Information
-// //                 </div>
-
-// //                 <table className="w-full text-sm">
-// //                   <tbody>
-// //                     <tr className="border-t">
-// //                       <td className="p-3 font-medium w-1/3">Customer Name</td>
-
-// //                       <td className="p-3">{invoiceForm.customerName}</td>
-// //                     </tr>
-
-// //                     <tr className="border-t">
-// //                       <td className="p-3 font-medium">Phone Number</td>
-
-// //                       <td className="p-3">{invoiceForm.customerPhone}</td>
-// //                     </tr>
-
-// //                     <tr className="border-t">
-// //                       <td className="p-3 font-medium">Vehicle</td>
-
-// //                       <td className="p-3">{invoiceForm.vehicleName}</td>
-// //                     </tr>
-
-// //                     <tr className="border-t">
-// //                       <td className="p-3 font-medium">Vehicle Number</td>
-
-// //                       <td className="p-3">{invoiceForm.vehicleNumber}</td>
-// //                     </tr>
-
-// //                     <tr className="border-t">
-// //                       <td className="p-3 font-medium">Service Type</td>
-
-// //                       <td className="p-3">{invoiceForm.serviceType}</td>
-// //                     </tr>
-
-// //                     <tr className="border-t">
-// //                       <td className="p-3 font-medium">Service Date</td>
-
-// //                       <td className="p-3">{invoiceForm.serviceDate}</td>
-// //                     </tr>
-
-// //                     <tr className="border-t">
-// //                       <td className="p-3 font-medium">Status</td>
-
-// //                       <td className="p-3 text-green-600 font-semibold capitalize">
-// //                         {invoiceForm.status}
-// //                       </td>
-// //                     </tr>
-// //                   </tbody>
-// //                 </table>
-// //               </div>
-
-// //               {/* PARTS TABLE */}
-// //               <div className="border rounded-2xl overflow-hidden">
-// //                 <div className="bg-slate-100 px-4 py-3 font-semibold">
-// //                   Parts Details
-// //                 </div>
-
-// //                 <table className="w-full text-sm">
-// //                   <thead className="bg-slate-50">
-// //                     <tr>
-// //                       <th className="p-3 text-left">Part Name</th>
-
-// //                       <th className="p-3 text-center">Qty</th>
-
-// //                       <th className="p-3 text-right">Price</th>
-
-// //                       <th className="p-3 text-right">Total</th>
-// //                     </tr>
-// //                   </thead>
-
-// //                   <tbody>
-// //                     {invoiceForm.parts.map((part, index) => (
-// //                       <tr key={index} className="border-t">
-// //                         <td className="p-3">{part.name}</td>
-
-// //                         <td className="p-3 text-center">{part.qty}</td>
-
-// //                         <td className="p-3 text-right">₹{part.price}</td>
-
-// //                         <td className="p-3 text-right font-medium">
-// //                           ₹{(part.qty * part.price).toFixed(2)}
-// //                         </td>
-// //                       </tr>
-// //                     ))}
-// //                   </tbody>
-// //                 </table>
-// //               </div>
-
-// //               {/* SUMMARY */}
-// //               <div className="border rounded-2xl overflow-hidden">
-// //                 <div className="bg-slate-100 px-4 py-3 font-semibold">
-// //                   Invoice Summary
-// //                 </div>
-
-// //                 <div className="p-4 space-y-3">
-// //                   <div className="flex justify-between">
-// //                     <span>Subtotal</span>
-
-// //                     <span>₹{subtotal.toFixed(2)}</span>
-// //                   </div>
-
-// //                   <div className="flex justify-between text-red-500">
-// //                     <span>
-// //                       Discount ({jobDetails?.discount_percentage || 0}
-// //                       %)
-// //                     </span>
-
-// //                     <span>- ₹{discount.toFixed(2)}</span>
-// //                   </div>
-
-// //                   {jobDetails?.extra_service && (
-// //                     <div className="flex justify-between text-green-600">
-// //                       <span>{jobDetails?.extra_service?.description}</span>
-
-// //                       <span>+ ₹{extraServiceAmount.toFixed(2)}</span>
-// //                     </div>
-// //                   )}
-
-// //                   <div className="flex justify-between">
-// //                     <span>Tax</span>
-
-// //                     <span>₹{Number(invoiceForm.tax).toFixed(2)}</span>
-// //                   </div>
-
-// //                   <div className="border-t pt-3 flex justify-between text-lg font-bold">
-// //                     <span>Total</span>
-
-// //                     <span>₹{total.toFixed(2)}</span>
-// //                   </div>
-// //                 </div>
-// //               </div>
-
-// //               {/* SUBMIT */}
-// //               <button
-// //                 type="submit"
-// //                 disabled={loading}
-// //                 className="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl font-semibold"
-// //               >
-// //                 {loading ? "Generating Invoice..." : "Generate Invoice"}
-// //               </button>
-// //             </form>
-// //           </div>
-// //         </div>
-// //       )}
-// //     </div>
-// //   );
-// // };
-
-// // export default GenerateInvoiceModel;
-
-// import React, { useMemo, useState } from "react";
-// import { ArrowRight, X } from "lucide-react";
-// import { useInvoice } from "../hooks/useInvoice";
-// import { generateAndSaveInvoice } from "../supabase/invoices";
-
-// const GenerateInvoiceModel = ({ jobDetails }) => {
-//   const [open, setOpen] = useState(false);
-//   const [generatedInvoices, setGeneratedInvoices] = useState({});
-//   const [isGenerating, setIsGenerating] = useState({});
-
-//   // DATA
-//   const customer = jobDetails?.customers?.customer_details || {};
-
-//   const vehicle = jobDetails?.customers?.vehicle_details || {};
-
-//   const parts = jobDetails?.parts_items || [];
-
-//   const serviceInfo = jobDetails?.job_info || {};
-
-//   // CALCULATIONS
-//   const subtotal = useMemo(() => {
-//     return parts.reduce(
-//       (acc, item) =>
-//         acc + Number(item.quantity || 0) * Number(item.total_price || 0),
-//       0,
-//     );
-//   }, [parts]);
-
-//   const discountPercentage = Number(jobDetails?.discount_percentage || 0);
-
-//   const discount = useMemo(() => {
-//     return (subtotal * discountPercentage) / 100;
-//   }, [subtotal, discountPercentage]);
-
-//   const extraServiceAmount = Number(jobDetails?.extra_service?.amount || 0);
-
-//   const total = useMemo(() => {
-//     return subtotal - discount + extraServiceAmount;
-//   }, [subtotal, discount, extraServiceAmount]);
-
-//   // SUBMIT
-//   const handleGenerateInvoice = async (job) => {
-//     try {
-//       setIsGenerating((prev) => ({ ...prev, [job.id]: true }));
-//       const result = await generateAndSaveInvoice(job, user?.id);
-
-//       setGeneratedInvoices((prev) => ({
-//         ...prev,
-//         [job.id]: result.publicUrl,
-//       }));
-//       toast.success("Invoice generated successfully!");
-//     } catch (error) {
-//       console.error("Error generating invoice:", error);
-//       toast.error("Failed to generate invoice.");
-//     } finally {
-//       setIsGenerating((prev) => ({ ...prev, [job.id]: false }));
-//     }
-//   };
-
-//   return (
-//     <div>
-//       {/* OPEN BUTTON */}
-//       <button
-//         onClick={() => setOpen(true)}
-//         className="mt-6 w-full bg-black text-white hover:bg-gray-900 rounded-xl py-3 font-semibold flex items-center justify-center gap-2 transition-all duration-300"
-//       >
-//         Generate Invoice
-//         <ArrowRight size={18} />
-//       </button>
-
-//       {/* MODAL */}
-//       {open && (
-//         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-//           <div className="w-full max-w-4xl bg-white rounded-3xl shadow-2xl overflow-auto max-h-[90vh] relative p-6">
-//             {/* CLOSE */}
-//             <button
-//               onClick={() => setOpen(false)}
-//               className="absolute top-4 right-4 w-10 h-10 rounded-full bg-gray-100 hover:bg-red-100 hover:text-red-500 flex items-center justify-center"
-//             >
-//               <X size={20} />
-//             </button>
-
-//             {/* HEADER */}
-//             <div className="mb-6">
-//               <h2 className="text-3xl font-bold">Invoice Preview</h2>
-
-//               <p className="text-sm text-gray-500 mt-1">
-//                 Review invoice before generating
-//               </p>
-//             </div>
-
-//             {/* FORM */}
-//             <form onSubmit={handleSubmit} className="space-y-6">
-//               {/* CUSTOMER + VEHICLE */}
-//               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-//                 {/* CUSTOMER */}
-//                 <div className="border rounded-2xl overflow-hidden">
-//                   <div className="bg-slate-100 px-4 py-3 font-semibold">
-//                     Customer Information
-//                   </div>
-
-//                   <table className="w-full text-sm">
-//                     <tbody>
-//                       <TableRow label="Customer Name" value={customer?.name} />
-
-//                       <TableRow
-//                         label="Phone Number"
-//                         value={customer?.contact}
-//                       />
-//                     </tbody>
-//                   </table>
-//                 </div>
-
-//                 {/* VEHICLE */}
-//                 <div className="border rounded-2xl overflow-hidden">
-//                   <div className="bg-slate-100 px-4 py-3 font-semibold">
-//                     Vehicle Information
-//                   </div>
-
-//                   <table className="w-full text-sm">
-//                     <tbody>
-//                       <TableRow label="Vehicle" value={vehicle?.model} />
-
-//                       <TableRow
-//                         label="Vehicle Number"
-//                         value={vehicle?.vehicle_number}
-//                       />
-
-//                       <TableRow
-//                         label="Service Type"
-//                         value={serviceInfo?.service_type}
-//                       />
-
-//                       <TableRow
-//                         label="Service Date"
-//                         value={jobDetails?.service_date}
-//                       />
-
-//                       <TableRow
-//                         label="Status"
-//                         value={
-//                           <span className="text-green-600 font-semibold capitalize">
-//                             {serviceInfo?.status}
-//                           </span>
-//                         }
-//                       />
-//                     </tbody>
-//                   </table>
-//                 </div>
-//               </div>
-
-//               {/* PARTS TABLE */}
-//               <div className="border rounded-2xl overflow-hidden">
-//                 <div className="bg-slate-100 px-4 py-3 font-semibold">
-//                   Parts Details
-//                 </div>
-
-//                 <div className="overflow-x-auto">
-//                   <table className="w-full text-sm">
-//                     <thead className="bg-slate-50">
-//                       <tr>
-//                         <th className="p-3 text-left">Part Name</th>
-
-//                         <th className="p-3 text-center">Qty</th>
-
-//                         <th className="p-3 text-right">Price</th>
-
-//                         <th className="p-3 text-right">Total</th>
-//                       </tr>
-//                     </thead>
-
-//                     <tbody>
-//                       {parts.map((part, index) => {
-//                         const qty = Number(part.quantity || 0);
-
-//                         const price = Number(part.total_price || 0);
-
-//                         return (
-//                           <tr key={index} className="border-t">
-//                             <td className="p-3">{part.part_name}</td>
-
-//                             <td className="p-3 text-center">{qty}</td>
-
-//                             <td className="p-3 text-right">
-//                               ₹{price.toFixed(2)}
-//                             </td>
-
-//                             <td className="p-3 text-right font-medium">
-//                               ₹{(qty * price).toFixed(2)}
-//                             </td>
-//                           </tr>
-//                         );
-//                       })}
-//                     </tbody>
-//                   </table>
-//                 </div>
-//               </div>
-
-//               {/* SUMMARY */}
-//               <div className="border rounded-2xl overflow-hidden">
-//                 <div className="bg-slate-100 px-4 py-3 font-semibold">
-//                   Invoice Summary
-//                 </div>
-
-//                 <div className="p-4 space-y-3">
-//                   <SummaryRow
-//                     label="Subtotal"
-//                     value={`₹${subtotal.toFixed(2)}`}
-//                   />
-
-//                   <SummaryRow
-//                     label={`Discount (${discountPercentage}%)`}
-//                     value={`- ₹${discount.toFixed(2)}`}
-//                     color="text-red-500"
-//                   />
-
-//                   {jobDetails?.extra_service && (
-//                     <SummaryRow
-//                       label={jobDetails?.extra_service?.description}
-//                       value={`+ ₹${extraServiceAmount.toFixed(2)}`}
-//                       color="text-green-600"
-//                     />
-//                   )}
-
-//                   <div className="border-t pt-3 flex justify-between text-lg font-bold">
-//                     <span>Total</span>
-
-//                     <span>₹{total.toFixed(2)}</span>
-//                   </div>
-//                 </div>
-//               </div>
-
-//               {/* SUBMIT */}
-//               <button
-//                 onClick={() => handleGenerateInvoice(job)}
-//                 disabled={isGenerating[job.id]}
-//               >
-//                 {isGenerating[job.id] ? "Generating..." : "Generate Invoice"}
-//               </button>
-//             </form>
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-// /* TABLE ROW */
-// const TableRow = ({ label, value }) => (
-//   <tr className="border-t">
-//     <td className="p-3 font-medium w-1/3">{label}</td>
-
-//     <td className="p-3">{value}</td>
-//   </tr>
-// );
-
-// /* SUMMARY ROW */
-// const SummaryRow = ({ label, value, color = "" }) => (
-//   <div className={`flex justify-between ${color}`}>
-//     <span>{label}</span>
-
-//     <span>{value}</span>
-//   </div>
-// );
-
-// export default GenerateInvoiceModel;
-
 import React, { useMemo, useState } from "react";
 import { ArrowRight, X } from "lucide-react";
-import { useAuth } from "../hooks/useAuth";
 import { generateAndSaveInvoice } from "../supabase/invoices";
+import toast from "react-hot-toast";
 
-const GenerateInvoiceModel = ({ jobDetails }) => {
-  const { user } = useAuth();
+const GenerateInvoiceModel = ({ jobDetails, disabled }) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // DATA
+  console.log(jobDetails);
+
   const customer = jobDetails?.customers?.customer_details || {};
   const vehicle = jobDetails?.customers?.vehicle_details || {};
   const parts = jobDetails?.parts_items || [];
   const serviceInfo = jobDetails?.job_info || {};
 
-  // Pre-fill form when jobDetails or open changes
-  React.useEffect(() => {
-    if (open && jobDetails) {
-      setInvoiceForm({
-        customerName: jobDetails.customers?.customer_details?.name || "",
-        customerPhone: jobDetails.customers?.customer_details?.contact || "",
-        vehicleName: jobDetails.customers?.vehicle_details?.model || "",
-        vehicleNumber: jobDetails.customers?.vehicle_details?.vehicle_number || "",
-        serviceType: jobDetails.job_info?.service_type || "",
-        serviceDate: jobDetails.service_date || "",
-        status: jobDetails.job_info?.status || "Pending",
-        parts: jobDetails.parts_items?.map(p => ({
-          name: p.part_name,
-          qty: p.quantity,
-          price: p.unit_price
-        })) || [{ name: "", qty: 1, price: 0 }],
-        tax: 0,
-      });
-    }
-  }, [open, jobDetails]);
-
-  // Handle input changes
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setInvoiceForm((prev) => ({ ...prev, [name]: value }));
-  };
+  const subtotal = useMemo(() => {
+    return parts.reduce((acc, p) => {
+      const qty = Number(p.quantity || 0);
+      const price = Number(p.unit_price || 0); // FIXED (was total_price incorrectly used)
+      return acc + qty * price;
+    }, 0);
+  }, [parts]);
 
   const discountPercentage = Number(jobDetails?.discount_percentage || 0);
 
@@ -876,63 +29,32 @@ const GenerateInvoiceModel = ({ jobDetails }) => {
     return (subtotal * discountPercentage) / 100;
   }, [subtotal, discountPercentage]);
 
-  const extraServiceAmount = Number(jobDetails?.extra_service?.amount || 0);
+  const extraServiceAmount = useMemo(() => {
+    return (
+      jobDetails?.extra_service?.reduce((acc, item) => {
+        return acc + (Number(item?.amount) || 0);
+      }, 0) || 0
+    );
+  }, [jobDetails?.extra_service]);
 
   const total = useMemo(() => {
     return subtotal - discount + extraServiceAmount;
   }, [subtotal, discount, extraServiceAmount]);
 
-  // Submit invoice
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!jobDetails || !user) {
-      alert("Job details or user session not ready. Please try again in a moment.");
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
+  const handleGenerateInvoice = async () => {
+    if (!jobDetails?.id || !jobDetails?.mechanic_id) return;
 
     try {
-      // Map form back to job structure for PDF generation
-      const updatedJob = {
-        ...jobDetails,
-        customers: {
-          ...(jobDetails.customers || {}),
-          customer_details: {
-            ...(jobDetails.customers?.customer_details || {}),
-            name: invoiceForm.customerName,
-            contact: invoiceForm.customerPhone
-          },
-          vehicle_details: {
-            ...(jobDetails.customers?.vehicle_details || {}),
-            model: invoiceForm.vehicleName,
-            vehicle_number: invoiceForm.vehicleNumber
-          }
-        },
-        job_info: {
-          ...(jobDetails.job_info || {}),
-          service_type: invoiceForm.serviceType,
-          status: invoiceForm.status
-        },
-        parts_items: (invoiceForm.parts || []).map((part) => ({
-          part_name: part.name,
-          quantity: part.qty,
-          unit_price: part.price,
-          total_price: part.qty * part.price,
-        })),
-        total_amount_full_service: total,
-      };
+      setLoading(true);
 
-      await generateAndSaveInvoice(updatedJob, user.id);
+      await generateAndSaveInvoice(jobDetails, jobDetails.mechanic_id);
 
-      alert("Invoice generated successfully!");
+      toast.success("Invoice generated successfully!");
       setOpen(false);
     } catch (err) {
       console.error("Failed to generate invoice:", err);
       setError(err.message);
-      alert("Failed to generate invoice: " + err.message);
+      toast.error("Already Created");
     } finally {
       setLoading(false);
     }
@@ -942,161 +64,191 @@ const GenerateInvoiceModel = ({ jobDetails }) => {
     <div>
       {/* OPEN BUTTON */}
       <button
-        onClick={() => setOpen(true)}
-        className="mt-6 w-full bg-black text-white hover:bg-gray-900 rounded-xl py-3 font-semibold flex items-center justify-center gap-2"
+        onClick={() => {
+          if (disabled) return;
+          setOpen(true);
+        }}
+        disabled={disabled}
+        className={`mt-6 w-full rounded-xl py-3 font-semibold flex items-center justify-center gap-2 transition-all duration-300
+          ${
+            disabled
+              ? "bg-gray-400 cursor-not-allowed text-white"
+              : "bg-black hover:bg-gray-900 text-white"
+          }`}
       >
         Generate Invoice
         <ArrowRight size={18} />
       </button>
 
       {/* MODAL */}
-      {open &&
-        (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-            <div className="w-full max-w-4xl bg-white rounded-3xl shadow-2xl max-h-[90vh] overflow-auto relative p-6">
-              {/* CLOSE */}
-              <button
-                onClick={() => setOpen(false)}
-                className="absolute top-4 right-4 w-10 h-10 rounded-full bg-gray-100 hover:bg-red-100 flex items-center justify-center"
-              >
-                <X size={20} />
-              </button>
+      {open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="no-scrollbar w-full max-w-4xl bg-white rounded-3xl shadow-2xl max-h-[90vh] overflow-auto relative p-6">
+            {/* CLOSE */}
+            <button
+              onClick={() => setOpen(false)}
+              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-gray-100 hover:bg-red-100 flex items-center justify-center"
+            >
+              <X size={20} />
+            </button>
 
-              {/* HEADER */}
-              <div className="mb-6">
-                <h2 className="text-3xl font-bold">Invoice Preview</h2>
-                <p className="text-sm text-gray-500">Review before generating</p>
-              </div>
+            {/* HEADER */}
+            <div className="mb-6">
+              <h2 className="text-3xl font-bold">Invoice Preview</h2>
+              <p className="text-sm text-gray-500">Review before generating</p>
+            </div>
 
-              {/* CONTENT (NO FORM) */}
-              <div className="space-y-6">
-                {/* CUSTOMER + VEHICLE */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* CUSTOMER */}
-                  <div className="border rounded-2xl overflow-hidden">
-                    <div className="bg-slate-100 px-4 py-3 font-semibold">
-                      Customer Information
-                    </div>
-                    <table className="w-full text-sm">
-                      <tbody>
-                        <TableRow label="Name" value={customer?.name} />
-                        <TableRow label="Phone" value={customer?.contact} />
-                      </tbody>
-                    </table>
-                  </div>
-
-                  {/* VEHICLE */}
-                  <div className="border rounded-2xl overflow-hidden">
-                    <div className="bg-slate-100 px-4 py-3 font-semibold">
-                      Vehicle Information
-                    </div>
-                    <table className="w-full text-sm">
-                      <tbody>
-                        <TableRow label="Vehicle" value={vehicle?.model} />
-                        <TableRow
-                          label="Number"
-                          value={vehicle?.vehicle_number}
-                        />
-                        <TableRow
-                          label="Service"
-                          value={serviceInfo?.service_type}
-                        />
-                        <TableRow label="Date" value={jobDetails?.service_date} />
-                        <TableRow
-                          label="Status"
-                          value={
-                            <span className="text-green-600 font-semibold">
-                              {serviceInfo?.status}
-                            </span>
-                          }
-                        />
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                {/* PARTS */}
+            {/* CONTENT */}
+            <div className="space-y-6">
+              {/* CUSTOMER + VEHICLE */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* CUSTOMER */}
                 <div className="border rounded-2xl overflow-hidden">
                   <div className="bg-slate-100 px-4 py-3 font-semibold">
-                    Parts Details
+                    Customer Information
+                  </div>
+                  <table className="w-full text-sm">
+                    <tbody>
+                      <TableRow label="Name" value={customer?.name} />
+                      <TableRow label="Phone" value={customer?.contact} />
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* VEHICLE */}
+                <div className="border rounded-2xl overflow-hidden">
+                  <div className="bg-slate-100 px-4 py-3 font-semibold">
+                    Vehicle Information
+                  </div>
+                  <table className="w-full text-sm">
+                    <tbody>
+                      <TableRow label="Vehicle" value={vehicle?.model} />
+                      <TableRow
+                        label="Number"
+                        value={vehicle?.vehicle_number}
+                      />
+                      <TableRow
+                        label="Service"
+                        value={serviceInfo?.service_type}
+                      />
+                      <TableRow label="Date" value={jobDetails?.service_date} />
+                      <TableRow
+                        label="Status"
+                        value={
+                          <span className="text-green-600 font-semibold">
+                            {serviceInfo?.status}
+                          </span>
+                        }
+                      />
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* PARTS */}
+              <div className="border rounded-2xl overflow-hidden">
+                <div className="bg-slate-100 px-4 py-3 font-semibold">
+                  Parts Details
+                </div>
+
+                <table className="w-full text-sm">
+                  <thead className="bg-slate-50">
+                    <tr>
+                      <th className="p-3 text-left">Part</th>
+                      <th className="p-3 text-center">Qty</th>
+                      <th className="p-3 text-right">Price</th>
+                      <th className="p-3 text-right">Total</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {parts.map((p, i) => {
+                      const qty = Number(p.quantity || 0);
+                      const price = Number(p.unit_price || 0);
+
+                      return (
+                        <tr key={i} className="border-t">
+                          <td className="p-3">{p.part_name}</td>
+                          <td className="p-3 text-center">{qty}</td>
+                          <td className="p-3 text-right">
+                            ₹{price.toFixed(2)}
+                          </td>
+                          <td className="p-3 text-right font-medium">
+                            ₹{(qty * price).toFixed(2)}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* EXTRA SERVICES */}
+              {jobDetails?.extra_service?.length > 0 && (
+                <div className="border rounded-2xl overflow-hidden">
+                  <div className="bg-slate-100 px-4 py-3 font-semibold">
+                    Extra Services
                   </div>
 
                   <table className="w-full text-sm">
                     <thead className="bg-slate-50">
                       <tr>
-                        <th className="p-3 text-left">Part</th>
-                        <th className="p-3 text-center">Qty</th>
-                        <th className="p-3 text-right">Price</th>
-                        <th className="p-3 text-right">Total</th>
+                        <th className="p-3 text-left">Service</th>
+                        <th className="p-3 text-right">Amount</th>
                       </tr>
                     </thead>
 
                     <tbody>
-                      {parts.map((p, i) => {
-                        const qty = Number(p.quantity || 0);
-                        const price = Number(p.total_price || 0);
-
-                        return (
-                          <tr key={i} className="border-t">
-                            <td className="p-3">{p.part_name}</td>
-                            <td className="p-3 text-center">{qty}</td>
-                            <td className="p-3 text-right">
-                              ₹{price.toFixed(2)}
-                            </td>
-                            <td className="p-3 text-right font-medium">
-                              ₹{(qty * price).toFixed(2)}
-                            </td>
-                          </tr>
-                        );
-                      })}
+                      {jobDetails.extra_service.map((s, i) => (
+                        <tr key={i} className="border-t">
+                          <td className="p-3">{s?.description || "Service"}</td>
+                          <td className="p-3 text-right font-medium">
+                            ₹{Number(s?.amount || 0).toFixed(2)}
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
+              )}
 
-                {/* SUMMARY */}
-                <div className="border rounded-2xl p-4 space-y-2">
-                  <Row label="Subtotal" value={`₹${subtotal.toFixed(2)}`} />
+              {/* SUMMARY */}
+              <div className="border rounded-2xl p-4 space-y-2">
+                <Row label="Subtotal" value={`₹${subtotal.toFixed(2)}`} />
 
-                  <Row
-                    label={`Discount (${discountPercentage}%)`}
-                    value={`- ₹${discount.toFixed(2)}`}
-                    color="text-red-500"
-                  />
+                <Row
+                  label={`Discount (${discountPercentage}%)`}
+                  value={`- ₹${discount.toFixed(2)}`}
+                  color="text-red-500"
+                />
 
-                  {jobDetails?.extra_service && (
-                    <Row
-                      label="Extra Service"
-                      value={`+ ₹${extraServiceAmount.toFixed(2)}`}
-                      color="text-green-600"
-                    />
-                  )}
-                </div>
-                <div className="border p-4 rounded-3xl bg-slate-50">
-                  <div className="flex justify-between mb-2">
-                    <span>Subtotal</span>
-                    <span>₹{subtotal.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between font-semibold">
-                    <span>Total</span>
-                    <span>₹{total.toFixed(2)}</span>
-                  </div>
-                </div>
+                <Row
+                  label="Extra Services"
+                  value={`+ ₹${extraServiceAmount.toFixed(2)}`}
+                  color="text-green-600"
+                />
               </div>
 
-              {/* ACTION */}
-              <button
-                onClick={handleGenerateInvoice}
-                disabled={isGenerating[jobDetails?.id]}
-                className="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl font-semibold"
-              >
-                {isGenerating[jobDetails?.id]
-                  ? "Generating..."
-                  : "Generate Invoice"}
-              </button>
+              {/* TOTAL */}
+              <div className="border p-4 rounded-3xl bg-slate-50">
+                <div className="flex justify-between font-semibold text-lg">
+                  <span>Total</span>
+                  <span>₹{total.toFixed(2)}</span>
+                </div>
+              </div>
             </div>
+
+            {/* ACTION */}
+            <button
+              onClick={handleGenerateInvoice}
+              disabled={loading}
+              className="w-full mt-4 bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl font-semibold"
+            >
+              {loading ? "Generating..." : "Generate Invoice"}
+            </button>
           </div>
-        )
-      }
+        </div>
+      )}
     </div>
   );
 };

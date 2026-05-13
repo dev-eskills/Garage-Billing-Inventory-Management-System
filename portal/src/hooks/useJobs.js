@@ -1,5 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createJob, fetchJobDetails, fetchJobs, updateJobParts } from "../supabase/jobs";
+import {
+  createJob,
+  fetchJobDetails,
+  fetchJobs,
+  markJobComplete,
+  updateJobParts,
+} from "../supabase/jobs";
 import { toast } from "react-hot-toast";
 
 export const useJobs = (mechanicId, jobId = null) => {
@@ -33,7 +39,7 @@ export const useJobs = (mechanicId, jobId = null) => {
     },
   });
 
-   // Update job mutation
+  // Update job mutation
   const updateJobMutation = useMutation({
     mutationFn: ({ jobId, updateData }) => updateJobParts(jobId, updateData),
     onSuccess: () => {
@@ -42,6 +48,24 @@ export const useJobs = (mechanicId, jobId = null) => {
       queryClient.invalidateQueries({ queryKey: ["jobDetails", jobId] });
       toast.success("Job updated successfully!");
     },
+    onError: (err) => {
+      toast.error(err.message);
+    },
+  });
+
+  const markJobCompleteMutation = useMutation({
+    mutationFn: (jobDetails) => markJobComplete(jobDetails),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["jobs", mechanicId] });
+
+      queryClient.invalidateQueries({
+        queryKey: ["jobDetails", jobId],
+      });
+
+      toast.success("Job marked as completed!");
+    },
+
     onError: (err) => {
       toast.error(err.message);
     },
@@ -60,5 +84,8 @@ export const useJobs = (mechanicId, jobId = null) => {
 
     updateJob: updateJobMutation.mutateAsync,
     isUpdatingJob: updateJobMutation.isPending,
+
+    markJobAsComplete: markJobCompleteMutation.mutateAsync,
+    isUpdatingStatus: markJobCompleteMutation.isPending,
   };
 };

@@ -20,10 +20,18 @@ import { useJobs } from "../../hooks/useJobs";
 import PartsUsed from "../../Components/Mechanic/Partsused";
 import AssignedMechanicCard from "../../Components/Mechanic/AssignedMechanicCard";
 import GenerateInvoiceModel from "../../Components/GenerateInvoiceModel";
-
 const MechanicJobDetail = () => {
   const { id } = useParams();
-  const { jobDetails, isJobDetailsLoading } = useJobs(null, id);
+  const {
+    jobDetails,
+    isJobDetailsLoading,
+    markJobAsComplete,
+    isUpdatingStatus,
+  } = useJobs(null, id);
+
+  const handleComplete = async () => {
+    await markJobAsComplete(jobDetails);
+  };
 
   return (
     <div className="min-h-screen text-gray-900 p-6">
@@ -31,7 +39,19 @@ const MechanicJobDetail = () => {
       <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 mb-8">
         <div>
           <div className="flex items-center gap-3">
-            <span className="bg-yellow-100 text-yellow-700 px-4 py-1 rounded-full text-sm font-medium border border-yellow-200">
+            <span
+              className={`px-4 py-1 rounded-full text-sm font-medium border ${
+                jobDetails?.job_info?.status === "completed"
+                  ? "bg-green-100 text-green-700 border-green-200"
+                  : status === "pending"
+                    ? "bg-yellow-100 text-yellow-700 border-yellow-200"
+                    : status === "in_progress"
+                      ? "bg-blue-100 text-blue-700 border-blue-200"
+                      : "bg-gray-100 text-gray-700 border-gray-200"
+              }
+  `}
+            >
+              {" "}
               {jobDetails?.job_info?.status}
             </span>
 
@@ -48,10 +68,27 @@ const MechanicJobDetail = () => {
         </div>
 
         <div className="flex gap-3 flex-wrap">
-          <AssignPartsModal jobId={jobDetails?.id} />
-
-          <button className="bg-green-500 hover:bg-green-600 text-white px-5 py-3 rounded-xl font-semibold shadow transition">
-            Mark Complete
+          {/* <AssignPartsModal jobId={jobDetails?.id} /> */}
+          <button
+            onClick={handleComplete}
+            disabled={
+              jobDetails?.job_info?.status === "completed" || isUpdatingStatus
+            }
+            className={`px-5 py-3 rounded-xl font-semibold shadow transition text-white
+    ${
+      jobDetails?.job_info?.status === "completed"
+        ? "bg-gray-400 cursor-not-allowed"
+        : isUpdatingStatus
+          ? "bg-green-400 cursor-wait"
+          : "bg-green-500 hover:bg-green-600"
+    }
+  `}
+          >
+            {jobDetails?.job_info?.status === "completed"
+              ? "Completed"
+              : isUpdatingStatus
+                ? "Updating..."
+                : "Mark Complete"}
           </button>
         </div>
       </div>
@@ -178,8 +215,10 @@ const MechanicJobDetail = () => {
 
               <Wrench size={50} />
             </div>
-
-            <GenerateInvoiceModel jobDetails={jobDetails} />
+            <GenerateInvoiceModel
+              jobDetails={jobDetails}
+              disabled={jobDetails?.job_info?.status !== "completed"}
+            />
           </div>
 
           {/* Mechanic */}
@@ -195,14 +234,22 @@ const MechanicJobDetail = () => {
             </div>
 
             <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
-              {jobDetails?.extra_service ? (
-                <div className="flex justify-between items-center text-gray-700">
-                  <span className="font-medium">
-                    {jobDetails?.extra_service.description}
-                  </span>
-                  <span className="font-semibold text-gray-900">
-                    ₹ {jobDetails?.extra_service.amount}
-                  </span>
+              {jobDetails?.extra_service?.length > 0 ? (
+                <div className="space-y-3">
+                  {jobDetails.extra_service.map((service, index) => (
+                    <div
+                      key={index}
+                      className="flex justify-between items-center text-gray-700"
+                    >
+                      <span className="font-medium">
+                        {service.description || "Extra Service"}
+                      </span>
+
+                      <span className="font-semibold text-gray-900">
+                        ₹ {Number(service.amount || 0).toFixed(2)}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               ) : (
                 <p className="text-gray-400 italic text-sm">

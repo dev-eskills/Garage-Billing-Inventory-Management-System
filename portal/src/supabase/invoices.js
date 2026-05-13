@@ -77,6 +77,22 @@ export const fetchInvoiceById = async (invoiceId) => {
   return data;
 };
 
+export const fetchInvoiceByJobId = async (jobId) => {
+  const { data, error } = await supabase
+    .from("invoices")
+    .select(
+      `
+      *
+    `,
+    )
+    .eq("job_id", jobId) // ✅ FIX HERE
+    .single();
+
+  if (error) throw error;
+
+  return data;
+};
+
 export const downloadInvoice = async (path, name) => {
   const { data, error } = await supabase.storage
     .from("invoices")
@@ -304,7 +320,6 @@ export const generateAndSaveInvoice = async (job, userId) => {
     const savedRecord = await uploadAndRecordInvoice(job.id, pdfBlob, userId);
 
     console.log("Invoice processed successfully:", savedRecord.public_url);
-
 
     return {
       publicUrl: savedRecord.public_url,
