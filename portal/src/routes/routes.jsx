@@ -17,24 +17,24 @@ import AdminExpenses from "../pages/admin/AdminExpenses";
 import MechanicDetails from "../pages/admin/MechanicDetails";
 import AdminLosses from "../pages/admin/AdminLosses";
 import MechanicDashboard from "../pages/mechanic/MechanicDashboard";
-import MechanicProfile from "../Pages/mechanic/MechanicProfile";
-import MechanicWorkOrders from "../Pages/mechanic/MechanicWorkOrders";
-import MechanicParts from "../Pages/mechanic/MechanicParts";
+import MechanicProfile from "../pages/mechanic/MechanicProfile";
+import MechanicWorkOrders from "../pages/mechanic/MechanicWorkOrders";
+import MechanicParts from "../pages/mechanic/MechanicParts";
 import MechanicInvoices from "../pages/mechanic/MechanicInvoices";
-import MechanicInvoiceDetail from "../Pages/mechanic/MechanicInvoiceDetail";
-import MechanicCustomers from "../Pages/mechanic/MechanicCustomers";
-import MechanicCustomerDetail from "../Pages/mechanic/MechanicCustomerDetail";
-import MechanicReports from "../Pages/mechanic/MechanicReports";
-import MechanicJobDetail from "../Pages/mechanic/MechanicJobDetail";
+import MechanicInvoiceDetail from "../pages/mechanic/MechanicInvoiceDetail";
+import MechanicCustomers from "../pages/mechanic/MechanicCustomers";
+import MechanicCustomerDetail from "../pages/mechanic/MechanicCustomerDetail";
+import MechanicReports from "../pages/mechanic/MechanicReports";
+import MechanicJobDetail from "../pages/mechanic/MechanicJobDetail";
 import CompletedJobs from "../components/Mechanic/CompletedJobs";
 import PendingJobs from "../components/Mechanic/PendingJobs";
 import PartsRequest from "../components/Mechanic/PartsRequest";
 import MechanicLayout from "../layouts/mechanic/MechanicLayout";
-import CreateCustomer from "../Pages/mechanic/CreateCustomer";
-import MechanicPurchase from "../Pages/mechanic/MechanicPurchase";
-import CreateJob from "../Pages/mechanic/CreateJob";
-import AllAssignedJobs from "../Pages/mechanic/AllAssignedJobs";
-import MechanicPurchases from "../Pages/mechanic/MechanicPurchases";
+import CreateCustomer from "../pages/mechanic/CreateCustomer";
+import MechanicPurchase from "../pages/mechanic/MechanicPurchase";
+import CreateJob from "../pages/mechanic/CreateJob";
+import AllAssignedJobs from "../pages/mechanic/AllAssignedJobs";
+import MechanicPurchases from "../pages/mechanic/MechanicPurchases";
 
 const router = createBrowserRouter([
   {
