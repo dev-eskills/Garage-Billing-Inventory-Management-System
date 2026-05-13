@@ -9,7 +9,6 @@ import {
   Clock3,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import PartsRequest from "./PartsRequest";
 
 const completedJobs = [
   {
