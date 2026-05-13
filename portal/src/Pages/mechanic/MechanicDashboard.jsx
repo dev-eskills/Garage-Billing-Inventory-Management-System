@@ -18,9 +18,9 @@ import MechanicInvoices from "./MechanicInvoices";
 import { useAuth } from "../../hooks/useAuth";
 import { useJobs } from "../../hooks/useJobs";
 import { useDashboard } from "../../hooks/useDashboard";
-import { useInvoices } from "../../hooks/useInvoices";
 import RecentActivities from "../../Components/Mechanic/RecentActivities";
 import QuickActions from "../../Components/Mechanic/QuickActions";
+import { useMechanicInventory } from "../../hooks/useMechanicInventory";
 
 // const dashboardStats = [
 //   {
@@ -94,78 +94,80 @@ const MechanicDashboard = () => {
   const { jobs, isJobsLoading } = useJobs(user?.id);
   const [inventoryOpen, setInventoryOpen] = useState(false);
   const [purchaseOpen, setPurchaseOpen] = useState(false);
-  const { stats, statsLoading } = useDashboard();
-  const { allInvoices } = useInvoices();
-  console.log(allInvoices);
+  const {
+    stats,
+    statsLoading,
+    globalStats,
+    userStats,
+    globalStatsLoading,
+    userStatsLoading,
+  } = useDashboard();
+
+  console.log("user Dashboard", userStats);
+
   const dashboardStats = [
     {
-      title: "Active Jobs",
-      value: stats?.activeJobs || 0,
-      subtitle: "Currently pending jobs",
-      change: `${stats?.completedJobs || 0} completed`,
+      title: "Total Jobs",
+      value: userStats?.totalJobs || 0,
+      subtitle: "Assigned / completed jobs",
+      change: `${userStats?.completedJobs || 0} completed • ${userStats?.pendingJobs || 0} pending`,
       color: "bg-indigo-100 text-indigo-700",
     },
 
     {
       title: "Parts Inventory",
-      value: stats?.parts || 0,
+      value: userStats?.parts || 0,
       subtitle: "Available spare parts",
-      change: `${stats?.purchases || 0} purchases`,
-      color: "bg-amber-100 text-amber-700",
+      change: `₹${Math.abs(userStats?.totalInventoryValue || 0).toLocaleString("en-IN")}`,
+      color:
+        (userStats?.totalInventoryValue || 0) >= 0
+          ? "bg-amber-100 text-amber-700"
+          : "bg-red-100 text-red-700",
     },
 
     {
-      title: "Open Invoices",
-      value: stats?.invoices || 0,
-      subtitle: "Awaiting payments",
-      change: `₹${stats?.revenue?.toLocaleString("en-IN") || 0}`,
+      title: "Invoices",
+      value: userStats?.invoices || 0,
+      subtitle: "Total invoices created",
+      change: `${userStats?.customers || 0} customers`,
       color: "bg-emerald-100 text-emerald-700",
     },
 
     {
       title: "Customers",
-      value: stats?.customers || 0,
+      value: userStats?.customers || 0,
       subtitle: "Registered customers",
-      change: `${stats?.mechanics || 0} mechanics`,
+      change: "Active base",
       color: "bg-sky-100 text-sky-700",
     },
 
     {
-      title: "Revenue",
-      value: `₹${stats?.revenue?.toLocaleString("en-IN") || 0}`,
-      subtitle: "Total earnings",
-      change: `₹${stats?.profitability?.toLocaleString("en-IN") || 0} profit`,
-      color: "bg-green-100 text-green-700",
-    },
-
-    {
-      title: "Expenses",
-      value: `₹${stats?.expenses?.toLocaleString("en-IN") || 0}`,
-      subtitle: "Business expenses",
-      change: `₹${stats?.losses?.toLocaleString("en-IN") || 0} losses`,
-      color: "bg-red-100 text-red-700",
-    },
-
-    {
-      title: "Purchases",
-      value: stats?.purchases || 0,
-      subtitle: "Total purchase orders",
-      change: `₹${stats?.totalPurchasesAmount?.toLocaleString("en-IN") || 0}`,
-      color: "bg-violet-100 text-violet-700",
-    },
-
-    {
-      title: "Profitability",
-      value: `₹${stats?.profitability?.toLocaleString("en-IN") || 0}`,
-      subtitle: "Net business profit",
-      change: stats?.profitability > 0 ? "Profitable" : "Loss Running",
+      title: "Inventory Value",
+      value: `₹${Math.abs(userStats?.totalInventoryValue || 0).toLocaleString("en-IN")}`,
+      subtitle: "Total stock value",
+      change:
+        (userStats?.totalInventoryValue || 0) >= 0
+          ? "Stock healthy"
+          : "Stock deficit detected",
       color:
-        stats?.profitability > 0
-          ? "bg-emerald-100 text-emerald-700"
-          : "bg-rose-100 text-rose-700",
+        (userStats?.totalInventoryValue || 0) >= 0
+          ? "bg-green-100 text-green-700"
+          : "bg-red-100 text-red-700",
+    },
+
+    {
+      title: "System Status",
+      value: `${userStats?.completedJobs || 0}/${userStats?.totalJobs || 0}`,
+      subtitle: "Completed vs total jobs",
+      change: "Live tracking enabled",
+      color: "bg-violet-100 text-violet-700",
     },
   ];
 
+  const { MechanicPartsUsage } = useMechanicInventory(user?.id);
+  const inventoryItems = MechanicPartsUsage || [];
+
+  console.log(MechanicPartsUsage);
   return (
     <div className="min-h-screen bg-slate-50 px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-8">
@@ -275,7 +277,7 @@ const MechanicDashboard = () => {
           </div>
         </section>
 
-        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {dashboardStats.map((stat) => (
             <div
               key={stat.title}
@@ -303,7 +305,7 @@ const MechanicDashboard = () => {
 
         <section className="grid gap-6 xl:grid-cols-[1.8fr_1fr]">
           <div className="space-y-6">
-            <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+            <div className="rounded-3xl min-h-[50vh] bg-white p-6 shadow-sm ring-1 ring-slate-200">
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <h2 className="text-lg font-semibold text-slate-900">
@@ -393,6 +395,7 @@ const MechanicDashboard = () => {
             {/* <QuickActions /> */}
 
             <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+              {/* Header */}
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <h2 className="text-lg font-semibold text-slate-900">
@@ -404,29 +407,35 @@ const MechanicDashboard = () => {
                 </div>
               </div>
 
+              {/* LIST */}
               <div className="mt-6 space-y-4">
-                {inventoryItems.map((item) => (
+                {inventoryItems.map((item, index) => (
                   <div
-                    key={item.name}
+                    key={index}
                     className="space-y-3 rounded-3xl border border-slate-200 bg-slate-50 p-4"
                   >
+                    {/* Top row */}
                     <div className="flex items-center justify-between gap-4">
                       <div>
                         <p className="font-semibold text-slate-900">
                           {item.name}
                         </p>
+
                         <p className="text-sm text-slate-500">
-                          {item.available}
+                          {item.remaining} available
                         </p>
                       </div>
+
                       <p className="text-sm font-semibold text-slate-700">
-                        {item.usage}
+                        {item.usagePercent?.toFixed(0)}%
                       </p>
                     </div>
+
+                    {/* Progress bar */}
                     <div className="h-2 overflow-hidden rounded-full bg-slate-200">
                       <div
-                        className="h-full rounded-full bg-slate-900"
-                        style={{ width: item.usage }}
+                        className="h-full rounded-full bg-slate-900 transition-all duration-300"
+                        style={{ width: `${item.usagePercent || 0}%` }}
                       />
                     </div>
                   </div>

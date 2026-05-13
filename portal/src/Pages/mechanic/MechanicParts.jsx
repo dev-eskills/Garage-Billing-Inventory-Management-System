@@ -26,9 +26,10 @@ const MechanicParts = () => {
         item.sku?.toLowerCase().includes(searchTerm.toLowerCase()),
     );
   }, [mechanicInventory, searchTerm]);
+  console.log(mechanicInventory);
 
   return (
-    <div className="flex flex-col h-[60vh] bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm relative">
+    <div className="flex flex-col h-[60vh]  overflow-hidden  relative">
       {/* Header section */}
       <div className="p-6 border-b border-slate-100 bg-slate-50/50">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -46,7 +47,7 @@ const MechanicParts = () => {
             </div>
           </div>
 
-          <div className="relative min-w-[280px]">
+          <div className="relative min-w-70">
             <Search
               className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
               size={16}
@@ -132,7 +133,7 @@ const MechanicParts = () => {
                         Total Quantity
                       </p>
                       <p className="text-lg font-bold text-slate-900">
-                         {item.total_quantity}
+                        {item.total_quantity}
                       </p>
                     </div>
                     <div className="text-right">
@@ -141,7 +142,7 @@ const MechanicParts = () => {
                       </p>
                       <p className="text-lg font-bold text-slate-900 flex items-center justify-end gap-0.5">
                         <IndianRupee size={14} />
-                        {Number(item.unit_price).toLocaleString()}
+                        {Number(item.weighted_avg_unit_price).toLocaleString()}
                       </p>
                     </div>
                   </div>

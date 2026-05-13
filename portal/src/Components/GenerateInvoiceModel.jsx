@@ -8,17 +8,17 @@ const GenerateInvoiceModel = ({ jobDetails, disabled }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // DATA
+  console.log(jobDetails);
+
   const customer = jobDetails?.customers?.customer_details || {};
   const vehicle = jobDetails?.customers?.vehicle_details || {};
   const parts = jobDetails?.parts_items || [];
   const serviceInfo = jobDetails?.job_info || {};
 
-  // SUBTOTAL
   const subtotal = useMemo(() => {
     return parts.reduce((acc, p) => {
       const qty = Number(p.quantity || 0);
-      const price = Number(p.total_price || 0);
+      const price = Number(p.unit_price || 0); // FIXED (was total_price incorrectly used)
       return acc + qty * price;
     }, 0);
   }, [parts]);
@@ -29,13 +29,18 @@ const GenerateInvoiceModel = ({ jobDetails, disabled }) => {
     return (subtotal * discountPercentage) / 100;
   }, [subtotal, discountPercentage]);
 
-  const extraServiceAmount = Number(jobDetails?.extra_service?.amount || 0);
+  const extraServiceAmount = useMemo(() => {
+    return (
+      jobDetails?.extra_service?.reduce((acc, item) => {
+        return acc + (Number(item?.amount) || 0);
+      }, 0) || 0
+    );
+  }, [jobDetails?.extra_service]);
 
   const total = useMemo(() => {
     return subtotal - discount + extraServiceAmount;
   }, [subtotal, discount, extraServiceAmount]);
 
-  // GENERATE INVOICE
   const handleGenerateInvoice = async () => {
     if (!jobDetails?.id || !jobDetails?.mechanic_id) return;
 
@@ -50,7 +55,6 @@ const GenerateInvoiceModel = ({ jobDetails, disabled }) => {
       console.error("Failed to generate invoice:", err);
       setError(err.message);
       toast.error("Already Created");
-      console.log("Failed to generate invoice: " + err.message);
     } finally {
       setLoading(false);
     }
@@ -79,7 +83,7 @@ const GenerateInvoiceModel = ({ jobDetails, disabled }) => {
       {/* MODAL */}
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-4xl bg-white rounded-3xl shadow-2xl max-h-[90vh] overflow-auto relative p-6">
+          <div className="no-scrollbar w-full max-w-4xl bg-white rounded-3xl shadow-2xl max-h-[90vh] overflow-auto relative p-6">
             {/* CLOSE */}
             <button
               onClick={() => setOpen(false)}
@@ -98,6 +102,7 @@ const GenerateInvoiceModel = ({ jobDetails, disabled }) => {
             <div className="space-y-6">
               {/* CUSTOMER + VEHICLE */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* CUSTOMER */}
                 <div className="border rounded-2xl overflow-hidden">
                   <div className="bg-slate-100 px-4 py-3 font-semibold">
                     Customer Information
@@ -110,6 +115,7 @@ const GenerateInvoiceModel = ({ jobDetails, disabled }) => {
                   </table>
                 </div>
 
+                {/* VEHICLE */}
                 <div className="border rounded-2xl overflow-hidden">
                   <div className="bg-slate-100 px-4 py-3 font-semibold">
                     Vehicle Information
@@ -158,7 +164,7 @@ const GenerateInvoiceModel = ({ jobDetails, disabled }) => {
                   <tbody>
                     {parts.map((p, i) => {
                       const qty = Number(p.quantity || 0);
-                      const price = Number(p.total_price || 0);
+                      const price = Number(p.unit_price || 0);
 
                       return (
                         <tr key={i} className="border-t">
@@ -177,6 +183,35 @@ const GenerateInvoiceModel = ({ jobDetails, disabled }) => {
                 </table>
               </div>
 
+              {/* EXTRA SERVICES */}
+              {jobDetails?.extra_service?.length > 0 && (
+                <div className="border rounded-2xl overflow-hidden">
+                  <div className="bg-slate-100 px-4 py-3 font-semibold">
+                    Extra Services
+                  </div>
+
+                  <table className="w-full text-sm">
+                    <thead className="bg-slate-50">
+                      <tr>
+                        <th className="p-3 text-left">Service</th>
+                        <th className="p-3 text-right">Amount</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {jobDetails.extra_service.map((s, i) => (
+                        <tr key={i} className="border-t">
+                          <td className="p-3">{s?.description || "Service"}</td>
+                          <td className="p-3 text-right font-medium">
+                            ₹{Number(s?.amount || 0).toFixed(2)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
               {/* SUMMARY */}
               <div className="border rounded-2xl p-4 space-y-2">
                 <Row label="Subtotal" value={`₹${subtotal.toFixed(2)}`} />
@@ -187,17 +222,16 @@ const GenerateInvoiceModel = ({ jobDetails, disabled }) => {
                   color="text-red-500"
                 />
 
-                {jobDetails?.extra_service && (
-                  <Row
-                    label="Extra Service"
-                    value={`+ ₹${extraServiceAmount.toFixed(2)}`}
-                    color="text-green-600"
-                  />
-                )}
+                <Row
+                  label="Extra Services"
+                  value={`+ ₹${extraServiceAmount.toFixed(2)}`}
+                  color="text-green-600"
+                />
               </div>
 
+              {/* TOTAL */}
               <div className="border p-4 rounded-3xl bg-slate-50">
-                <div className="flex justify-between font-semibold">
+                <div className="flex justify-between font-semibold text-lg">
                   <span>Total</span>
                   <span>₹{total.toFixed(2)}</span>
                 </div>
@@ -208,7 +242,7 @@ const GenerateInvoiceModel = ({ jobDetails, disabled }) => {
             <button
               onClick={handleGenerateInvoice}
               disabled={loading}
-              className="w-full mt-2 bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl font-semibold"
+              className="w-full mt-4 bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl font-semibold"
             >
               {loading ? "Generating..." : "Generate Invoice"}
             </button>
