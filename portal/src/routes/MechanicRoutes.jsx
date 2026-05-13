@@ -2,40 +2,40 @@ import React, { Suspense, lazy } from "react";
 import { useRoutes } from "react-router-dom";
 
 const MechanicDashboard = lazy(
-  () => import("../Pages/mechanic/MechanicDashboard"),
+  () => import("../pages/mechanic/MechanicDashboard"),
 );
-const MechanicProfile = lazy(() => import("../Pages/mechanic/MechanicProfile"));
+const MechanicProfile = lazy(() => import("../pages/mechanic/MechanicProfile"));
 const MechanicWorkOrders = lazy(
-  () => import("../Pages/mechanic/MechanicWorkOrders"),
+  () => import("../pages/mechanic/MechanicWorkOrders"),
 );
-const MechanicParts = lazy(() => import("../Pages/mechanic/MechanicParts"));
+const MechanicParts = lazy(() => import("../pages/mechanic/MechanicParts"));
 
 const MechanicInvoices = lazy(
-  () => import("../Pages/mechanic/MechanicInvoices"),
+  () => import("../pages/mechanic/MechanicInvoices"),
 );
 const MechanicInvoiceDetail = lazy(
-  () => import("../Pages/mechanic/MechanicInvoiceDetail"),
+  () => import("../pages/mechanic/MechanicInvoiceDetail"),
 );
 const MechanicCustomers = lazy(
-  () => import("../Pages/mechanic/MechanicCustomers"),
+  () => import("../pages/mechanic/MechanicCustomers"),
 );
 const MechanicCustomerDetail = lazy(
-  () => import("../Pages/mechanic/MechanicCustomerDetail"),
+  () => import("../pages/mechanic/MechanicCustomerDetail"),
 );
-const MechanicReports = lazy(() => import("../Pages/mechanic/MechanicReports"));
+const MechanicReports = lazy(() => import("../pages/mechanic/MechanicReports"));
 
 const MechanicJobDetail = lazy(
-  () => import("../Pages/mechanic/MechanicJobDetail"),
+  () => import("../pages/mechanic/MechanicJobDetail"),
 );
-const ALL_JOBS = lazy(() => import("../Pages/mechanic/AllAssignedJobs"));
+const ALL_JOBS = lazy(() => import("../pages/mechanic/AllAssignedJobs"));
 const CompletedJobs = lazy(
   () => import("../components/Mechanic/CompletedJobs"),
 );
 const PendingJobs = lazy(() => import("../components/Mechanic/PendingJobs"));
 const PartsRequest = lazy(() => import("../components/Mechanic/PartsRequest"));
-const CreateCustomer = lazy(() => import("../Pages/mechanic/CreateCustomer"));
+const CreateCustomer = lazy(() => import("../pages/mechanic/CreateCustomer"));
 const MechanicPurchase = lazy(
-  () => import("../Pages/mechanic/MechanicPurchase"),
+  () => import("../pages/mechanic/MechanicPurchase"),
 );
 
 const mechanicRoutes = [
