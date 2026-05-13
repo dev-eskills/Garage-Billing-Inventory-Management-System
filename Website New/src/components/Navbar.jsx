@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, Car, ChevronRight } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
@@ -166,7 +166,7 @@ export default function Navbar() {
 
               {/* Bottom CTA */}
               <div style={{ padding: '1.5rem', borderTop: '1px solid #F0F0F0' }}>
-                <Link to="/contact" className="btn-red" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, padding: '16px', width: '100%', fontSize: '0.95rem', borderRadius: '16px', textDecoration: 'none' }}>
+                <Link to="/contact" className="btn-red">
                   Book Service Now <Car size={18} />
                 </Link>
               </div>

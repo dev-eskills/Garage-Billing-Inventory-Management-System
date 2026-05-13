@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+ import { useEffect } from 'react'
 import Lenis from 'lenis'
 import 'lenis/dist/lenis.css'
 import { useLocation } from 'react-router-dom'
