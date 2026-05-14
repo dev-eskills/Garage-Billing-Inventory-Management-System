@@ -46,7 +46,7 @@ const MechanicPurchases = lazy(() => import("../pages/mechanic/MechanicPurchases
 
 // Mechanic Components (if used as pages)
 const CompletedJobs = lazy(() => import("../Components/Mechanic/CompletedJobs"));
-const PendingJobs = lazy(() => import("../Components/Mechanic/PendingJobs"));
+const PendingJobs = lazy(() => import("../Components/Mechanic/pendingJobs"));
 const PartsRequest = lazy(() => import("../Components/Mechanic/PartsRequest"));
 
 // Loading Fallback

@@ -18,7 +18,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAdminInventory } from '../../hooks/useAdminInventory';
 import { usePagination } from '../../hooks/usePagination';
-import Pagination from '../../components/common/Pagination';
+import Pagination from '../../Components/common/Pagination';
 
 const AdminInventory = () => {
   const {

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
-import MechanicHeader from "../../components/MechanicHeader";
+import MechanicHeader from "../../Components/MechanicHeader";
 
 const MechanicLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);

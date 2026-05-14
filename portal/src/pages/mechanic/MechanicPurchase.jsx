@@ -5,7 +5,7 @@ import { useParts } from "../../hooks/useParts";
 import { useAdminInventory } from "../../hooks/useAdminInventory";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
-import MechanicCart from "../../components/Mechanic/MechanicCart";
+import MechanicCart from "../../Components/Mechanic/MechanicCart";
 import { useMechanicInventory } from "../../hooks/useMechanicInventory";
 import { createNotification } from "../../supabase/notifications";
 
