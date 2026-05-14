@@ -218,7 +218,7 @@ const MechanicDashboard = () => {
                 <Clock size={18} />
                 Set Reminder
               </button>
-              <MechanicProfileButton />
+              {/* <MechanicProfileButton /> */}
             </div>
 
           </div>

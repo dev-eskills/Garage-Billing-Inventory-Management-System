@@ -4,13 +4,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNotifications } from '../hooks/useNotifications';
 import NotificationList from './admin/NotificationList';
 import { useAuth } from '../hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
+import MechanicProfileButton from './MechanicProfileButton';
 
 const MechanicHeader = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const { user, logout } = useAuth();
   const { mechanicNotifications, markAsRead } = useNotifications(user?.id);
   const [showNotifications, setShowNotifications] = useState(false);
   const notificationRef = useRef(null);
-
+  const navigate = useNavigate();
   const unreadCount = mechanicNotifications?.filter(n => n.status === 'unread').length || 0;
 
   useEffect(() => {
@@ -31,10 +33,14 @@ const MechanicHeader = ({ isSidebarOpen, setIsSidebarOpen }) => {
     }
   };
 
+  const handleClick = () => {
+    navigate("/")
+  }
+
   return (
     <header className="h-20 bg-white border-b border-slate-200 px-6 flex items-center justify-between sticky top-0 z-40">
       <div className="flex items-center gap-4">
-        <button 
+        <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           className="lg:hidden p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-all"
         >
@@ -44,7 +50,7 @@ const MechanicHeader = ({ isSidebarOpen, setIsSidebarOpen }) => {
           <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white font-black text-xl shadow-lg shadow-slate-200">
             G
           </div>
-          <div className="hidden sm:block">
+          <div className="hidden sm:block cursor-pointer" onClick={handleClick}>
             <h1 className="font-black text-slate-900 tracking-tight text-lg leading-none">Garage Portal</h1>
             <p className="text-[10px] font-bold text-blue-600 uppercase tracking-[0.2em] mt-1">Mechanic Panel</p>
           </div>
@@ -54,7 +60,7 @@ const MechanicHeader = ({ isSidebarOpen, setIsSidebarOpen }) => {
       <div className="flex items-center gap-4">
         {/* Notifications */}
         <div className="relative" ref={notificationRef}>
-          <button 
+          <button
             onClick={() => setShowNotifications(!showNotifications)}
             className="p-2.5 text-slate-500 hover:bg-slate-100 rounded-xl transition-all cursor-pointer relative"
           >
@@ -84,9 +90,9 @@ const MechanicHeader = ({ isSidebarOpen, setIsSidebarOpen }) => {
                 </div>
 
                 <div className="max-h-96 overflow-y-auto">
-                  <NotificationList 
-                    notifications={mechanicNotifications} 
-                    onMarkAsRead={handleMarkAsRead} 
+                  <NotificationList
+                    notifications={mechanicNotifications}
+                    onMarkAsRead={handleMarkAsRead}
                   />
                 </div>
 
@@ -108,9 +114,7 @@ const MechanicHeader = ({ isSidebarOpen, setIsSidebarOpen }) => {
             <p className="text-sm font-bold text-slate-900 leading-tight">{user?.user_metadata?.full_name || 'Mechanic'}</p>
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Ready to work</p>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 font-bold shadow-sm">
-            {user?.user_metadata?.full_name?.charAt(0) || 'M'}
-          </div>
+          <MechanicProfileButton />
         </div>
       </div>
     </header>
