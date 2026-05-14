@@ -18,12 +18,12 @@ import {
   ShoppingBag
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import AddPartModal from '../../components/admin/AddPartModal';
-import DeleteConfirmModal from '../../components/admin/DeleteConfirmModal';
+import AddPartModal from '../../Components/admin/AddPartModal';
+import DeleteConfirmModal from '../../Components/admin/DeleteConfirmModal';
 import { useParts } from '../../hooks/useParts';
 import { useAdminPurchase } from '../../hooks/useAdminPurchase';
 import { usePagination } from '../../hooks/usePagination';
-import Pagination from '../../components/common/Pagination';
+import Pagination from '../../Components/common/Pagination';
 
 const AdminParts = () => {
   const { parts, partsPending, deletePart, deletePartPending, updatePartSalePrice, updatePartSalePricePending } = useParts();

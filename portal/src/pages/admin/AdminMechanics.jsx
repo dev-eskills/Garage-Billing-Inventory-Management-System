@@ -6,13 +6,13 @@ import {
   ChevronDown, ChevronUp, User, Car, IndianRupee, Bell,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import AddMechanicModal from '../../components/admin/AddMechanicModal';
-import ChangePasswordModal from '../../components/admin/ChangePasswordModal';
-import ConfirmationModal from '../../components/common/ConfirmationModal';
+import AddMechanicModal from '../../Components/admin/AddMechanicModal';
+import ChangePasswordModal from '../../Components/admin/ChangePasswordModal';
+import ConfirmationModal from '../../Components/common/ConfirmationModal';
 import { useAdminMechanic } from '../../hooks/useAdminMechanic';
 import { usePagination } from '../../hooks/usePagination';
-import Pagination from '../../components/common/Pagination';
-import SendNotificationModal from '../../components/admin/SendNotificationModal';
+import Pagination from '../../Components/common/Pagination';
+import SendNotificationModal from '../../Components/admin/SendNotificationModal';
 import { fetchMechanics } from '../../supabase/adminMechanic';
 
 

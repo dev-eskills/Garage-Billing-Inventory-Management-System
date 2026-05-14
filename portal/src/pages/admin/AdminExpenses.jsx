@@ -2,12 +2,12 @@ import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DollarSign, Plus, Search, Filter, Trash2, Edit, Calendar, Tag, FileText } from 'lucide-react';
 import { useExpenses } from '../../hooks/useExpenses';
-import AddExpenseModal from '../../components/admin/AddExpenseModal';
-import DeleteConfirmModal from '../../components/admin/DeleteConfirmModal';
+import AddExpenseModal from '../../Components/admin/AddExpenseModal';
+import DeleteConfirmModal from '../../Components/admin/DeleteConfirmModal';
 import { syncHistoricalPurchases } from '../../supabase/syncPurchases';
 import { useQueryClient } from '@tanstack/react-query';
 import { usePagination } from '../../hooks/usePagination';
-import Pagination from '../../components/common/Pagination';
+import Pagination from '../../Components/common/Pagination';
 
 const AdminExpenses = () => {
   const queryClient = useQueryClient();

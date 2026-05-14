@@ -11,9 +11,9 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLosses } from '../../hooks/useLosses';
-import ConfirmationModal from '../../components/common/ConfirmationModal';
+import ConfirmationModal from '../../Components/common/ConfirmationModal';
 import { usePagination } from '../../hooks/usePagination';
-import Pagination from '../../components/common/Pagination';
+import Pagination from '../../Components/common/Pagination';
 
 const AdminLosses = () => {
   const { 

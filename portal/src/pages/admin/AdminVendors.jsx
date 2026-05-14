@@ -21,10 +21,10 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAdminVendor } from '../../hooks/useAdminVendor';
-import AddVendorModal from '../../components/admin/AddVendorModal';
-import ConfirmationModal from '../../components/common/ConfirmationModal';
+import AddVendorModal from '../../Components/admin/AddVendorModal';
+import ConfirmationModal from '../../Components/common/ConfirmationModal';
 import { usePagination } from '../../hooks/usePagination';
-import Pagination from '../../components/common/Pagination';
+import Pagination from '../../Components/common/Pagination';
 
 const AdminVendors = () => {
     const {

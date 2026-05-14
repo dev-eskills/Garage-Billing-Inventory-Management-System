@@ -18,10 +18,10 @@ import { useAdminPurchase } from '../../hooks/useAdminPurchase';
 import { useLosses } from '../../hooks/useLosses';
 import { useParts } from '../../hooks/useParts';
 import { usePagination } from '../../hooks/usePagination';
-import AddPurchaseModal from '../../components/admin/AddPurchaseModal';
-import ReturnPartsModal from '../../components/admin/ReturnPartsModal';
-import ConfirmationModal from '../../components/common/ConfirmationModal';
-import Pagination from '../../components/common/Pagination';
+import AddPurchaseModal from '../../Components/admin/AddPurchaseModal';
+import ReturnPartsModal from '../../Components/admin/ReturnPartsModal';
+import ConfirmationModal from '../../Components/common/ConfirmationModal';
+import Pagination from '../../Components/common/Pagination';
 
 const AdminPurchase = () => {
     const {

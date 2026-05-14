@@ -20,8 +20,8 @@ import { useDashboard } from "../../hooks/useDashboard";
 import { useInvoices } from "../../hooks/useInvoices";
 import QuickActions from "../../Components/Mechanic/QuickActions";
 import { useNotifications } from "../../hooks/useNotifications";
-import NotificationList from "../../components/admin/NotificationList";
-import CreateReminderModal from "../../components/mechanic/CreateReminderModal";
+import NotificationList from "../../Components/admin/NotificationList";
+import CreateReminderModal from "../../Components/Mechanic/CreateReminderModal";
 import { Bell, Clock } from "lucide-react";
 
 import RecentActivities from "../../Components/Mechanic/RecentActivities";
