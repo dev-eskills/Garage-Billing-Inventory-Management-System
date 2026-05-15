@@ -9,7 +9,7 @@ import MechanicProfileButton from './MechanicProfileButton';
 
 const MechanicHeader = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const { user, logout } = useAuth();
-  const { mechanicNotifications, markAsRead } = useNotifications(user?.id);
+  const { mechanicNotifications, markAsRead } = useNotifications(true);
   const [showNotifications, setShowNotifications] = useState(false);
   const notificationRef = useRef(null);
   const navigate = useNavigate();

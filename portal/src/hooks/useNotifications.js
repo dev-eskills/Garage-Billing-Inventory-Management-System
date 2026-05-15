@@ -5,29 +5,33 @@ import {
   markNotificationAsRead,
   checkAndGenerateExpirations 
 } from "../supabase/notifications"
+import { useAuth } from "./useAuth"
 
-export const useNotifications = (mechanicId = null) => {
+export const useNotifications = (isMechanic = false) => {
     const queryClient = useQueryClient();
+    const { user } = useAuth();
+    const userId = user?.id;
 
     const getAdminNotificationsFn = useQuery({
-        queryKey: ["admin-notifications"],
+        queryKey: ["admin-notifications", userId],
         queryFn: async () => {
+          if (!userId) return [];
           // Trigger expiry check when admin fetches notifications
           try {
             await checkAndGenerateExpirations();
           } catch (e) {
             console.error("Expiry check failed", e);
           }
-          return fetchAdminNotifications();
+          return fetchAdminNotifications(userId);
         },
-        enabled: !mechanicId,
-        refetchInterval: 60000, // Refetch every minute
+        enabled: !!userId && !isMechanic,
+        refetchInterval: 60000, 
     })
 
     const getMechanicNotificationsFn = useQuery({
-        queryKey: ["mechanic-notifications", mechanicId],
-        queryFn: () => fetchMechanicNotifications(mechanicId),
-        enabled: !!mechanicId,
+        queryKey: ["mechanic-notifications", userId],
+        queryFn: () => fetchMechanicNotifications(userId),
+        enabled: !!userId && isMechanic,
         refetchInterval: 60000,
     })
 

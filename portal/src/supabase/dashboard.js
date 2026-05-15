@@ -18,7 +18,7 @@ export async function fetchDashboardStats() {
       supabase.from('purchases').select('total_amount, payment_status'),
       supabase.from('expenses').select('amount'),
       supabase.from('losses').select('amount'),
-      supabase.from('mechanics').select('*', { count: 'exact', head: true }),
+      supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'mechanic'),
       supabase.from('customers').select('*', { count: 'exact', head: true }),
       supabase.from('jobs').select('*', { count: 'exact', head: true }),
       supabase.from('jobs').select('total_amount_full_service, job_info')
@@ -139,8 +139,6 @@ export async function fetchDashboardStats() {
 // }
 
 export async function fetchDashboardStatsbyId(userId) {
-  console.log("USER ID:", userId);
-
   try {
     const [inventoryRes, customersRes, invoicesRes, jobsRes] =
       await Promise.all([

@@ -9,7 +9,8 @@ import {
   Info,
   Wrench,
   Phone,
-  Car
+  Car,
+  ShieldCheck
 } from 'lucide-react';
 import WhatsAppButton from '../common/WhatsAppButton';
 
@@ -22,6 +23,10 @@ const NotificationList = ({ notifications, onMarkAsRead }) => {
         return <AlertTriangle size={16} className="text-red-500" />;
       case 'success':
         return <CheckCircle2 size={16} className="text-green-500" />;
+      case 'admin_notification':
+        return <ShieldCheck size={16} className="text-amber-500" />;
+      case 'personal_reminder':
+        return <Bell size={16} className="text-indigo-500" />;
       default:
         return <Info size={16} className="text-blue-500" />;
     }
@@ -35,7 +40,7 @@ const NotificationList = ({ notifications, onMarkAsRead }) => {
       </div>
     );
   }
-
+  console.log("notifications: ", notifications);
   return (
     <div className="max-h-96 overflow-y-auto custom-scrollbar">
       {notifications?.map((notification) => (

@@ -101,7 +101,7 @@ const MechanicDashboard = () => {
   const [purchaseOpen, setPurchaseOpen] = useState(false);
   const [isReminderModalOpen, setIsReminderModalOpen] = useState(false);
 
-  const { mechanicNotifications, markAsRead } = useNotifications(user?.id);
+  const { mechanicNotifications, markAsRead } = useNotifications(true);
 
   const unreadCount = mechanicNotifications?.filter(n => n.status === 'unread').length || 0;
   const {
@@ -112,8 +112,6 @@ const MechanicDashboard = () => {
     globalStatsLoading,
     userStatsLoading,
   } = useDashboard();
-
-  console.log("user Dashboard", userStats);
 
   const dashboardStats = [
     {
@@ -215,8 +213,8 @@ const MechanicDashboard = () => {
                 onClick={() => setIsReminderModalOpen(true)}
                 className="rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 px-5 py-3 text-sm font-semibold transition hover:bg-indigo-100 hover:border-indigo-300 flex items-center gap-2 cursor-pointer"
               >
-                <Clock size={18} />
-                Set Reminder
+                <Bell size={18} />
+                Notify / Remind
               </button>
               {/* <MechanicProfileButton /> */}
             </div>
@@ -450,17 +448,17 @@ const MechanicDashboard = () => {
             {/* Right Side: Reminder Action */}
             <div className="flex flex-col items-center justify-center text-center p-8 bg-indigo-50/30 rounded-2xl border border-dashed border-indigo-100">
               <div className="w-16 h-16 rounded-full bg-white shadow-sm flex items-center justify-center text-indigo-500 mb-4">
-                <Clock size={32} />
+                <Bell size={32} />
               </div>
-              <h3 className="text-lg font-bold text-slate-800">Need to remember something?</h3>
+              <h3 className="text-lg font-bold text-slate-800">Communicate & Remind</h3>
               <p className="text-sm text-slate-500 max-w-xs mt-2 mb-6">
-                Set a personal reminder for inventory checks, customer calls, or vehicle follow-ups.
+                Send updates to admins, WhatsApp reminders to customers, or set tasks for yourself.
               </p>
               <button
                 onClick={() => setIsReminderModalOpen(true)}
                 className="px-6 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all cursor-pointer"
               >
-                Create Reminder
+                Send Notification
               </button>
             </div>
           </div>
