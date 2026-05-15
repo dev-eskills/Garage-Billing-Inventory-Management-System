@@ -7,7 +7,6 @@ import { useAuth } from "./useAuth";
 
 export function useDashboard() {
   const { user } = useAuth();
-  console.log(user.id);
   const {
     data: stats,
     isLoading: statsLoading,

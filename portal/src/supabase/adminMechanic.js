@@ -15,6 +15,23 @@ export async function adminAddMechanic({ email, password, name, contact, address
   });
 
   if (error) throw new Error(error.message);
+
+  // Sync to profiles table to avoid foreign key violations in notifications
+  const { error: profileError } = await supabase
+    .from('profiles')
+    .insert({
+      id: data.user.id,
+      full_name: name,
+      email: email,
+      phone: contact,
+      address: address,
+      role: 'mechanic'
+    });
+
+  if (profileError) {
+    console.error('Profile creation failed:', profileError.message);
+  }
+
   return data;
 }
 

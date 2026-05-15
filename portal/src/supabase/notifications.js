@@ -4,11 +4,12 @@ import { fetchMechanics } from "./adminMechanic";
 /**
  * Fetch notifications for the admin panel
  */
-export const fetchAdminNotifications = async () => {
+export const fetchAdminNotifications = async (adminId) => {
   const [notificationsRes, mechanics, jobsRes] = await Promise.all([
     supabase
       .from("notifications")
       .select("*")
+      .or(`receiver_id.eq.${adminId},receiver_id.is.null`)
       .order("created_at", { ascending: false }),
     fetchMechanics(),
     supabase.from("jobs").select("*, customers(*)"),
@@ -20,7 +21,7 @@ export const fetchAdminNotifications = async () => {
   const jobs = jobsRes.data || [];
 
   return notifications.map((notification) => {
-    const mechanic = mechanics.find((m) => m.id === notification.mechanic_id);
+    const mechanic = mechanics.find((m) => m.id === (notification.mechanic_id || notification.sender_id));
     const job = jobs.find((j) => j.id === notification.job_id);
 
     return {
@@ -37,23 +38,58 @@ export const fetchAdminNotifications = async () => {
 };
 
 /**
- * Fetch notifications for a specific mechanic
+ * Fetch all admin users
  */
-export const fetchMechanicNotifications = async (mechanicId) => {
+export const fetchAdmins = async () => {
   const { data, error } = await supabase
-    .from("notifications")
-    .select("*, jobs(*, customers(*))")
-    .or(`mechanic_id.eq.${mechanicId},receiver_id.eq.${mechanicId}`)
-    .order("created_at", { ascending: false });
+    .from("profiles")
+    .select("id, full_name, role")
+    .eq("role", "admin");
 
   if (error) throw error;
   return data;
 };
 
 /**
+ * Fetch notifications for a specific mechanic
+ */
+// export const fetchMechanicNotifications = async (mechanicId) => {
+//   const { data, error } = await supabase
+//     .from("notifications")
+//     .select("*, jobs(*, customers(*))")
+//     .or(`mechanic_id.eq.${mechanicId},receiver_id.eq.${mechanicId},sender_id.eq.${mechanicId}`)
+//     .order("created_at", { ascending: false });
+
+//   if (error) throw error;
+//   return data;
+// };
+
+export const fetchMechanicNotifications = async (mechanicId) => {
+  const { data, error } = await supabase
+    .from("notifications")
+    .select("*, jobs(*, customers(*))")
+    // Filter for notifications intended for this mechanic OR about this mechanic 
+    // (excluding messages they sent to others)
+    .or(`receiver_id.eq.${mechanicId},and(mechanic_id.eq.${mechanicId},notification_type.neq.admin_notification,notification_type.neq.customer_reminder)`)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  
+  // Additional safety filter: if I am the sender and NOT the receiver, 
+  // it shouldn't be in my inbox (unless it's a personal reminder)
+  return (data || []).filter(n => {
+    if (n.sender_id === mechanicId && n.receiver_id !== mechanicId) {
+        if (n.notification_type === 'admin_notification' || n.notification_type === 'customer_reminder') {
+            return false;
+        }
+    }
+    return true;
+  });
+};
+
+/**
  * Create a new notification
  */
-
 export const createNotification = async (notificationData) => {
   // 1. Always get the current logged-in user as the SENDER
   const { data: { user } } = await supabase.auth.getUser();
@@ -64,8 +100,9 @@ export const createNotification = async (notificationData) => {
     .from("notifications")
     .insert([
       {
-        sender_id: notificationData.sender_id, // Use the renamed column (or mechanic_id if you didn't rename)
-        receiver_id: notificationData.receiver_id, // The ID of the Admin or Mechanic receiving it
+        sender_id: user.id, // Current authenticated user is always the sender
+        receiver_id: notificationData.receiver_id || null, // Specific target receiver
+        mechanic_id: notificationData.mechanic_id || null,
         job_id: notificationData.job_id || null,
         title: notificationData.title,
         message: notificationData.message,

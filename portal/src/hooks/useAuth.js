@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { login as loginApi, logout as logoutApi, getCurrentUser,updatePassword as updatePasswordApi} from '../supabase/auth';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabaseClient';
 
 export const useAuth=()=>{
   const queryClient = useQueryClient();
@@ -48,7 +49,28 @@ export const useAuth=()=>{
 
   const getUserFn = useQuery({
     queryKey: ['user'],
-    queryFn: getCurrentUser,
+    queryFn: async () => {
+      const user = await getCurrentUser();
+      if (user) {
+        // Ensure profile exists in profiles table
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('id', user.id)
+          .single();
+        
+        if (!profile) {
+          console.log("Syncing missing profile for user:", user.id);
+          await supabase.from('profiles').insert({
+            id: user.id,
+            full_name: user.user_metadata?.full_name || 'User',
+            email: user.email,
+            role: user.user_metadata?.role || 'mechanic'
+          });
+        }
+      }
+      return user;
+    },
   });
 
 
