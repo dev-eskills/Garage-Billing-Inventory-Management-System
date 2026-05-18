@@ -30,7 +30,16 @@ export const useNotifications = (isMechanic = false) => {
 
     const getMechanicNotificationsFn = useQuery({
         queryKey: ["mechanic-notifications", userId],
-        queryFn: () => fetchMechanicNotifications(userId),
+        queryFn: async () => {
+          if (!userId) return [];
+          // Trigger expiry check when mechanic fetches notifications too
+          try {
+            await checkAndGenerateExpirations();
+          } catch (e) {
+            console.error("Expiry check failed", e);
+          }
+          return fetchMechanicNotifications(userId);
+        },
         enabled: !!userId && isMechanic,
         refetchInterval: 60000,
     })
