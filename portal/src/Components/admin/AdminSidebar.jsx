@@ -12,7 +12,8 @@ import {
   CarIcon,
   DollarSign,
   TrendingDown,
-  User
+  User,
+  Bell
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -28,6 +29,7 @@ const navItems = [
   { id: 'losses', label: 'Losses', icon: TrendingDown, path: '/admin/losses' },
   { id: 'customers', label: 'Customers', icon: UserSquare2, path: '/admin/customers' },
   { id: 'invoices', label: 'Invoices', icon: FileText, path: '/admin/invoices' },
+  { id: 'reminders', label: 'Reminders', icon: Bell, path: '/admin/reminders' },
   { id: 'settings', label: 'Settings', icon: Settings, path: '/admin/settings' },
 ];
 

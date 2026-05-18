@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Bell, Calendar, MessageSquare, Clock, User, ShieldCheck, Send } from 'lucide-react';
 import { createNotification, fetchAdmins } from '../../supabase/notifications';
+import { createReminder } from '../../supabase/reminders';
 import { useCustomers } from '../../hooks/useCustomers';
 import { toast } from 'react-hot-toast';
 
@@ -59,12 +60,22 @@ const CreateReminderModal = ({ onClose, mechanicId }) => {
         handleWhatsApp(customer.customer_details?.contact, customer.customer_details?.name);
         
         // 2. Record in database for history/tracking
+        await createReminder({
+          customer_name: customer.customer_details?.name || "Customer",
+          vehicle_no: customer.vehicle_details?.vehicle_number || "N/A",
+          contact_info: customer.customer_details?.contact || "N/A",
+          type: 'manual_whatsapp',
+          title: formData.title,
+          status: 'sent'
+        });
+
+        // 3. Create a notification for record
         await createNotification({
           ...formData,
-          receiver_id: null, // Customers don't have IDs in this portal yet, or use their profile ID if they had one
+          receiver_id: null,
           mechanic_id: mechanicId,
           notification_type: 'customer_reminder',
-          status: 'read' // Mark as read since it was just sent
+          status: 'read'
         });
 
         toast.success('WhatsApp opened & recorded');
@@ -109,7 +120,7 @@ const CreateReminderModal = ({ onClose, mechanicId }) => {
         <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
           <div className="flex items-center gap-3">
             <div className={`p-2.5 rounded-xl ${
-                targetType === 'personal_reminder' ? 'bg-indigo-100 text-indigo-600' :
+                targetType === 'personal_reminder' ? 'bg-blue-100 text-blue-600' :
                 targetType === 'admin_notification' ? 'bg-amber-100 text-amber-600' :
                 'bg-emerald-100 text-emerald-600'
             }`}>
@@ -156,7 +167,7 @@ const CreateReminderModal = ({ onClose, mechanicId }) => {
                 }}
                 className={`flex flex-col items-center gap-1.5 py-3 rounded-2xl border-2 transition-all cursor-pointer ${
                   targetType === type.id
-                    ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
+                    ? 'border-blue-600 bg-blue-50 text-blue-700'
                     : 'border-slate-100 bg-white text-slate-500 hover:border-slate-200'
                 }`}
               >
@@ -180,12 +191,12 @@ const CreateReminderModal = ({ onClose, mechanicId }) => {
                 <select
                   value={selectedTargetId}
                   onChange={(e) => setSelectedTargetId(e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all text-sm font-semibold"
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all text-sm font-semibold"
                   required
                 >
                   <option value="">Choose Recipient...</option>
                   {targetType === 'admin_notification' && (
-                    <option value="all" className="text-indigo-600 font-bold">📢 All Administrators</option>
+                    <option value="all" className="text-blue-600 font-bold">📢 All Administrators</option>
                   )}
                   {getTargetOptions().map((opt) => (
                     <option key={opt.id} value={opt.id}>
@@ -201,28 +212,28 @@ const CreateReminderModal = ({ onClose, mechanicId }) => {
 
           <div className="space-y-2">
             <label className="text-[11px] font-black text-slate-500 uppercase tracking-[0.1em] flex items-center gap-2">
-              <Bell size={12} className="text-indigo-500" /> {targetType === 'customer_reminder' ? 'Subject' : 'Title'}
+              <Bell size={12} className="text-blue-500" /> {targetType === 'customer_reminder' ? 'Subject' : 'Title'}
             </label>
             <input
               type="text"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               placeholder={targetType === 'personal_reminder' ? "e.g., Check oil stock" : "Brief topic..."}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all text-sm font-semibold placeholder:text-slate-400"
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all text-sm font-semibold placeholder:text-slate-400"
               required
             />
           </div>
 
           <div className="space-y-2">
             <label className="text-[11px] font-black text-slate-500 uppercase tracking-[0.1em] flex items-center gap-2">
-              <MessageSquare size={12} className="text-indigo-500" /> {targetType === 'customer_reminder' ? 'WhatsApp Message' : 'Message Details'}
+              <MessageSquare size={12} className="text-blue-500" /> {targetType === 'customer_reminder' ? 'WhatsApp Message' : 'Message Details'}
             </label>
             <textarea
               value={formData.message}
               onChange={(e) => setFormData({ ...formData, message: e.target.value })}
               placeholder={targetType === 'customer_reminder' ? "Write your message for the customer here..." : "Provide more details..."}
               rows={4}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all text-sm font-semibold resize-none placeholder:text-slate-400"
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all text-sm font-semibold resize-none placeholder:text-slate-400"
               required
             ></textarea>
           </div>
@@ -241,7 +252,7 @@ const CreateReminderModal = ({ onClose, mechanicId }) => {
               disabled={loading}
               className={`flex-1 px-4 py-3 text-white rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg cursor-pointer ${
                 targetType === 'customer_reminder' ? 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-100' : 
-                'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-100'
+                'bg-blue-600 hover:bg-blue-700 shadow-blue-100'
               }`}
             >
               {loading ? (

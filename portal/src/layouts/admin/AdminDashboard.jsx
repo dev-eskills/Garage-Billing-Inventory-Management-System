@@ -4,6 +4,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { Outlet, useLocation } from 'react-router-dom';
 import AdminSidebar from '../../Components/admin/AdminSidebar';
 import AdminHeader from '../../Components/admin/AdminHeader';
+import WhatsAppAutoSender from '../../Components/WhatsAppAutoSender';
 
 const AdminDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -15,6 +16,7 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-[#f8faff] flex font-sans text-gray-900 overflow-x-hidden relative">
+      <WhatsAppAutoSender />
       <AdminSidebar
         activeTab={activeTab}
         isSidebarOpen={isSidebarOpen}

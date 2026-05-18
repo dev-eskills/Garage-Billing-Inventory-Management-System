@@ -26,6 +26,7 @@ const AdminPurchase = lazy(() => import("../pages/admin/AdminPurchase"));
 const AdminExpenses = lazy(() => import("../pages/admin/AdminExpenses"));
 const MechanicDetails = lazy(() => import("../pages/admin/MechanicDetails"));
 const AdminLosses = lazy(() => import("../pages/admin/AdminLosses"));
+const AdminReminders = lazy(() => import("../pages/admin/AdminReminders"));
 
 // Mechanic Pages
 const MechanicDashboard = lazy(() => import("../pages/mechanic/MechanicDashboard"));
@@ -143,6 +144,7 @@ const router = createBrowserRouter([
       { path: "losses", element: <LazyComponent Component={AdminLosses} /> },
       { path: "customers", element: <LazyComponent Component={AdminCustomers} /> },
       { path: "invoices", element: <LazyComponent Component={AdminInvoices} /> },
+      { path: "reminders", element: <LazyComponent Component={AdminReminders} /> },
       { path: "settings", element: <LazyComponent Component={AdminSettings} /> },
     ],
   },

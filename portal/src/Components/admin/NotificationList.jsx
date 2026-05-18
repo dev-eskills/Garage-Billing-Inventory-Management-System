@@ -27,6 +27,8 @@ const NotificationList = ({ notifications, onMarkAsRead }) => {
         return <ShieldCheck size={16} className="text-amber-500" />;
       case 'personal_reminder':
         return <Bell size={16} className="text-indigo-500" />;
+      case 'customer_reminder_sent':
+        return <CheckCircle2 size={16} className="text-emerald-500" />;
       default:
         return <Info size={16} className="text-blue-500" />;
     }
@@ -70,19 +72,19 @@ const NotificationList = ({ notifications, onMarkAsRead }) => {
               <div className="mt-3 bg-gray-50/80 rounded-md border border-gray-100/50 overflow-hidden">
                 <div className="grid grid-cols-2 gap-2">
                   <div className="space-y-1">
-                    {notification.jobs?.customer_details && (
+                    {notification.jobs?.customers?.customer_details && (
                       <div className="flex items-center gap-1.5 min-w-0">
                         <User size={12} className="text-emerald-600 shrink-0" />
                         <span className="text-xs text-gray-700 truncate tracking-tight font-medium">
-                          {notification.jobs.customer_details.name}
+                          {notification.jobs.customers.customer_details.name}
                         </span>
                       </div>
                     )}
-                    {notification.jobs?.vehicle_details && (
+                    {notification.jobs?.customers?.vehicle_details && (
                       <div className="flex items-center gap-1.5 min-w-0">
                         <Car size={10} className="text-blue-600 shrink-0" />
                         <span className="text-xs text-gray-600 truncate tracking-tight font-medium">
-                          {notification.jobs.vehicle_details.name} ({notification.jobs.vehicle_details.number})
+                          {notification.jobs.customers.vehicle_details.model || 'Vehicle'} ({notification.jobs.customers.vehicle_details.vehicle_number || 'N/A'})
                         </span>
                       </div>
                     )}
@@ -107,11 +109,11 @@ const NotificationList = ({ notifications, onMarkAsRead }) => {
                 </div>
 
                 {/* Action Footer */}
-                <div className=" py-1.5 flex items-center justify-between border-t border-gray-100">
+                <div className=" py-1.5 flex items-center justify-between border-t border-gray-100 px-3">
                   <div className="flex items-center gap-1.5">
                     <Phone size={10} className="text-gray-400" />
                     <span className="text-xs  text-gray-500 tracking-tighter">
-                      {notification.jobs?.customer_details?.contact}
+                      {notification.jobs?.customers?.customer_details?.contact || 'No Contact'}
                     </span>
                   </div>
                   <WhatsAppButton notification={notification} />

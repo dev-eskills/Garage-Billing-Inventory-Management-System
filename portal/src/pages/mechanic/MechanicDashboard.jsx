@@ -446,8 +446,8 @@ const MechanicDashboard = () => {
             </div>
 
             {/* Right Side: Reminder Action */}
-            <div className="flex flex-col items-center justify-center text-center p-8 bg-indigo-50/30 rounded-2xl border border-dashed border-indigo-100">
-              <div className="w-16 h-16 rounded-full bg-white shadow-sm flex items-center justify-center text-indigo-500 mb-4">
+            <div className="flex flex-col items-center justify-center text-center p-8 bg-blue-50/30 rounded-2xl border border-dashed border-blue-100">
+              <div className="w-16 h-16 rounded-full bg-white shadow-sm flex items-center justify-center text-blue-500 mb-4">
                 <Bell size={32} />
               </div>
               <h3 className="text-lg font-bold text-slate-800">Communicate & Remind</h3>
@@ -456,7 +456,7 @@ const MechanicDashboard = () => {
               </p>
               <button
                 onClick={() => setIsReminderModalOpen(true)}
-                className="px-6 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all cursor-pointer"
+                className="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all cursor-pointer"
               >
                 Send Notification
               </button>

@@ -2,11 +2,11 @@ import React from 'react';
 import { MessageCircle } from 'lucide-react';
 
 const WhatsAppButton = ({ notification }) => {
-  const { jobs, mechanic } = notification;
-  const customerName = jobs?.customer_details?.name || 'Customer';
-  const customerContact = jobs?.customer_details?.contact;
-  const vehicleName = jobs?.vehicle_details?.name || 'your vehicle';
-  const vehicleNumber = jobs?.vehicle_details?.number || '';
+  const { jobs } = notification;
+  const customerName = jobs?.customers?.customer_details?.name || 'Customer';
+  const customerContact = jobs?.customers?.customer_details?.contact;
+  const vehicleName = jobs?.customers?.vehicle_details?.model || 'your vehicle';
+  const vehicleNumber = jobs?.customers?.vehicle_details?.vehicle_number || '';
   const expiryDate = jobs?.expiry_date ? new Date(jobs.expiry_date).toLocaleDateString() : '';
 
   const generateMessage = () => {
